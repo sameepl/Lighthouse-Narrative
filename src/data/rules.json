@@ -1,0 +1,18 @@
+{
+  "defaultTarget": 8,
+  "cleanMargin": 2,
+  "charMods": [[2, -2], [5, -1], [8, 0], [11, 1], [14, 2]],
+  "skillChar": {
+    "Leadership": "SOC", "Persuade": "SOC", "Diplomat": "SOC", "Tactics": "INT",
+    "Pilot": "DEX", "Gunnery": "DEX", "Electronics": "EDU", "Mechanic": "EDU",
+    "Recon": "INT", "Gun Combat": "DEX", "Astrogation": "EDU"
+  },
+  "resources": {
+    "Credits": { "start": 52000, "min": 0, "reserve": 40000 },
+    "Edge": { "start": 3, "min": 0, "max": 3 },
+    "Strain": { "start": 0, "min": 0, "max": 5 }
+  },
+  "bonuses": {
+    "priya_read": { "label": "Priya’s reading", "n": 1 }
+  }
+}

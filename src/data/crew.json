@@ -1,0 +1,10 @@
+[
+  { "id": "renata", "name": "Renata", "role": "Compact chair", "faction": "compact" },
+  { "id": "priya", "name": "Priya", "role": "Seneschal and liaison", "faction": "alliance" },
+  { "id": "halvorsen", "name": "Halvorsen", "role": "Compact officer", "faction": "compact" },
+  { "id": "cass", "name": "Cass", "role": "Analyst", "faction": "alliance" },
+  { "id": "miri", "name": "Miri", "role": "Young engineer-scientist", "faction": "alliance" },
+  { "id": "tally", "name": "Tally", "role": "Young pilot", "faction": "alliance" },
+  { "id": "wren", "name": "Wren", "role": "Liaison", "faction": "alliance" },
+  { "id": "lysa", "name": "Lysa", "role": "Pilot", "faction": "alliance" }
+]

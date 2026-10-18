@@ -1,4 +1,4 @@
-name: Deploy prototypes to GitHub Pages
+name: Test and deploy to GitHub Pages
 on:
   push:
     branches: [main]
@@ -22,11 +22,12 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: react/package-lock.json
+      - run: npm ci
+      - run: npm test
       - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: dist
       - id: deployment
         uses: actions/deploy-pages@v4

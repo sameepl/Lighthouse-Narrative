@@ -1,0 +1,9 @@
+{
+  "name": "Marcus Torin",
+  "placeholder": true,
+  "chars": { "STR": 7, "DEX": 8, "END": 8, "INT": 10, "EDU": 10, "SOC": 9 },
+  "skills": {
+    "Leadership": 2, "Tactics": 2, "Persuade": 1, "Diplomat": 2, "Pilot": 2, "Gunnery": 1,
+    "Electronics": 1, "Mechanic": 0, "Recon": 1, "Gun Combat": 1, "Astrogation": 1
+  }
+}

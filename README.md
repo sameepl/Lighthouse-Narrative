@@ -3,35 +3,38 @@
 ## ▶ Play it (no install, works on your phone)
 **https://sameepl.github.io/Lighthouse-Narrative/**
 
-Tap A, B or C to play the same scene built three ways. Updates deploy automatically from `main`
-(GitHub Actions → Pages, see `.github/workflows/pages.yml`).
+A mobile-first narrative game: space opera with dark shades, where doing right costs something.
+The first playable scene is "The Written Clause". Updates deploy automatically from `main`.
 
-*Everything below is for developers who want to run or edit it locally.*
-
-# Narrative game prototypes: "The Written Clause"
-
-One scene from the brief (`brief.md`), built three ways. `shared/` holds the content, rules engine, CSS and art placeholder.
-
-| Folder | Stack | Where the story/rules live |
+## How it is built
+| Layer | Tech | Where |
 |---|---|---|
-| `plain/` | HTML + ES modules, no build | `shared/story.js` (data) + `shared/engine.js` (rules) |
-| `ink/`   | inkjs (compiled in-browser) + the shared DOM UI | `ink/story.ink` (story AND rules, written in ink) |
-| `react/` | React + Vite + Framer Motion | `shared/story.js` + `shared/engine.js` |
+| Writing | [ink](https://www.inklestudios.com/ink/) | `src/story/` |
+| Rules | TypeScript (pure functions, unit-tested) | `src/engine/` |
+| Data | JSON, validated with zod | `src/data/` |
+| Bridge | inkjs + zustand | `src/bridge/` |
+| UI | React + Framer Motion + Vite | `src/ui/` |
 
-## Run
-- Everything: `npm run build` (needs Node 22), then `npm run serve` and open http://localhost:8801/
-- Dev server for React only: `cd react && npm install && npm run dev`
+Writers only touch `.ink` files: see [`docs/WRITING.md`](docs/WRITING.md).
 
-## What's implemented (all three)
-- Roll: 2d6 + skill + characteristic mod vs 8. Hidden behind "Try it"; "Odds" reveals target, modifier breakdown, success % and clean %.
-- Three outcomes: Clean success (total >= target+2), Success with a cost (target..target+1), Failure (always moves the story).
-- Edge pool of 3: re-roll a failure, or upgrade a cost-success to clean.
-- Resources: Credits (green/amber vs the Cr40,000 reserve), Edge, Strain with the Compact. Crew help (Priya's reading, +1).
-- Consequence notes after each outcome, a running Ledger in the Sheet, and an end-of-scene summary of what it bought and cost.
-- Marcus is never written for: narration covers the world and NPCs; choices are the player's intents.
-- Dark/light themes, small-caps labels, monospace numbers, slow background drift, save/restore in localStorage.
+## Develop
+```bash
+npm install
+npm run dev        # dev server
+npm test           # rules, data validation, and a walk of every story branch
+npm run build      # typecheck + production build into dist/
+```
+Requires Node 22+.
 
-## Assumptions to confirm (invented for the slice)
-- Marcus's six characteristics and skill levels; skill-to-characteristic pairings (Persuade/Diplomat/Leadership: SOC, Tactics: INT).
-- The "success with a cost" trigger (margin band 0-1 over target), plus the Credits (-3,000) and Strain numbers.
-- Starting Credits (52,000) and Strain max (5).
+## Rules in brief
+2d6 + skill + characteristic modifier against a target (usually 8+), hidden behind a **Try it** button; **Odds** reveals the maths.
+Three results: **Clean success**, **Success with a cost**, **Failure** (which always moves the story on).
+**Edge** (3 per episode) re-rolls a failure or upgrades a cost-success to clean. Tracked: Credits (reserve Cr40,000), Edge, Strain with the Compact.
+
+## Placeholders to confirm
+Marcus's characteristics and skill levels, the skill-to-characteristic pairings, the margin that triggers "success with a cost",
+the Credits/Strain numbers, and the starting Credits and Strain limit are invented for the prototype. They live in `src/data/`.
+
+## History
+`archive/prototypes-v0` branch: the original three-stack comparison (plain JS, ink, React) this project grew from.
+Design brief: [`docs/brief.md`](docs/brief.md).
