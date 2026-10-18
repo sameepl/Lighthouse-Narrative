@@ -1,0 +1,9 @@
+{
+  "name": "lighthouse-narrative-ink",
+  "version": "1.0.0",
+  "description": "Prototype B: ink (vendored inkjs in vendor/)",
+  "dependencies": {
+    "inkjs": "^2.4.0"
+  },
+  "private": true
+}

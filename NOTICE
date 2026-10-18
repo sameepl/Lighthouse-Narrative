@@ -1,0 +1,17 @@
+Lighthouse Narrative (prototypes)
+
+Original story, characters, setting and code in this repository are
+Copyright (c) the repository owner. All rights reserved. No license is
+granted to copy, modify or distribute them. This repository is private.
+
+The game rules are inspired by 2d6 task-resolution tabletop systems. This
+project does not reproduce any published rulebook text, tables, or
+trademarked setting material.
+
+Third-party software (all MIT-licensed):
+  - inkjs (c) inkle Ltd. and inkjs contributors. Vendored at
+    ink/vendor/ink-full.js; license text in ink/vendor/LICENSE-inkjs.md
+  - React (c) Meta Platforms, Inc. and affiliates
+  - Framer Motion (c) Framer B.V.
+  - Vite (c) VoidZero Inc. and Vite contributors
+Their license texts ship inside each package in node_modules.

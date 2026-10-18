@@ -1,0 +1,9 @@
+{
+  "name": "lighthouse-narrative",
+  "private": true,
+  "description": "Mobile-first narrative game prototypes (plain JS, ink, React)",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "serve": "python3 -m http.server 8801 --directory site"
+  }
+}

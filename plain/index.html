@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Prototype A — Plain JS</title><link rel="stylesheet" href="../shared/ui.css"></head>
+<body><div id="app"></div>
+<script type="module">
+import { newState, view, choose, introEvents, sheet } from '../shared/engine.js';
+import { createUI } from '../shared/ui.js';
+const SAVE = 'proto-plain-v2';
+const ui = createUI(document.getElementById('app'), { onRestart: restart, onPick: pick });
+let state;
+
+function sync() {
+  const v = view(state);
+  ui.setHud(v.hud); ui.setBg(v.bg); ui.setSheet(sheet(state)); ui.setOdds(v.odds); ui.setChoices(v.choices);
+  try { localStorage.setItem(SAVE, JSON.stringify({ state, feed: ui.getFeed() })); } catch {}
+}
+function pick(id) { const r = choose(state, id); state = r.state; ui.append(r.events); sync(); }
+function restart() { try { localStorage.removeItem(SAVE); } catch {} start(); }
+function start(saved) {
+  ui.clear();
+  if (saved) { state = saved.state; ui.setFeed(saved.feed); }
+  else { state = newState(); ui.append(introEvents(state)); }
+  sync();
+}
+let saved = null; try { saved = JSON.parse(localStorage.getItem(SAVE)); } catch {}
+start(saved);
+</script></body></html>
