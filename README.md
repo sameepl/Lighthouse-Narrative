@@ -1,3 +1,13 @@
+# Lighthouse Narrative
+
+## ▶ Play it (no install, works on your phone)
+**https://sameepl.github.io/Lighthouse-Narrative/**
+
+Tap A, B or C to play the same scene built three ways. Updates deploy automatically from `main`
+(GitHub Actions → Pages, see `.github/workflows/pages.yml`).
+
+*Everything below is for developers who want to run or edit it locally.*
+
 # Narrative game prototypes: "The Written Clause"
 
 One scene from the brief (`brief.md`), built three ways. `shared/` holds the content, rules engine, CSS and art placeholder.
