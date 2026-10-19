@@ -30,8 +30,30 @@ describe('data files', () => {
   it('rejects rules missing a core resource', () => {
     const { Edge: _edge, ...rest } = rules.resources;
     expect(() => parseData({ ...raw, rules: { ...rules, resources: rest } })).toThrow(/Edge/);
+    const { Renown: _renown, ...withoutRenown } = rules.resources;
+    expect(() => parseData({ ...raw, rules: { ...rules, resources: withoutRenown } })).toThrow(/Renown/);
   });
   it('rejects malformed crew entries', () => {
     expect(() => parseData({ ...raw, crew: [{ id: 'x' }] })).toThrow();
+  });
+  it('validates crew assist skills and trust bounds', () => {
+    expect(() => parseData({ ...raw, crew: [{ ...crew[0], assist: { skill: 'Unknown', n: 1 } }] })).toThrow(
+      /assist.skill.*Unknown/,
+    );
+    expect(() => parseData({ ...raw, crew: [{ ...crew[0], trust: 4 }] })).toThrow(/trust/);
+  });
+  it('validates ship upkeep and unique ids', () => {
+    expect(() => parseData({ ...raw, ships: [{ ...ships[0], upkeep: -1 }] })).toThrow(/upkeep/);
+    expect(() => parseData({ ...raw, ships: [ships[0], ships[0]] })).toThrow(/duplicate ids/);
+  });
+  it('preserves placeholder markers on new entity numbers', () => {
+    const parsed = parseData(raw);
+    expect(parsed.crew.every(member => member.placeholder)).toBe(true);
+    expect(parsed.ships.every(ship => ship.placeholder)).toBe(true);
+  });
+  it('rejects a nonpositive Edge reward', () => {
+    expect(() => parseData({ ...raw, rules: { ...rules, cycle: { ...rules.cycle, edgeReward: 0 } } })).toThrow(
+      /edgeReward/,
+    );
   });
 });

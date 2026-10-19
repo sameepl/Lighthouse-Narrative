@@ -27,10 +27,16 @@ export function parseData(raw: { rules: unknown; character: unknown; crew: unkno
       },
     ]);
   }
-  for (const need of ['Credits', 'Edge', 'Strain']) {
+  for (const need of ['Credits', 'Edge', 'Strain', 'Renown']) {
     if (!(need in rules.resources)) throw new Error(`rules.resources is missing "${need}"`);
+  }
+  for (const member of crew) {
+    if (!(member.assist.skill in rules.skillChar))
+      throw new Error(`crew.json ${member.id} assist.skill "${member.assist.skill}" is not in rules.skillChar`);
   }
   const ids = crew.map(c => c.id);
   if (new Set(ids).size !== ids.length) throw new Error('crew.json has duplicate ids');
+  const shipIds = ships.map(s => s.id);
+  if (new Set(shipIds).size !== shipIds.length) throw new Error('ships.json has duplicate ids');
   return { rules, character, crew, ships };
 }

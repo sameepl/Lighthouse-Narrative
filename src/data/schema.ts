@@ -18,9 +18,25 @@ export const RulesSchema = z.object({
       min: z.number().int(),
       max: z.number().int().optional(),
       reserve: z.number().int().optional(),
+      placeholder: z.boolean().optional(),
     }),
   ),
   bonuses: z.record(z.string(), z.object({ label: z.string(), n: z.number().int() })),
+  cycle: z.object({
+    actions: z.number().int().positive(),
+    pursuit: z.object({
+      length: z.number().int().positive(),
+      sliceLength: z.number().int().positive(),
+      base: z.number().int(),
+      renownThreshold: z.number().int(),
+      renownDelta: z.number().int(),
+      loudDelta: z.number().int(),
+      quietDelta: z.number().int(),
+    }),
+    edgeTrust: z.number().int().min(0).max(3),
+    edgeReward: z.number().int().positive(),
+    trustedAssistBonus: z.number().int().nonnegative(),
+  }),
 });
 
 export const CharacterSchema = z.object({
@@ -38,6 +54,10 @@ export const CrewSchema = z.array(
     name: z.string(),
     role: z.string(),
     faction: z.string(),
+    assist: z.object({ skill: z.string(), n: z.number().int().min(0) }),
+    trait: z.string().min(1),
+    trust: z.number().int().min(0).max(3),
+    placeholder: z.boolean().optional(),
   }),
 );
 
@@ -47,6 +67,9 @@ export const ShipsSchema = z.array(
     name: z.string(),
     role: z.string(),
     main: z.boolean(),
+    tags: z.array(z.string().min(1)),
+    upkeep: z.number().int().nonnegative(),
+    placeholder: z.boolean().optional(),
   }),
 );
 

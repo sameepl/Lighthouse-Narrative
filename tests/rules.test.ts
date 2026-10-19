@@ -118,9 +118,11 @@ describe('rolling and Edge', () => {
 describe('resources', () => {
   it('starts from rules.json and clamps to min and max', () => {
     const g = newGameState(rules);
-    expect(g.res).toEqual({ Credits: 52000, Edge: 3, Strain: 0 });
+    expect(g.res).toEqual({ Credits: 52000, Edge: 3, Strain: 0, Renown: 0 });
     expect(addResource(g.res, rules, 'Strain', 99)).toBe(5);
     expect(addResource(g.res, rules, 'Strain', -99)).toBe(0);
+    expect(addResource(g.res, rules, 'Renown', 99)).toBe(5);
+    expect(addResource(g.res, rules, 'Renown', -99)).toBe(0);
     expect(addResource(g.res, rules, 'Edge', 5)).toBe(3);
     expect(addResource(g.res, rules, 'Credits', -3000)).toBe(49000);
   });

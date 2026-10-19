@@ -3,12 +3,18 @@
     "id": "errant_pawn",
     "name": "Errant Pawn",
     "role": "Fast, armoured, quiet escort. Marcus's main ship.",
-    "main": true
+    "main": true,
+    "tags": ["fast", "armoured", "quiet"],
+    "upkeep": 1000,
+    "placeholder": true
   },
   {
     "id": "ardent_venture",
     "name": "Ardent Venture",
     "role": "Large expedition hub: workshop, sickbay, launch bay.",
-    "main": false
+    "main": false,
+    "tags": ["hub", "workshop", "sickbay"],
+    "upkeep": 3000,
+    "placeholder": true
   }
 ]
