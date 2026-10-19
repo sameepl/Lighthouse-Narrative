@@ -4,7 +4,29 @@ import path from 'node:path';
 import type { Plugin } from 'vite';
 import { Compiler, CompilerOptions } from 'inkjs/full';
 import type { IFileHandler } from 'inkjs/compiler/IFileHandler';
-import { readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+
+/** Marker line in main.ink that expands to an INCLUDE for every file in scenes/ (sorted), so adding a scene never edits main.ink. */
+export const SCENES_MARKER = '// @include-scenes';
+
+export function sceneFiles(dir: string): string[] {
+  const scenes = path.join(dir, 'scenes');
+  return existsSync(scenes)
+    ? readdirSync(scenes)
+        .filter(f => f.endsWith('.ink'))
+        .sort()
+    : [];
+}
+
+export function expandSceneIncludes(source: string, dir: string): string {
+  const includes = sceneFiles(dir)
+    .map(f => `INCLUDE scenes/${f}`)
+    .join('\n');
+  return source
+    .split('\n')
+    .map(line => (line.trim() === SCENES_MARKER ? includes : line))
+    .join('\n');
+}
 
 export function compileInk(file: string, loaded: string[] = []): string {
   const errors: string[] = [];
@@ -27,7 +49,7 @@ export function compileInk(file: string, loaded: string[] = []): string {
   );
   let json = '';
   try {
-    json = new Compiler(readFileSync(file, 'utf8'), options).Compile().ToJson() ?? '';
+    json = new Compiler(expandSceneIncludes(readFileSync(file, 'utf8'), dir), options).Compile().ToJson() ?? '';
   } catch {
     /* compile errors are reported through the handler */
   }
@@ -45,6 +67,7 @@ export function inkPlugin(): Plugin {
       const loaded: string[] = [];
       const json = compileInk(file, loaded);
       for (const f of [file, ...loaded]) this.addWatchFile(f); // INCLUDEd files rebuild the story too
+      this.addWatchFile(path.join(path.dirname(file), 'scenes')); // so does adding a scene file
       return `export default ${JSON.stringify(json)};`;
     },
     handleHotUpdate({ file, server }) {

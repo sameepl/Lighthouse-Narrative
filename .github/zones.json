@@ -1,0 +1,34 @@
+{
+  "comment": "Zones limit which files a PR may change. A PR declares its zone with a label (zone:core|feature|content|docs) or a branch prefix (core/ feature/ content/ docs/). When a core PR adds a contract file, add it to the 'deny' list of feature and content.",
+  "zones": {
+    "core": { "allow": ["**"] },
+    "feature": {
+      "allow": [
+        "src/ui/**",
+        "src/engine/**",
+        "tests/**",
+        "src/story/scenes/**",
+        "src/data/encounters/**",
+        "src/data/crew.json",
+        "src/data/ships.json",
+        "docs/tasks/**",
+        "docs/ROADMAP.md"
+      ],
+      "deny": ["src/engine/types.ts", "src/engine/rules.ts"]
+    },
+    "content": {
+      "allow": [
+        "src/story/scenes/**",
+        "src/data/encounters/**",
+        "src/data/crew.json",
+        "src/data/ships.json",
+        "src/ui/assets/**"
+      ],
+      "deny": []
+    },
+    "docs": {
+      "allow": ["docs/**", "README.md"],
+      "deny": ["docs/decisions/**"]
+    }
+  }
+}
