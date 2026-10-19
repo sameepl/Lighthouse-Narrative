@@ -37,4 +37,4 @@ the Credits/Strain numbers, and the starting Credits and Strain limit are invent
 
 ## History
 `archive/prototypes-v0` branch: the original three-stack comparison (plain JS, ink, React) this project grew from.
-Design brief: [`docs/brief.md`](docs/brief.md).
+Design brief: [`docs/brief.md`](docs/brief.md). Game design and scale targets: [`docs/game-design.md`](docs/game-design.md).
