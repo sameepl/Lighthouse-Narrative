@@ -151,7 +151,7 @@ The player learns each archetype in small, low-stakes encounters, then meets the
 
 Marcus's missing memories link him to people, and some people want what he lost. **Ariadne is the anchor, and she is already aboard:** EID-0, recovered as an isolated core from Far Horizon, with Marcus since the start (see `canon/`). There is no reunion to reach. The story is about **what to ask her and what asking costs**, with a pursuing Section closing in. The season question: _who gets to decide what a person keeps, and what will you pay to protect that right?_
 
-Revised after the planner's notes (`canon/design-impact.md`). Everything here is a proposal until the owner approves it; items drawn from `[GM-ONLY]` canon are not usable in text until authorised (`canon/README.md`).
+Revised after the planner's notes (`canon/design-impact.md`). Keystone titles, the pieces and K5's stances are proposals until the design PR is merged. `[GM-ONLY]` canon is usable in text only if it is on the authorised list (`canon/owner-decisions.md`).
 
 Each of K2 to K4 yields one **piece** of the picture, delivered as evidence the world shows (never as Marcus's thoughts):
 
@@ -161,7 +161,7 @@ Each of K2 to K4 yields one **piece** of the picture, delivered as evidence the 
 | **The Six** | Who they were: the six children | the six-place table drawn three times; a manifest of six identifiers, one matching no one |
 | **The Claim** | Who is pursuing him, and what they want | the cut mast and the old continuity signal; the Section's argument for custody |
 
-**The price of knowing (proposal, needs OK).** Ariadne tells Marcus things only if asked, and authenticating her on an open channel tells the Section where she is. So asking her for a truth is a choice with a cost: a Pursuit tick of +2.
+**The price of knowing.** The canon facts are authorised (`canon/owner-decisions.md`): Ariadne tells Marcus things only if asked, and authenticating her on an open channel tells the Section where she is. So asking her for a truth is a choice with a cost: a Pursuit tick of +2.
 
 ### Keystones (working titles)
 
@@ -214,12 +214,12 @@ M1 numbers: 4 keystones x ~1,300 = 5,200; 6 encounters x ~900 = 5,400; Hub ~1,20
 
 ## 10. Open questions
 
-1. **Ariadne:** what she wants now (the notes say it is not on file), and a few lines in her voice. See `canon/design-impact.md` section 6.
-2. **Authorisations:** which `[GM-ONLY]` items Season 1 may use (checklist in `canon/design-impact.md` section 5).
-3. **Visibility of powers:** coherence, Lantern powers and discontinuities, shown or only unexplained strangeness? (The brief said no psychics on screen.)
-4. **Fixed points:** which played events are backstory only and which are seen on screen.
-5. **Crew data:** reconcile Tally, Cass, Miri, Wren and Lysa with the notes.
-6. **Child-welfare treatment:** records and aftermath only, no on-screen harm to children. Confirm.
-7. **Edge:** is "earned only by crew trust 3, never refreshed" right?
-8. **Ending count** (M1 has 2, M2 has 3) and how the K5 stance maps to them.
-9. **Calibrate** the reading-speed assumption with a real playtest.
+Resolved by the owner (2026-10-19, `canon/owner-decisions.md`): powers stay unexplained strangeness; no on-screen harm to children; the authorised `[GM-ONLY]` list; cryogenics explains the crew's ages.
+
+1. **Ariadne:** what she wants now (not on file), and a few lines in her voice. See `canon/design-impact.md` section 6.
+2. **Fixed points:** which played events are backstory only and which are seen on screen.
+3. **Crew:** roles of Wren and Lysa (not in the notes); apparent ages of Cass and Miri.
+4. **The number:** which ship or Quiet Registry segment (a placeholder is fine for now).
+5. **Edge:** is "earned only by crew trust 3, never refreshed" right?
+6. **Ending count** (M1 has 2, M2 has 3) and how the K5 stance maps to them.
+7. **Calibrate** the reading-speed assumption with a real playtest.

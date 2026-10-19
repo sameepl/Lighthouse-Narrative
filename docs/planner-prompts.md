@@ -52,27 +52,19 @@ No reproduced tabletop rulebook text or trademarked setting terms.
 
 ## 3. Follow-ups after the first answers (see `canon/design-impact.md` section 6)
 
+Already answered by the owner: powers visibility, the authorised GM-only list, child-welfare treatment, and the crew-age question (cryogenics: Tally was frozen much longer; Marcus lost the least time).
+
 ```
-Thank you. Your notes corrected our premise: Ariadne is already aboard, not someone to find. Follow-ups, short
-answers are fine, mark anything uncertain as (TBD):
+Thank you. Your notes corrected our premise: Ariadne is already aboard, not someone to find. A few follow-ups;
+short answers are fine, mark anything uncertain as (TBD):
 
 1. What does Ariadne want now? Give 5 to 8 sample lines in her voice (short; spoilers are fine, I will filter).
    How does she speak to Marcus versus to Miri?
-2. Confirm or correct our crew roles: Tally, Cass, Miri, Wren, Lysa. Which are Lantern Six, which are not,
-   and roughly how old is each? (We have Tally as a young pilot; your notes say eldest and anchor.)
+2. What are Wren's and Lysa's roles and relationships to Marcus? (They were not in your notes.) And roughly how
+   old do Cass and Miri appear to be, given the cryogenics?
 3. Which fixed points are backstory only (shown as evidence), and which should be seen on screen in a
    30-minute game for new players?
-4. Which of these GM-ONLY items may the game use? (yes/no each)
-   - Ariadne tells Marcus things only if asked
-   - opening an authenticated channel for Ariadne tells the Section where she is
-   - the Section as the pursuers, with its "custody as protection" argument
-   - Ariadne holds a removal record of what Marcus asked to remove
-   - the Section holds an image of Ariadne "before Marcus"
-   - Merrow as the man in both doorways
-5. Should coherence and Lantern powers be visible in the game, or stay unexplained strangeness?
-   (Our original brief said no psychics on screen.)
-6. Child-welfare treatment: we plan records, evidence and aftermath only, with no on-screen harm to children. OK?
-7. The number: which ship or Quiet Registry segment does it refer to? A placeholder is fine.
-8. Is "relief mixed with guilt" the right ending tone, and is "who gets to decide what a person keeps, and what
+4. Which ship or Quiet Registry segment does the number refer to? A placeholder is fine.
+5. Is "relief mixed with guilt" the right ending tone, and is "who gets to decide what a person keeps, and what
    will you pay to protect that right?" the right season question?
 ```
