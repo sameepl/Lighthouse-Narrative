@@ -75,6 +75,13 @@ Narrative facts are ink variables: `VAR priya_read = false`, then `~ priya_read 
 To make a flag boost rolls, add it to `bonuses` in `src/data/rules.json`:
 `"priya_read": { "label": "Priya’s reading", "n": 1 }` and pass its name to `roll()`.
 
+## Canon and voice
+
+- Read `docs/canon/README.md` before writing anything about Ariadne, the Section, or Marcus's past. Unauthorised `[GM-ONLY]` and HELD material never appears in text; use `[STUB]` and ask.
+- Ariadne: `docs/canon/ariadne-voice.md`. She is exact, never claims certainty, and distinguishes "I do not know" from "I am not able to say".
+- Strangeness around Marcus is evidence (a count that matches, a voice that is recognised), and its cost is headaches and exhaustion. No lights, no named powers.
+- Miri is never in danger scenes. No on-screen harm to children.
+
 ## Ink traps
 
 - `|` and `{ }` are special inside text; avoid them in prose.

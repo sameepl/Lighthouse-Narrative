@@ -33,7 +33,7 @@ Order: M0-01, then M0-02, then M0-03 and M0-04 in parallel, then M0-05, then M0-
 
 ## M1: 20-minute slice (about 13,500 authored words)
 
-4 cycles. Keystones K1, K2, K3, K5. Six encounters (Courier, Distress call, Scout, Trade run, Salvage, Standoff, one each, with complications). Two endings. Needs the owner's answers to the follow-ups in `planner-prompts.md` (prompt 3) and the authorisation checklist in `canon/design-impact.md`.
+4 cycles. Keystones K1, K2, K3, K5. Six encounters (Courier, Distress call, Scout, Trade run, Salvage, Standoff, one each, with complications). Two endings. Planner follow-up 1 is in (`canon/planner-followup-1.md`); a few gaps remain (`planner-prompts.md`, prompt 4).
 
 ## M2: 30-minute lean (about 25,000 words)
 

@@ -50,7 +50,7 @@ Constraints: Marcus Torin is never written for (the game never decides his words
 No reproduced tabletop rulebook text or trademarked setting terms.
 ```
 
-## 3. Follow-ups after the first answers (see `canon/design-impact.md` section 6)
+## 3. Follow-ups after the first answers (answered; see `canon/planner-followup-1.md`)
 
 Already answered by the owner: powers visibility, the authorised GM-only list, child-welfare treatment, and the crew-age question (cryogenics: Tally was frozen much longer; Marcus lost the least time).
 
@@ -67,4 +67,20 @@ short answers are fine, mark anything uncertain as (TBD):
 4. Which ship or Quiet Registry segment does the number refer to? A placeholder is fine.
 5. Is "relief mixed with guilt" the right ending tone, and is "who gets to decide what a person keeps, and what
    will you pay to protect that right?" the right season question?
+```
+
+## 4. Remaining follow-ups (after follow-up 1; see `canon/design-impact.md` section 8)
+
+```
+Thank you, very useful. We have used your answers. A few small gaps; short answers are fine, mark uncertain as (TBD):
+
+1. How should Ariadne address Marcus? (By name, by rank, formally, something else.) One or two sample lines.
+2. The Season 4 "ladder" (own core, shared weight, quiet board, with Cass able to end it) is marked player-safe.
+   May the game use it as Ariadne's progression across a season?
+3. We drafted K5 around your new line: "You asked me to tell you the truth if I found you. I would like to know
+   whether that request still stands." Does that fit the files, and is it OK for Ariadne to be the one who asks?
+4. Miri's present age (roughly), and whether Halworth is 19 or 20 years before the game's present.
+5. What is Jonah's role, if any, in a Season 1 scene? (A Lantern; nothing else on file.)
+6. Is there a safe way to show Merrow's initials on the second removal in a folder scene without revealing the
+   doorway reveal until later?
 ```

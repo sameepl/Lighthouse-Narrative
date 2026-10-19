@@ -9,6 +9,8 @@ The game uses the campaign as source material and a theme guide, not as a litera
 |---|---|
 | [`ariadne-and-backstory.md`](ariadne-and-backstory.md) | The planner's notes, as received: Ariadne, Marcus's missing memories, the pursuers, other people, the truth, fixed points, tone |
 | [`owner-decisions.md`](owner-decisions.md) | **Authoritative** owner rulings: what may be used, content lines, the cryogenics explanation |
+| [`planner-followup-1.md`](planner-followup-1.md) | The planner's answers on Ariadne's wants and voice, crew roles, fixed points, the authorised list, tone |
+| [`ariadne-voice.md`](ariadne-voice.md) | Writer's guide to Ariadne: what to use, how she speaks and behaves, sample lines |
 | [`design-impact.md`](design-impact.md) | Our review of those notes: what they settle, what they correct, how the game design changes, and open questions |
 
 ## Status tags (used in the notes and in our docs)
@@ -26,10 +28,12 @@ The game uses the campaign as source material and a theme guide, not as a litera
 
 1. **Never put `[GM-ONLY]` or `HELD` material in player-visible text** (ink scenes, encounter data, UI labels, notes) unless the item is on the **authorised list** in `owner-decisions.md` section 3, or the task's issue names that exact item and says it is authorised. The built game, including the compiled ink, is public on GitHub Pages.
 2. **HELD items stay unresolved** through Season 1: Contact 1's identity, Tally's name and number, Helena Voss's whereabouts, Adrian Vale's whereabouts.
-3. **Standing guardrails** (all `[GM-ONLY]`, so they bind the writing but are not themselves revealed): the nature of the discontinuities stays unresolved; no alien or Ancient reveal; Hunters stay rare; Miri is never operational.
+3. **Standing guardrails** (all `[GM-ONLY]`, so they bind the writing but are not themselves revealed): the nature of the discontinuities stays unresolved; no alien or Ancient reveal; Hunters stay rare; Miri is never operational and is kept out of danger scenes.
 4. **Marcus is never written for.** The past appears as evidence the world shows, never as his thoughts.
 5. **Child-welfare themes are handled with restraint** (owner ruling): records, evidence and aftermath only; no on-screen harm to children.
-6. When a canon fact is needed and is missing, **do not invent it**; use a placeholder marked `[STUB]` and ask in the issue.
+6. **Strangeness is evidence, not power.** Show effects as evidence (a count that matches, a voice that is recognised) and costs as headaches and exhaustion. No lights, no named powers.
+7. **Ariadne** follows `ariadne-voice.md`: she informs and never instructs, and she says whether it is "I do not know" or "I am not able to say".
+8. When a canon fact is needed and is missing, **do not invent it**; use a placeholder marked `[STUB]` and ask in the issue.
 
 ## Updating canon
 

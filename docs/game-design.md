@@ -93,6 +93,7 @@ Renown is both reward and risk: it makes money easier and trouble faster. That t
 - **Marcus** keeps the six characteristics and skills. NPCs do not get them.
 - **Ships:** tags (fast, armoured, quiet, hub, workshop, sickbay), upkeep per cycle, one committed per job. The ship decides which options appear.
 - **Gear:** about six items; each is a tag that unlocks options (a sealed data core, a long-range probe).
+- **Ariadne (companion):** always aboard the _Errant Pawn_ and never "busy". INT 14 and EDU 13 (+2 each); suggested assist Electronics, Astrogation or Recon at +1 (placeholder). She informs and never instructs; see `canon/ariadne-voice.md`.
 - **Crew (simple):**
   - **Assist:** one skill bonus when assigned (+1). Only the best assist applies to a roll; no stacking.
   - **Trait:** one tag that unlocks an option (Priya reads the fine print).
@@ -149,7 +150,7 @@ The player learns each archetype in small, low-stakes encounters, then meets the
 
 ### The thread: a missing past, a pursuit, and a companion
 
-Marcus's missing memories link him to people, and some people want what he lost. **Ariadne is the anchor, and she is already aboard:** EID-0, recovered as an isolated core from Far Horizon, with Marcus since the start (see `canon/`). There is no reunion to reach. The story is about **what to ask her and what asking costs**, with a pursuing Section closing in. The season question: _who gets to decide what a person keeps, and what will you pay to protect that right?_
+Marcus's missing memories link him to people, and some people want what he lost. **Ariadne is the anchor, and she is already aboard:** EID-0, recovered as an isolated core from Far Horizon, with Marcus since the start (see `canon/`). There is no reunion to reach. The story is about **what to ask her and what asking costs**, with a pursuing Section closing in. The season question: _who gets to decide what a person keeps, and what will you pay to protect that right?_ (Confirmed by the planner: it fits the files' own theme of custody against consent, with "doing right costs" as the other half.)
 
 Revised after the planner's notes (`canon/design-impact.md`). Keystone titles, the pieces and K5's stances are proposals until the design PR is merged. `[GM-ONLY]` canon is usable in text only if it is on the authorised list (`canon/owner-decisions.md`).
 
@@ -169,11 +170,11 @@ Each of K2 to K4 yields one **piece** of the picture, delivered as evidence the 
 |---|---|---|---|---|---|---|
 | **K1** | **The Passenger** | Courier | A routine courier booking: the passenger is being hunted, and recognises Marcus | Shelter them, hand them over, or smuggle them out, with the Compact watching | The passenger knows details no stranger should; a credential that still opens a terminal | opens the pursuit |
 | **K2** | **The Silent Hab** | Distress call | A hab on a dark lane is failing, and nothing answers hails | Whom or what to save with limited time and air: the people or the records | A manifest of six identifiers, one of which matches no one | The Six |
-| **K3** | **The Dark Lane** | Scout | Chart the lane that went dark, a segment with no chart | Publish what you find (Renown, but it exposes you) or keep it quiet | A number from the sealed folder that matches this segment | Removed |
+| **K3** | **The Dark Lane** | Scout | Chart the lane that went dark, a segment with no chart | Publish what you find (Renown, but it exposes you) or keep it quiet | The sealed folder, opened on screen: its number matches the segment (placeholder "Segment SEG-0417, ship and leg (TBD)"), and Merrow's initials are on the second removal | Removed |
 | **K4** | **The Cargo They Want** | Trade run | Armed crews try to take a sealed case wanted by a buyer with a Section seal | Defend it, sell it, or destroy it; the buyer offers "continuity care" | The seal matches the cut mast's old continuity signal | The Claim |
-| **K5** | **The Asking** | (finale) | The Pursuit clock is nearly full. Ariadne holds a removal record, and Cass holds a sealed 41-hour core | Open it (learn everything, pay the cost), leave it closed (honour what a younger Marcus chose), or share the decision with Cass and the others | Everything gathered | resolves the pieces |
+| **K5** | **The Asking** | (finale) | The Pursuit clock is nearly full. Ariadne gives her first honest "I am not able to say", then asks Marcus whether his old request (to tell him the truth if she found him) still stands. She holds the removal record | Reaffirm the request (learn everything, pay the Pursuit cost), withdraw it (honour what a younger Marcus chose and what Ariadne would rather not carry), or share the decision with Cass and the others | Everything gathered | resolves the pieces |
 
-K5 is a decision about whether to ask, not a reunion. Its tone, per the planner, is relief mixed with guilt.
+K5 is Ariadne asking, not Marcus finding. The relief is Ariadne answering, not being found; the guilt is stronger because Marcus asked her to do it, so there is a thread of unease under it. Ariadne can decline to show the record and says plainly which kind of "no" it is ("I do not know" or "I am not able to say"). The player never decides, for her, what to do with the image of her "before Marcus": that is her call.
 
 ### Order and flexibility
 
@@ -214,12 +215,13 @@ M1 numbers: 4 keystones x ~1,300 = 5,200; 6 encounters x ~900 = 5,400; Hub ~1,20
 
 ## 10. Open questions
 
-Resolved by the owner (2026-10-19, `canon/owner-decisions.md`): powers stay unexplained strangeness; no on-screen harm to children; the authorised `[GM-ONLY]` list; cryogenics explains the crew's ages.
+Resolved: powers stay unexplained strangeness; no on-screen harm to children; the authorised `[GM-ONLY]` list; cryogenics explains the crew's ages; crew roles; which fixed points are evidence only and which are seen on screen (`canon/planner-followup-1.md`).
 
-1. **Ariadne:** what she wants now (not on file), and a few lines in her voice. See `canon/design-impact.md` section 6.
-2. **Fixed points:** which played events are backstory only and which are seen on screen.
-3. **Crew:** roles of Wren and Lysa (not in the notes); apparent ages of Cass and Miri.
-4. **The number:** which ship or Quiet Registry segment (a placeholder is fine for now).
-5. **Edge:** is "earned only by crew trust 3, never refreshed" right?
-6. **Ending count** (M1 has 2, M2 has 3) and how the K5 stance maps to them.
-7. **Calibrate** the reading-speed assumption with a real playtest.
+1. **Ariadne's address to Marcus** is `(TBD)` in the files; the planner recommends formal and precise.
+2. **Her progression:** may the game use the Season 4 "ladder" (own core, shared weight, quiet board, with Cass able to end it) as her progression? It is a draft marked player-safe.
+3. **The `[NEW]` sample lines** in `canon/ariadne-voice.md`: confirm which may be used.
+4. **Open numbers:** Miri's present age; whether Halworth was 19 or 20 years before now; the real meaning of "SEG-0417" (a placeholder).
+5. **Jonah's role** (a Lantern; nothing else on file).
+6. **Edge:** is "earned only by crew trust 3, never refreshed" right?
+7. **Ending count** (M1 has 2, M2 has 3) and how the K5 stance maps to them.
+8. **Calibrate** the reading-speed assumption with a real playtest.

@@ -57,9 +57,9 @@ So Ariadne is not a destination. She is **a companion with a past that other peo
    | K4 | The Cargo They Want | Trade run | A sealed case wanted by a Section-linked buyer; the Section's offer of "continuity care" | The Claim |
    | K5 | **The Asking** (replaces "Ariadne") | finale | Ariadne holds the removal record and a partition; Cass holds the sealed 41-hour core (still shut `[PLAYED]`) | resolves the pieces |
 
-6. **K5, The Asking.** Not a reunion: a decision about **whether to ask**, with the Pursuit clock and the Section closing in. Proposed stances (the player picks one): **Open it** (ask Ariadne for the record and open the partition; learn everything, pay the Pursuit cost), **Leave it closed** (honour what a younger Marcus chose; protect Ariadne and the fleet; stay in the dark), or **Share it** (take the decision to Cass and the others; slower and costlier, but not Marcus's alone). Each maps to the theme of custody against consent. A proposal until the design PR is merged.
+6. **K5, The Asking** (revised after planner follow-up 1; see section 8). Not a reunion, and not Marcus asking: **Ariadne asks Marcus whether his old request still stands.** Stances (the player picks one): **Reaffirm** (learn everything, pay the Pursuit cost), **Withdraw** (honour what a younger Marcus chose; stay in the dark; protect her and the fleet), or **Share** (take the decision to Cass and the others; slower and costlier, but not Marcus's alone). Each maps to custody against consent. A proposal until the design PR is merged.
 7. **Season question:** _Who gets to decide what a person keeps, and what will you pay to protect that right?_
-8. **Tone for K5:** relief mixed with guilt, per the planner. Ariadne's unprompted thank-you was a played beat `[PLAYED]`; a version of it can close the game.
+8. **Tone for K5:** relief mixed with guilt, per the planner (adjusted in section 8 below). Ariadne's unprompted thank-you was a played beat `[PLAYED]`; a version of it can close the game.
 
 ## 5. Authorisation list (approved by the owner)
 
@@ -91,3 +91,34 @@ Also in [`../planner-prompts.md`](../planner-prompts.md) as prompt 3. Answered b
 - `docs/decisions/0006-ariadne-aboard-and-canon-status.md` records the decision.
 - `AGENTS.md` and the PR template now say: no `[GM-ONLY]` or HELD material in player-visible text without authorisation.
 - Task cards M0-01 (story-driven Pursuit ticks) and M0-10 (K5 title, canon rule) are updated, along with issues #1 and #10.
+
+## 8. Update after planner follow-up 1
+
+Source: [`planner-followup-1.md`](planner-followup-1.md). Voice guide: [`ariadne-voice.md`](ariadne-voice.md).
+
+**What it settles**
+
+- **Ariadne's wants:** nothing is stated in her own words. The one stated hook is that **Marcus asked her to tell him the truth if she found him** (`[PLAYED]`). A fair design reading is that **she wants to be asked, not used** `(TBD)`. Her choice about the image of her "before Marcus" is hers ("her call and her grief").
+- **K5 is reframed.** She is the one who asks: "You asked me to tell you the truth if I found you. I would like to know whether that request still stands." This turns the finale into consent running in both directions: Marcus consented to his own erasure, and now he is asked whether he still consents to knowing.
+- **Tone:** the relief is Ariadne answering, not being found. The guilt is stronger because Marcus asked her to do it, so add a thread of unease.
+- **On-screen beats worth having in 30 minutes:** the sealed folder opened (K3); Ariadne's first honest "I am not able to say", then the removal record (K5); Merrow's initials on the second removal (K3). Optional: Tally's custody declaration. Evidence only, never on screen as events: the Halworth escape night, the removal request, the six-place table, the Session 0 events.
+- **Powers:** unexplained strangeness. Effects are evidence (a count that matches, a voice that is recognised); costs are headaches and exhaustion. No lights, no named powers.
+- **Miri** is kept out of danger scenes (her protection is a hard rule in the campaign).
+- **The number:** placeholder "Segment SEG-0417, ship and leg (TBD)".
+- **Calendar:** Halworth was about 20 years ago (the files say 19 to 20 before Day 0, so 20 to 21 before now; TBD). Write "about twenty years", never an exact figure.
+
+**Crew roles** (applied to `src/data/crew.json`; roles are player-visible, so they stay spoiler-light)
+
+| Person | Role in the data | Notes (from the planner) |
+|---|---|---|
+| Marcus | captain | Lantern One, age 30 |
+| Tally | Pilot trainee | they/them; late teens apparent; cryogenics explains it; number and name HELD |
+| Cass | Analyst, cooperating | Lantern Three; not crew |
+| Eli | Gunner | Lantern Four; _Errant Pawn_ gunner (added) |
+| Miri | Young engineer-scientist | Lantern Six, the youngest (about 11 to 12 at the start of Season 3); present age TBD |
+| Wren | Compact liaison | not a Lantern; recovering (faction now `compact`) |
+| Lysa | Pilot and executive officer | not a Lantern |
+| Ariadne | Ship intelligence | companion, aboard the _Errant Pawn_ (added) |
+| Jonah | not added | a Lantern; nothing else on file |
+
+**Still open** (prompt 4 in `../planner-prompts.md`): how Ariadne addresses Marcus; whether the Season 4 "ladder" may be her progression; which `[NEW]` sample lines may be used; Miri's present age; 19 or 20 years; Jonah's role.
