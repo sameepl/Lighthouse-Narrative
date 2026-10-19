@@ -9,6 +9,7 @@ Status: `[ ]` not started, `[~]` in progress, `[x]` done. Update the box when a 
 - [x] Rebuild on ink + TypeScript + React with "The Written Clause" (branch-walk tested)
 - [x] Game design: scale targets, loop, keystones, roster (`game-design.md`)
 - [x] Multi-agent scaffolding: AGENTS.md, zones, CI, templates, decisions, task cards
+- [x] Planner notes filed as canon, with a design review (`docs/canon/`)
 
 ## M0: Grey-box loop (about 2,000 words of placeholder text)
 
@@ -32,7 +33,7 @@ Order: M0-01, then M0-02, then M0-03 and M0-04 in parallel, then M0-05, then M0-
 
 ## M1: 20-minute slice (about 13,500 authored words)
 
-4 cycles. Keystones K1, K2, K3, K5. Six encounters (Courier, Distress call, Scout, Trade run, Salvage, Standoff, one each, with complications). Two endings. Needs the owner's answers on Ariadne and the pursuers (`planner-prompts.md`).
+4 cycles. Keystones K1, K2, K3, K5. Six encounters (Courier, Distress call, Scout, Trade run, Salvage, Standoff, one each, with complications). Two endings. Needs the owner's answers to the follow-ups in `planner-prompts.md` (prompt 3) and the authorisation checklist in `canon/design-impact.md`.
 
 ## M2: 30-minute lean (about 25,000 words)
 

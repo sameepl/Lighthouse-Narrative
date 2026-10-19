@@ -2,7 +2,9 @@
 
 Use these in the thread that holds the real campaign, to gather canon. Paste the answers into this repo (or to an agent) as markdown.
 
-## 1. Ariadne and the missing past
+## 1. Ariadne and the missing past (answered; see `canon/ariadne-and-backstory.md`)
+
+Note: this prompt assumed a reunion with Ariadne. The planner correctly pointed out she has been aboard since Session 0, so prompt 3 corrects it.
 
 ```
 I'm designing a mobile narrative game using my campaign as source material and a theme guide (not a literal
@@ -46,4 +48,31 @@ and mark anything uncertain as (TBD) rather than guessing.
 
 Constraints: Marcus Torin is never written for (the game never decides his words, thoughts or actions).
 No reproduced tabletop rulebook text or trademarked setting terms.
+```
+
+## 3. Follow-ups after the first answers (see `canon/design-impact.md` section 6)
+
+```
+Thank you. Your notes corrected our premise: Ariadne is already aboard, not someone to find. Follow-ups, short
+answers are fine, mark anything uncertain as (TBD):
+
+1. What does Ariadne want now? Give 5 to 8 sample lines in her voice (short; spoilers are fine, I will filter).
+   How does she speak to Marcus versus to Miri?
+2. Confirm or correct our crew roles: Tally, Cass, Miri, Wren, Lysa. Which are Lantern Six, which are not,
+   and roughly how old is each? (We have Tally as a young pilot; your notes say eldest and anchor.)
+3. Which fixed points are backstory only (shown as evidence), and which should be seen on screen in a
+   30-minute game for new players?
+4. Which of these GM-ONLY items may the game use? (yes/no each)
+   - Ariadne tells Marcus things only if asked
+   - opening an authenticated channel for Ariadne tells the Section where she is
+   - the Section as the pursuers, with its "custody as protection" argument
+   - Ariadne holds a removal record of what Marcus asked to remove
+   - the Section holds an image of Ariadne "before Marcus"
+   - Merrow as the man in both doorways
+5. Should coherence and Lantern powers be visible in the game, or stay unexplained strangeness?
+   (Our original brief said no psychics on screen.)
+6. Child-welfare treatment: we plan records, evidence and aftermath only, with no on-screen harm to children. OK?
+7. The number: which ship or Quiet Registry segment does it refer to? A placeholder is fine.
+8. Is "relief mixed with guilt" the right ending tone, and is "who gets to decide what a person keeps, and what
+   will you pay to protect that right?" the right season question?
 ```

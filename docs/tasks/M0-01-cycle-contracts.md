@@ -26,6 +26,7 @@ Add the cycle layer to the rules engine and data, as pure tested TypeScript: the
 - [ ] `endCycle(...)` pays upkeep per ship in service, ticks the Pursuit clock, and returns a report (`upkeep`, `pursuitDelta`, `full`).
 - [ ] Edge is a pool of 3 for the whole run. `earnEdge` adds +1 (cap 3) and is meant to be called when a crew member reaches trust 3 (once per crew member).
 - [ ] Crew schema: `assist {skill, n}`, `trait` (a tag), `trust` 0 to 3. Ship schema: `tags`, `upkeep`.
+- [ ] The story can advance the Pursuit clock directly (for example asking Ariadne for a truth: +2). Route it through the existing ink function `add("Pursuit", n)` (the name maps to the clock, clamped at its length) or a new documented function; update `src/story/lib/world.ink` and `docs/WRITING.md`.
 - [ ] Unit tests for every new function, including boundaries (Renown 2 and 3, Pursuit full, Edge cap, upkeep with zero ships).
 
 ## How to verify

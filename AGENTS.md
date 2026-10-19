@@ -48,6 +48,7 @@ Marcus Torin, the player character, is never written for.
 - Marcus Torin is never written for: no speech, thoughts or actions for him in prose. The past surfaces as evidence the world shows (a recording, a manifest, a stranger who knows his face).
 - Do not reproduce published tabletop rulebook text or trademarked setting material (see `NOTICE`).
 - Character stats and some Credits and Strain numbers are placeholders. Do not present them as canon.
+- **Story canon:** read `docs/canon/README.md`. Never put `[GM-ONLY]` or `HELD` material in player-visible text (ink, encounter data, UI) unless the issue names that exact item and authorises it. The compiled game is public. Do not invent facts about Ariadne, the pursuers or Marcus's past; use a `[STUB]` placeholder and ask.
 - Failure always moves the story on. Every roll has three written outcomes: clean, cost, fail.
 - Keep persistent state small: at most 4 visible meters, 1 clock and about 25 narrative flags.
 

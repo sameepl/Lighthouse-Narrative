@@ -11,8 +11,8 @@
 - **Complication:** a swap-in twist that makes a repeated archetype play differently.
 - **Keystone:** a scene the story requires. Never random. An elevated version of an archetype.
 - **Lead:** a flag that makes a keystone available, dropped by an encounter or by time.
-- **Piece:** one of three things a keystone teaches about Marcus's past: Where, Who, Why.
-- **Anchor:** the person Marcus's missing past ties him to (Ariadne; details to be supplied by the owner).
+- **Piece:** one of three things a keystone teaches about Marcus's past: Removed, The Six, The Claim.
+- **Anchor:** the person Marcus's missing past ties him to: Ariadne, who is already aboard the _Errant Pawn_ (see `canon/`).
 - **Pursuit clock:** the narrative clock. Ticks each cycle; when full, the pursuers arrive and the finale is forced.
 - **Edge:** a pool of 3 per run. Re-roll a failure or upgrade a success-with-a-cost to clean. Earned back only through crew trust.
 - **Renown:** 0 to 5. Better offers, but you are easier to find.
@@ -22,4 +22,5 @@
 - **Ledger:** the running list of consequences (gain, cost, watch) shown in the Sheet and the end summary.
 - **Zone:** which files a PR may change (core, feature, content, docs). Enforced by CI.
 - **Tier:** a suggested model class for a task (A strongest, B mid, C cheap or local).
+- **Canon status:** `[PLAYED]` (fixed, usable), `[GM-ONLY]` (spoiler; needs authorisation), `HELD` (never decide), `(TBD)`. See `canon/README.md`.
 - **Contract:** a file other code depends on (types, schemas, ink function signatures). Changes only in `zone:core` PRs.
