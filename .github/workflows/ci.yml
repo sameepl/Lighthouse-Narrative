@@ -1,0 +1,42 @@
+name: CI
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  push:
+    branches-ignore: [main]
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  check:
+    # Label changes only matter to the zone job.
+    if: github.event.action != 'labeled' && github.event.action != 'unlabeled'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+  zones:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/zone-check.mjs
+        env:
+          PR_LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+          HEAD_REF: ${{ github.head_ref }}
+          BASE_REF: origin/${{ github.base_ref }}

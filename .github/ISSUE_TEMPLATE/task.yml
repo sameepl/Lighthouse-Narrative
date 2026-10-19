@@ -1,0 +1,65 @@
+name: Agent task
+description: A small, well-specified unit of work for one coding agent (or a person). One issue is one PR.
+labels: [task]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Keep it small enough for one PR (aim for under about 300 changed lines). Cheaper and local models do best with
+        exact file lists, a pattern to copy, and commands to verify. See docs/AGENT_WORKFLOW.md.
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should be true when this is done, and why. Link the relevant docs (for example docs/game-design.md section 5).
+    validations:
+      required: true
+  - type: dropdown
+    id: zone
+    attributes:
+      label: Zone
+      description: Decides which files the PR may touch (see .github/zones.json). Also add the matching zone label to the PR.
+      options: [core, feature, content, docs]
+    validations:
+      required: true
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Suggested model tier
+      options:
+        - 'A: strongest (architecture, contracts, tricky logic)'
+        - 'B: mid (well-specified features, UI, tests)'
+        - 'C: cheap or local (content, data, mechanical edits)'
+    validations:
+      required: true
+  - type: textarea
+    id: allowed
+    attributes:
+      label: Files you may change
+      description: Exact paths or globs. Note an existing file to copy the pattern from.
+    validations:
+      required: true
+  - type: textarea
+    id: forbidden
+    attributes:
+      label: Files you must not change
+      description: Contracts and anything outside the task. If the task seems to need one, stop and open a zone:core issue instead.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: A checklist a reviewer can tick. Include tests to add.
+    validations:
+      required: true
+  - type: textarea
+    id: verify
+    attributes:
+      label: How to verify
+      value: |
+        npm run check
+      description: Commands that must pass.
+  - type: input
+    id: depends
+    attributes:
+      label: Depends on
+      description: Issue numbers or task ids that must be merged first.

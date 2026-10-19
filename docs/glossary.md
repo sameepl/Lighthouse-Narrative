@@ -1,0 +1,25 @@
+# Glossary
+
+- **Run:** one playthrough, first scene to ending. Target 30 minutes (first playable: 20).
+- **Cycle:** one turn of the loop: Hub, two actions, Downtime. About 5 minutes.
+- **Scene:** one encounter or keystone with a fork and an outcome. About 2 minutes.
+- **Moment:** one player decision (a choice, an assignment, a roll, an Edge decision).
+- **Hub:** the between-scenes screen: brief, board of offers, Prepare, upkeep.
+- **Layer:** Immediate Crisis, Commercial or Narrative (see `game-design.md` section 3).
+- **Encounter:** a small, self-contained scene from the roster. Can be once-only or repeatable.
+- **Archetype:** a template for encounters (Trade run, Courier, Salvage, Scout, Distress call, Standoff) with a complication table.
+- **Complication:** a swap-in twist that makes a repeated archetype play differently.
+- **Keystone:** a scene the story requires. Never random. An elevated version of an archetype.
+- **Lead:** a flag that makes a keystone available, dropped by an encounter or by time.
+- **Piece:** one of three things a keystone teaches about Marcus's past: Where, Who, Why.
+- **Anchor:** the person Marcus's missing past ties him to (Ariadne; details to be supplied by the owner).
+- **Pursuit clock:** the narrative clock. Ticks each cycle; when full, the pursuers arrive and the finale is forced.
+- **Edge:** a pool of 3 per run. Re-roll a failure or upgrade a success-with-a-cost to clean. Earned back only through crew trust.
+- **Renown:** 0 to 5. Better offers, but you are easier to find.
+- **Strain:** 0 to 5. How much of the Compact's patience you have used.
+- **Success with a cost:** a roll that succeeds by 0 or 1 over the target; the win comes with a consequence.
+- **Fail forward:** failure always moves the story on and has a written consequence.
+- **Ledger:** the running list of consequences (gain, cost, watch) shown in the Sheet and the end summary.
+- **Zone:** which files a PR may change (core, feature, content, docs). Enforced by CI.
+- **Tier:** a suggested model class for a task (A strongest, B mid, C cheap or local).
+- **Contract:** a file other code depends on (types, schemas, ink function signatures). Changes only in `zone:core` PRs.

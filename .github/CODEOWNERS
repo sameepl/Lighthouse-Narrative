@@ -1,0 +1,20 @@
+# Core paths: the owner reviews changes here. To enforce, enable "Require review from Code Owners" in branch
+# protection (see docs/AGENT_WORKFLOW.md for the caveat when agents push as the owner).
+/src/engine/       @sameepl
+/src/bridge/       @sameepl
+/src/data/schema.ts   @sameepl
+/src/data/validate.ts @sameepl
+/src/data/index.ts    @sameepl
+/src/data/rules.json  @sameepl
+/src/story/lib/    @sameepl
+/src/story/main.ink @sameepl
+/plugins/          @sameepl
+/scripts/          @sameepl
+/.github/          @sameepl
+/docs/decisions/   @sameepl
+/AGENTS.md         @sameepl
+/CLAUDE.md         @sameepl
+/package.json      @sameepl
+/package-lock.json @sameepl
+/vite.config.ts    @sameepl
+/tsconfig.json     @sameepl

@@ -17,12 +17,16 @@ The first playable scene is "The Written Clause". Updates deploy automatically f
 
 Writers only touch `.ink` files: see [`docs/WRITING.md`](docs/WRITING.md).
 
+## Working with agents
+
+Several coding agents can work in this repo through pull requests: see [`AGENTS.md`](AGENTS.md) and [`docs/AGENT_WORKFLOW.md`](docs/AGENT_WORKFLOW.md). The plan is in [`docs/ROADMAP.md`](docs/ROADMAP.md); all docs are indexed in [`docs/README.md`](docs/README.md).
+
 ## Develop
 ```bash
 npm install
 npm run dev        # dev server
 npm test           # rules, data validation, and a walk of every story branch
-npm run build      # typecheck + production build into dist/
+npm run check      # format check + typecheck + tests + build (run before every PR)
 ```
 Requires Node 22+.
 

@@ -13,7 +13,7 @@ src/story/lib/roll.ink        the roll() check
 src/story/scenes/*.ink        one file per scene
 ```
 
-New scene: create `scenes/my_scene.ink`, add `INCLUDE scenes/my_scene.ink` to `main.ink`, and divert to it (`-> my_scene`).
+New scene: create `scenes/my_scene.ink`. Every file in `scenes/` is included automatically (the `// @include-scenes` line in `main.ink`), so you never edit `main.ink`. Divert to it with `-> my_scene`.
 
 ## Voice rules
 
