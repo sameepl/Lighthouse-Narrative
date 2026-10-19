@@ -24,11 +24,15 @@ export function gradeOf(total: number, target: number, rules: Rules): Grade {
 }
 
 export function setupRoll(
-  character: Character, rules: Rules, req: CheckRequest, isActive: (flag: string) => boolean,
+  character: Character,
+  rules: Rules,
+  req: CheckRequest,
+  isActive: (flag: string) => boolean,
 ): RollSetup {
   let best: RollPart | null = null;
   for (const skill of req.skills) {
-    if (!(skill in rules.skillChar)) throw new Error(`Unknown skill "${skill}" in a check. Known: ${Object.keys(rules.skillChar).join(', ')}`);
+    if (!(skill in rules.skillChar))
+      throw new Error(`Unknown skill "${skill}" in a check. Known: ${Object.keys(rules.skillChar).join(', ')}`);
     const n = character.skills[skill] ?? 0;
     if (!best || n > best.n) best = { label: skill, n };
   }
@@ -46,16 +50,20 @@ export function setupRoll(
 export const signed = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
 
 export function oddsOf(setup: RollSetup, rules: Rules): OddsInfo {
-  let win = 0, clean = 0;
-  for (let a = 1; a <= 6; a++) for (let b = 1; b <= 6; b++) {
-    const g = gradeOf(a + b + setup.mod, setup.target, rules);
-    if (g !== 'fail') win++;
-    if (g === 'clean') clean++;
-  }
+  let win = 0,
+    clean = 0;
+  for (let a = 1; a <= 6; a++)
+    for (let b = 1; b <= 6; b++) {
+      const g = gradeOf(a + b + setup.mod, setup.target, rules);
+      if (g !== 'fail') win++;
+      if (g === 'clean') clean++;
+    }
   return {
-    target: setup.target, mod: setup.mod,
+    target: setup.target,
+    mod: setup.mod,
     parts: setup.parts.map(p => `${p.label} ${signed(p.n)}`),
-    success: Math.round((win / 36) * 100), clean: Math.round((clean / 36) * 100),
+    success: Math.round((win / 36) * 100),
+    clean: Math.round((clean / 36) * 100),
   };
 }
 

@@ -11,9 +11,13 @@ export const data = raw as unknown as GameData;
 
 // Validate in dev so a bad edit is loud right away. Production never loads zod; CI validates via `npm test`.
 if (import.meta.env.DEV) {
-  void import('./validate').then(m => m.parseData(raw)).catch((err: unknown) => {
-    setTimeout(() => { throw err; }); // surfaces in the Vite error overlay and the console
-  });
+  void import('./validate')
+    .then(m => m.parseData(raw))
+    .catch((err: unknown) => {
+      setTimeout(() => {
+        throw err;
+      }); // surfaces in the Vite error overlay and the console
+    });
 }
 
 export type { GameData } from './validate';

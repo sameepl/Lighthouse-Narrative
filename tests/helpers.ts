@@ -13,6 +13,11 @@ export function makeSession(saved: SaveData | null = null, dice: { next: Dice } 
 export const view = (s: GameSession) => s.store.getState();
 export const choiceId = (s: GameSession, text: string) => {
   const c = view(s).choices.find(x => x.text === text);
-  if (!c) throw new Error(`No choice "${text}". Have: ${view(s).choices.map(x => x.text).join(' | ')}`);
+  if (!c)
+    throw new Error(
+      `No choice "${text}". Have: ${view(s)
+        .choices.map(x => x.text)
+        .join(' | ')}`,
+    );
   return c.id;
 };

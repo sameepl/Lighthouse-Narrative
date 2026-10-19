@@ -9,7 +9,12 @@ export type GameEvent = { id: number } & (
 );
 
 export type ChoiceKind = 'choice' | 'try' | 'odds' | 'back' | 'edge' | 'accept';
-export interface UIChoice { id: number | string; kind: ChoiceKind; text: string; sub?: string }
+export interface UIChoice {
+  id: number | string;
+  kind: ChoiceKind;
+  text: string;
+  sub?: string;
+}
 
 /** Everything the UI renders. Replaced (not mutated) on every change. */
 export interface GameView {

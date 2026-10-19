@@ -38,19 +38,32 @@ export class GameSession {
   private checkIndex = -1;
   private showOdds = false;
   private bg = 'hall';
-  private snapshot: { ink: string; res: Record<string, number>; ledger: GameState['ledger']; eventsLen: number } | null = null;
+  private snapshot: {
+    ink: string;
+    res: Record<string, number>;
+    ledger: GameState['ledger'];
+    eventsLen: number;
+  } | null = null;
   private errors: string[] = [];
 
   constructor(private opts: SessionOptions) {
     this.store = createStore<GameView>(() => ({
-      events: [], choices: [], odds: null, bg: 'hall', ended: false, res: {}, ledger: [],
+      events: [],
+      choices: [],
+      odds: null,
+      bg: 'hall',
+      ended: false,
+      res: {},
+      ledger: [],
     }));
     this.init(opts.saved ?? null);
   }
 
   // ---- lifecycle ---------------------------------------------------------------------
 
-  restart(): void { this.init(null); }
+  restart(): void {
+    this.init(null);
+  }
 
   private init(saved: SaveData | null): void {
     const { data, inkJson } = this.opts;
@@ -58,8 +71,12 @@ export class GameSession {
     this.story.onError = msg => this.errors.push(msg);
     this.bindExternals();
     this.game = newGameState(data.rules);
-    this.events = []; this.nextId = 1; this.phase = 'story'; this.showOdds = false;
-    this.request = this.setup = this.pending = this.snapshot = null; this.bg = 'hall';
+    this.events = [];
+    this.nextId = 1;
+    this.phase = 'story';
+    this.showOdds = false;
+    this.request = this.setup = this.pending = this.snapshot = null;
+    this.bg = 'hall';
     if (saved) {
       this.story.state.LoadJson(saved.ink);
       this.game = { res: { ...saved.res }, ledger: [...saved.ledger] };
@@ -89,8 +106,9 @@ export class GameSession {
   /** id is a story choice index (number) or 'try' | 'odds' | 'back' | 'edge' | 'accept'. */
   act(id: number | string): void {
     if (typeof id === 'number') this.pick(id);
-    else if (id === 'odds') { this.showOdds = true; }
-    else if (id === 'back') this.back();
+    else if (id === 'odds') {
+      this.showOdds = true;
+    } else if (id === 'back') this.back();
     else if (id === 'try') this.try();
     else if (id === 'edge') this.edge();
     else if (id === 'accept') this.finalize(this.pending!.grade);
@@ -101,7 +119,12 @@ export class GameSession {
   private pick(index: number): void {
     const choice = this.story.currentChoices[index];
     if (!choice) throw new Error(`No story choice ${index}`);
-    this.snapshot = { ink: this.story.state.toJson(), res: { ...this.game.res }, ledger: [...this.game.ledger], eventsLen: this.events.length };
+    this.snapshot = {
+      ink: this.story.state.toJson(),
+      res: { ...this.game.res },
+      ledger: [...this.game.ledger],
+      eventsLen: this.events.length,
+    };
     this.push({ type: 'pick', html: choice.text });
     this.story.ChooseChoiceIndex(index);
     this.advance();
@@ -113,7 +136,8 @@ export class GameSession {
     this.story.state.LoadJson(s.ink);
     this.game = { res: { ...s.res }, ledger: [...s.ledger] };
     this.events.length = s.eventsLen;
-    this.showOdds = false; this.pending = null;
+    this.showOdds = false;
+    this.pending = null;
     this.refreshChoices();
   }
 
@@ -134,7 +158,10 @@ export class GameSession {
   private finalize(grade: Grade): void {
     this.story.variablesState['roll_grade'] = GRADE_VALUE[grade];
     this.story.ChooseChoiceIndex(this.checkIndex);
-    this.pending = null; this.request = this.setup = null; this.snapshot = null; this.showOdds = false;
+    this.pending = null;
+    this.request = this.setup = null;
+    this.snapshot = null;
+    this.showOdds = false;
     this.advance();
   }
 
@@ -148,7 +175,8 @@ export class GameSession {
     });
     this.story.BindExternalFunction('add', (name: string, n: number) => addResource(this.game.res, rules, name, n));
     this.story.BindExternalFunction('note', (kind: string, t: string) => {
-      if (!NOTE_KINDS.includes(kind as NoteKind)) throw new Error(`note("${kind}", ...): kind must be ${NOTE_KINDS.join(', ')}`);
+      if (!NOTE_KINDS.includes(kind as NoteKind))
+        throw new Error(`note("${kind}", ...): kind must be ${NOTE_KINDS.join(', ')}`);
       const note = { kind: kind as NoteKind, t };
       this.game.ledger.push(note);
       this.push({ type: 'note', ...note });
@@ -164,7 +192,10 @@ export class GameSession {
       if (tags.includes('summary')) this.push({ type: 'summary', items: [...this.game.ledger] });
     }
     this.refreshChoices();
-    if (this.errors.length) { const e = this.errors.splice(0); throw new Error(`ink runtime error:\n${e.join('\n')}`); }
+    if (this.errors.length) {
+      const e = this.errors.splice(0);
+      throw new Error(`ink runtime error:\n${e.join('\n')}`);
+    }
   }
 
   /** Decide whether the story is waiting on a player choice, a roll, or has ended. */
@@ -174,9 +205,15 @@ export class GameSession {
     if (this.checkIndex >= 0) {
       const v = this.story.variablesState;
       this.request = {
-        skills: String(v['chk_skills']).split(',').map(s => s.trim()).filter(Boolean),
+        skills: String(v['chk_skills'])
+          .split(',')
+          .map(s => s.trim())
+          .filter(Boolean),
         target: Number(v['chk_target']),
-        bonuses: String(v['chk_bonus']).split(',').map(s => s.trim()).filter(Boolean),
+        bonuses: String(v['chk_bonus'])
+          .split(',')
+          .map(s => s.trim())
+          .filter(Boolean),
       };
       this.setup = setupRoll(this.opts.data.character, this.opts.data.rules, this.request, flag => v[flag] === true);
       this.phase = 'staged';
@@ -185,19 +222,30 @@ export class GameSession {
     }
   }
 
-  private push(e: Draft): void { this.events.push({ ...e, id: this.nextId++ } as GameEvent); }
+  private push(e: Draft): void {
+    this.events.push({ ...e, id: this.nextId++ } as GameEvent);
+  }
 
   // ---- view --------------------------------------------------------------------------
 
   private choices(): UIChoice[] {
     if (this.phase === 'ended') return [];
     if (this.phase === 'staged') {
-      return [{ id: 'try', kind: 'try', text: 'Try it' }, { id: 'odds', kind: 'odds', text: 'Odds' }, { id: 'back', kind: 'back', text: 'Back' }];
+      return [
+        { id: 'try', kind: 'try', text: 'Try it' },
+        { id: 'odds', kind: 'odds', text: 'Odds' },
+        { id: 'back', kind: 'back', text: 'Back' },
+      ];
     }
     if (this.phase === 'rolled') {
       const fail = this.pending!.grade === 'fail';
       return [
-        { id: 'edge', kind: 'edge', text: `Spend Edge: ${fail ? 're-roll' : 'make it clean'}`, sub: `${this.game.res.Edge} left` },
+        {
+          id: 'edge',
+          kind: 'edge',
+          text: `Spend Edge: ${fail ? 're-roll' : 'make it clean'}`,
+          sub: `${this.game.res.Edge} left`,
+        },
         { id: 'accept', kind: 'accept', text: 'Accept the result' },
       ];
     }
@@ -208,14 +256,17 @@ export class GameSession {
   }
 
   private publish(): void {
-    this.store.setState({
-      events: [...this.events],
-      choices: this.choices(),
-      odds: this.phase === 'staged' && this.showOdds && this.setup ? oddsOf(this.setup, this.opts.data.rules) : null,
-      bg: this.bg,
-      ended: this.phase === 'ended',
-      res: { ...this.game.res },
-      ledger: [...this.game.ledger],
-    }, true);
+    this.store.setState(
+      {
+        events: [...this.events],
+        choices: this.choices(),
+        odds: this.phase === 'staged' && this.showOdds && this.setup ? oddsOf(this.setup, this.opts.data.rules) : null,
+        bg: this.bg,
+        ended: this.phase === 'ended',
+        res: { ...this.game.res },
+        ledger: [...this.game.ledger],
+      },
+      true,
+    );
   }
 }

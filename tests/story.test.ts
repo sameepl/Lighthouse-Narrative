@@ -11,7 +11,10 @@ const sums: Record<Grade, (target: number, mod: number) => number> = {
   cost: (t, m) => t - m,
   fail: (t, m) => t - 1 - m,
 };
-const diceFor = (sum: number): Dice => { const s = Math.min(12, Math.max(2, sum)); return [Math.floor(s / 2), Math.ceil(s / 2)]; };
+const diceFor = (sum: number): Dice => {
+  const s = Math.min(12, Math.max(2, sum));
+  return [Math.floor(s / 2), Math.ceil(s / 2)];
+};
 
 describe('The Written Clause: scripted playthroughs', () => {
   it('opens on the scene with the four options and a hint on each approach', () => {
@@ -20,7 +23,10 @@ describe('The Written Clause: scripted playthroughs', () => {
     expect(v.bg).toBe('hall');
     expect(v.events.filter(e => e.type === 'para')).toHaveLength(6);
     expect(v.choices.map(c => c.text)).toEqual([
-      'Press for parity', 'Ask for protected-escort status', 'Take the pages away and let Priya read them', 'Decline for now',
+      'Press for parity',
+      'Ask for protected-escort status',
+      'Take the pages away and let Priya read them',
+      'Decline for now',
     ]);
     expect(v.choices[0]).toMatchObject({ kind: 'choice', sub: 'Persuade / Diplomat' });
     expect(v.res).toEqual({ Credits: 52000, Edge: 3, Strain: 0 });
@@ -95,7 +101,11 @@ describe('The Written Clause: scripted playthroughs', () => {
     session.act(choiceId(session, 'Take the pages away and let Priya read them'));
     session.act(choiceId(session, 'Return to the hall'));
     const v = view(session);
-    expect(v.choices.map(c => c.text)).toEqual(['Press for parity', 'Ask for protected-escort status', 'Decline for now']);
+    expect(v.choices.map(c => c.text)).toEqual([
+      'Press for parity',
+      'Ask for protected-escort status',
+      'Decline for now',
+    ]);
     session.act(choiceId(session, 'Press for parity'));
     session.act('odds');
     expect(view(session).odds).toMatchObject({ mod: 4, parts: ['Diplomat +2', 'SOC +1', 'Priya’s reading +1'] });
@@ -130,7 +140,8 @@ describe('saving and loading', () => {
     const { session, dice } = makeSession();
     session.act(choiceId(session, 'Press for parity'));
     dice.next = [1, 1];
-    session.act('try'); session.act('accept');
+    session.act('try');
+    session.act('accept');
     expect(view(session).res.Strain).toBe(1);
     session.restart();
     expect(view(session).res).toEqual({ Credits: 52000, Edge: 3, Strain: 0 });
@@ -144,7 +155,8 @@ describe('every branch of the story', () => {
   const endings = new Map<string, string[]>();
   let paths = 0;
 
-  const fresh = (saved: SaveData, dice: { next: Dice }) => new GameSession({ inkJson, data, rng: () => dice.next, saved });
+  const fresh = (saved: SaveData, dice: { next: Dice }) =>
+    new GameSession({ inkJson, data, rng: () => dice.next, saved });
 
   function explore(session: GameSession, trail: string[], depth: number): void {
     expect(depth).toBeLessThan(12); // the scene must terminate
@@ -152,7 +164,10 @@ describe('every branch of the story', () => {
     if (v.ended) {
       paths++;
       expect(v.events.some(e => e.type === 'summary')).toBe(true);
-      endings.set(v.ledger.map(n => `${n.kind}:${n.t}`).join('\n') + `\nStrain=${v.res.Strain} Credits=${v.res.Credits}`, trail);
+      endings.set(
+        v.ledger.map(n => `${n.kind}:${n.t}`).join('\n') + `\nStrain=${v.res.Strain} Credits=${v.res.Credits}`,
+        trail,
+      );
       return;
     }
     const save = session.save();
@@ -160,7 +175,10 @@ describe('every branch of the story', () => {
       const dice = { next: [4, 4] as Dice };
       const probe = fresh(save, dice);
       probe.act(choice.id);
-      if (view(probe).choices[0]?.kind !== 'try') { explore(probe, [...trail, choice.text], depth + 1); continue; }
+      if (view(probe).choices[0]?.kind !== 'try') {
+        explore(probe, [...trail, choice.text], depth + 1);
+        continue;
+      }
       probe.act('odds');
       const { target, mod } = view(probe).odds!;
       for (const grade of ['clean', 'cost', 'fail'] as Grade[]) {
@@ -170,7 +188,10 @@ describe('every branch of the story', () => {
           s.act(choice.id);
           s.act('try');
           if (view(s).choices[0]?.kind === 'edge') {
-            if (mode === 'edge') { d.next = diceFor(sums.clean(target, mod)); s.act('edge'); } else s.act('accept');
+            if (mode === 'edge') {
+              d.next = diceFor(sums.clean(target, mod));
+              s.act('edge');
+            } else s.act('accept');
           } else if (mode === 'edge') continue; // clean on the first roll: no Edge decision exists
           explore(s, [...trail, `${choice.text} [${grade}/${mode}]`], depth + 1);
         }
@@ -183,9 +204,16 @@ describe('every branch of the story', () => {
     expect(paths).toBeGreaterThan(10);
     const text = [...endings.keys()].join('\n');
     for (const needle of [
-      'for every hull', 'wary of your fleet', 'No arms clause', 'escorts of record', 'heavy end', 'berth priority slips',
-      'Nothing is written down', 'Priya’s reading gives you +1',
-    ]) expect(text, `outcome containing "${needle}" is reachable`).toContain(needle);
+      'for every hull',
+      'wary of your fleet',
+      'No arms clause',
+      'escorts of record',
+      'heavy end',
+      'berth priority slips',
+      'Nothing is written down',
+      'Priya’s reading gives you +1',
+    ])
+      expect(text, `outcome containing "${needle}" is reachable`).toContain(needle);
     // 3 grades x 2 approaches, the unsigned ending, and the Priya variants of each
     expect(endings.size).toBeGreaterThanOrEqual(7);
   });

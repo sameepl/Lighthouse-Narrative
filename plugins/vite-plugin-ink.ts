@@ -11,11 +11,20 @@ export function compileInk(file: string, loaded: string[] = []): string {
   const dir = path.dirname(file);
   const handler: IFileHandler = {
     ResolveInkFilename: name => path.resolve(dir, name),
-    LoadInkFileContents: name => { loaded.push(name); return readFileSync(name, 'utf8'); },
+    LoadInkFileContents: name => {
+      loaded.push(name);
+      return readFileSync(name, 'utf8');
+    },
   };
-  const options = new CompilerOptions(file, [], false, (message, type) => {
-    if (type !== 0) errors.push(message); // 0 = author note
-  }, handler);
+  const options = new CompilerOptions(
+    file,
+    [],
+    false,
+    (message, type) => {
+      if (type !== 0) errors.push(message); // 0 = author note
+    },
+    handler,
+  );
   let json = '';
   try {
     json = new Compiler(readFileSync(file, 'utf8'), options).Compile().ToJson() ?? '';

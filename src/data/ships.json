@@ -1,4 +1,14 @@
 [
-  { "id": "errant_pawn", "name": "Errant Pawn", "role": "Fast, armoured, quiet escort. Marcus's main ship.", "main": true },
-  { "id": "ardent_venture", "name": "Ardent Venture", "role": "Large expedition hub: workshop, sickbay, launch bay.", "main": false }
+  {
+    "id": "errant_pawn",
+    "name": "Errant Pawn",
+    "role": "Fast, armoured, quiet escort. Marcus's main ship.",
+    "main": true
+  },
+  {
+    "id": "ardent_venture",
+    "name": "Ardent Venture",
+    "role": "Large expedition hub: workshop, sickbay, launch bay.",
+    "main": false
+  }
 ]

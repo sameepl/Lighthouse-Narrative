@@ -6,6 +6,12 @@ import { App } from './ui/App';
 try {
   const theme = localStorage.getItem('lighthouse-narrative-theme');
   if (theme) document.documentElement.dataset['theme'] = theme;
-} catch { /* ignore */ }
+} catch {
+  /* ignore */
+}
 
-createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);

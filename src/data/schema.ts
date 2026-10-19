@@ -11,29 +11,44 @@ export const RulesSchema = z.object({
   cleanMargin: z.number().int().min(1),
   charMods: z.array(z.tuple([z.number().int(), z.number().int()])).min(1),
   skillChar: z.record(z.string(), Characteristic),
-  resources: z.record(z.string(), z.object({
-    start: z.number().int(),
-    min: z.number().int(),
-    max: z.number().int().optional(),
-    reserve: z.number().int().optional(),
-  })),
+  resources: z.record(
+    z.string(),
+    z.object({
+      start: z.number().int(),
+      min: z.number().int(),
+      max: z.number().int().optional(),
+      reserve: z.number().int().optional(),
+    }),
+  ),
   bonuses: z.record(z.string(), z.object({ label: z.string(), n: z.number().int() })),
 });
 
 export const CharacterSchema = z.object({
   name: z.string(),
   placeholder: z.boolean().optional(),
-  chars: z.object(Object.fromEntries(CHARACTERISTICS.map(c => [c, Score])) as Record<(typeof CHARACTERISTICS)[number], typeof Score>),
+  chars: z.object(
+    Object.fromEntries(CHARACTERISTICS.map(c => [c, Score])) as Record<(typeof CHARACTERISTICS)[number], typeof Score>,
+  ),
   skills: z.record(z.string(), z.number().int().min(0).max(4)),
 });
 
-export const CrewSchema = z.array(z.object({
-  id: z.string(), name: z.string(), role: z.string(), faction: z.string(),
-}));
+export const CrewSchema = z.array(
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    role: z.string(),
+    faction: z.string(),
+  }),
+);
 
-export const ShipsSchema = z.array(z.object({
-  id: z.string(), name: z.string(), role: z.string(), main: z.boolean(),
-}));
+export const ShipsSchema = z.array(
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    role: z.string(),
+    main: z.boolean(),
+  }),
+);
 
 export type Rules = z.infer<typeof RulesSchema>;
 export type Character = z.infer<typeof CharacterSchema>;
