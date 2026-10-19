@@ -14,7 +14,14 @@
         "docs/tasks/**",
         "docs/ROADMAP.md"
       ],
-      "deny": ["src/engine/types.ts", "src/engine/rules.ts"]
+      "deny": [
+        "src/engine/types.ts",
+        "src/engine/rules.ts",
+        "src/engine/cycle.ts",
+        "src/data/schema.ts",
+        "src/data/validate.ts",
+        "src/data/index.ts"
+      ]
     },
     "content": {
       "allow": [
@@ -24,7 +31,14 @@
         "src/data/ships.json",
         "src/ui/assets/**"
       ],
-      "deny": []
+      "deny": [
+        "src/engine/types.ts",
+        "src/engine/rules.ts",
+        "src/engine/cycle.ts",
+        "src/data/schema.ts",
+        "src/data/validate.ts",
+        "src/data/index.ts"
+      ]
     },
     "docs": {
       "allow": ["docs/**", "README.md"],

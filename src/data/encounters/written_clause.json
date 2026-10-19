@@ -1,0 +1,13 @@
+{
+  "id": "written_clause",
+  "knot": "written_clause",
+  "layer": "crisis",
+  "archetype": "standoff",
+  "tags": ["compact", "social"],
+  "requires": {},
+  "repeat": { "kind": "once" },
+  "weight": 1,
+  "cost": 0,
+  "risk": "Charter obligations, Credits or Strain with the Compact.",
+  "placeholder": true
+}
