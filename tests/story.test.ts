@@ -29,7 +29,7 @@ describe('The Written Clause: scripted playthroughs', () => {
       'Decline for now',
     ]);
     expect(v.choices[0]).toMatchObject({ kind: 'choice', sub: 'Persuade / Diplomat' });
-    expect(v.res).toEqual({ Credits: 52000, Edge: 3, Strain: 0 });
+    expect(v.res).toEqual({ Credits: 52000, Edge: 3, Strain: 0, Renown: 0 });
   });
 
   it('stages a check, shows odds only on request, and rolls', () => {
@@ -144,7 +144,7 @@ describe('saving and loading', () => {
     session.act('accept');
     expect(view(session).res.Strain).toBe(1);
     session.restart();
-    expect(view(session).res).toEqual({ Credits: 52000, Edge: 3, Strain: 0 });
+    expect(view(session).res).toEqual({ Credits: 52000, Edge: 3, Strain: 0, Renown: 0 });
     expect(view(session).ended).toBe(false);
   });
 });
