@@ -25,6 +25,8 @@ Make the session run the cycle loop: Hub, board, Prepare, two actions, Downtime,
 - [ ] The bridge diverts with `ChoosePathString(knot)` and returns to the Hub on `scene_end`.
 - [ ] Save format version 2 includes engine cycle state, RNG state and played ids; version 1 saves are discarded cleanly.
 - [ ] Tests: a scripted multi-cycle run with fixed dice and seed; save and load in the Hub and mid-scene.
+- [ ] The story can advance the Pursuit clock directly (for example asking Ariadne for a truth: +2). Route it through the existing ink function `add("Pursuit", n)` (the name maps to the clock, clamped at its length) or a new documented function; update `src/story/lib/world.ink` and `docs/WRITING.md`.
+- [ ] Integrate and persist the engine cycle state and the one-time crew Edge reward state from #1 (they are deliberately separate from the bridge's existing `GameState` until this task).
 - [ ] Update `written_clause.ink` so it ends via `scene_end`.
 
 ## How to verify

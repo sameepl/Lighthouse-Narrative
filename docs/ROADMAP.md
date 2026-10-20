@@ -17,8 +17,8 @@ Goal: a full run is playable with fake text, and the loop feels right. See `game
 
 | # | Task | Zone | Tier | Depends on |
 |---|---|---|---|---|
-| [ ] [M0-01](tasks/M0-01-cycle-contracts.md) | Cycle, meters and Pursuit clock: contracts and engine | core | A | none |
-| [ ] [M0-02](tasks/M0-02-encounter-data.md) | Encounter and keystone data layout, schemas, loader, content tests | core | A | M0-01 |
+| [x] [M0-01](tasks/M0-01-cycle-contracts.md) (#14 merged) | Cycle, meters and Pursuit clock: contracts and engine | core | A | none |
+| [~] [M0-02](tasks/M0-02-encounter-data.md) (PR #15 in review) | Encounter and keystone data layout, schemas, loader, content tests | core | A | M0-01 |
 | [ ] [M0-03](tasks/M0-03-board-selector.md) | Board builder and selector with seeded RNG | feature | B | M0-01, M0-02 |
 | [ ] [M0-04](tasks/M0-04-keystone-scheduler.md) | Keystone scheduler, leads and deadlines | feature | B | M0-01, M0-02 |
 | [ ] [M0-05](tasks/M0-05-bridge-hub.md) | Bridge: Hub flow, divert to encounter knots and back | core | A | M0-03, M0-04 |

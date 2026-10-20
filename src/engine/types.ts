@@ -14,6 +14,14 @@ export interface GameState {
   ledger: Note[];
 }
 
+/** Run-long cycle and reward state. Pursuit is a clock, not a resource. */
+export interface CycleState {
+  cycle: number;
+  actionsLeft: number;
+  pursuit: { value: number; length: number };
+  edgeEarnedCrewIds: string[];
+}
+
 /** A roll requested by the story (see src/story/lib/roll.ink). */
 export interface CheckRequest {
   skills: string[]; // best of these is used

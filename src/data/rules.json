@@ -24,9 +24,25 @@
   "resources": {
     "Credits": { "start": 52000, "min": 0, "reserve": 40000 },
     "Edge": { "start": 3, "min": 0, "max": 3 },
-    "Strain": { "start": 0, "min": 0, "max": 5 }
+    "Strain": { "start": 0, "min": 0, "max": 5 },
+    "Renown": { "start": 0, "min": 0, "max": 5 }
   },
   "bonuses": {
     "priya_read": { "label": "Priya’s reading", "n": 1 }
+  },
+  "cycle": {
+    "actions": 2,
+    "pursuit": {
+      "length": 6,
+      "sliceLength": 4,
+      "base": 1,
+      "renownThreshold": 3,
+      "renownDelta": 1,
+      "loudDelta": 1,
+      "quietDelta": -1
+    },
+    "edgeTrust": 3,
+    "edgeReward": 1,
+    "trustedAssistBonus": 1
   }
 }
