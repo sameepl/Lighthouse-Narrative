@@ -131,3 +131,13 @@ List problems by severity. Do not rewrite the PR.
 | `check` fails on format | `npm run format`, commit only the files you changed |
 | Story test fails after a scene edit | Read the failing branch path in the test output; fix the divert or missing outcome |
 | An agent edited `package-lock.json` | Revert it unless the task is core and adds a dependency |
+
+## Triggers for the reviewer
+
+The reviewer brief is `REVIEWER_PROMPT.md`; the checklist is `REVIEW_CHECKLIST.md`. Ways to start it, in order of preference:
+
+1. **GitHub Action on each PR (a real trigger).** A workflow on `pull_request` (opened, synchronize, ready for review) runs the reviewer with the prompt and an API key stored as a repository secret. It comments the verdict. Needs a core PR for the workflow file and the owner adding the secret. Do not run it on forks, and give it read access plus permission to comment only.
+2. **Scheduled task (fallback).** A cloud scheduled task that runs about hourly, lists open PRs whose latest commit has no verdict comment and a green `check`, and reviews each. Simple, but up to an hour late.
+3. **A watching session.** A Claude Code session can subscribe to a PR's activity (comments, reviews, CI results) and respond as events arrive. Good for the author following their own PR, not for a standing reviewer: it ends when the session ends and only one session watches a PR.
+
+The reviewer never merges. The owner merges after the verdict (and the Opus review for core PRs).
