@@ -46,12 +46,12 @@ const keystone = (id: string, change: Partial<Keystone>): Keystone => ({
 
 export const simulationKeystones: Keystone[] = [
   keystone('opening', { availableWhen: { cycle: 1 }, deadline: 2 }),
-  keystone('middle_where', { availableWhen: { lead: 'middle_where', cycle: 3 }, deadline: 4, piece: 'where' }),
-  keystone('middle_who', { availableWhen: { lead: 'middle_who', cycle: 4 }, deadline: 5, piece: 'who' }),
+  keystone('middle_where', { availableWhen: { lead: 'middle_where', cycle: 3 }, deadline: 4, piece: 'removed' }),
+  keystone('middle_who', { availableWhen: { lead: 'middle_who', cycle: 4 }, deadline: 5, piece: 'six' }),
   keystone('middle_why', {
     availableWhen: { cycle: 5 },
     deadline: 6,
-    piece: 'why',
+    piece: 'claim',
     requires: { flags: ['aid'] },
   }),
   keystone('finale', { availableWhen: { cycle: 8 }, deadline: 9 }),

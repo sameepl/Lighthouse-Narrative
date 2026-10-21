@@ -122,7 +122,7 @@ export const KeystoneSchema = z
       .strictObject({ lead: ContentId.optional(), cycle: CycleNumber.optional() })
       .refine(v => v.lead !== undefined || v.cycle !== undefined, 'Needs a lead or cycle'),
     deadline: CycleNumber,
-    piece: z.enum(['where', 'who', 'why', 'none']),
+    piece: z.enum(['removed', 'six', 'claim', 'none']),
     requires: Requirements,
     placeholder: z.boolean().optional(),
   })

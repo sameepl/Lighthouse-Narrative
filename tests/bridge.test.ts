@@ -238,7 +238,7 @@ describe('bridge scheduling and assignment boundaries', () => {
       elevates: 'courier' as const,
       availableWhen: { cycle: 1 },
       deadline: 9,
-      piece: id === 'middle' ? ('where' as const) : ('none' as const),
+      piece: id === 'middle' ? ('removed' as const) : ('none' as const),
       requires: {},
     }));
     const opts = {

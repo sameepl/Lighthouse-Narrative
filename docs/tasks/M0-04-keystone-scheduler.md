@@ -19,7 +19,7 @@ Decide when each keystone is available, due, or forced, including flexible order
 - [ ] K1 is available first; K5 last. K2, K3, K4 in any order.
 - [ ] A keystone becomes available when its lead is set or its available cycle arrives.
 - [ ] A keystone not played by its deadline is forced, flagged as `weak` (fewer options).
-- [ ] K5 requires at least two of K2 to K4 (or is forced when the Pursuit clock is full), and reports which pieces (where, who, why) the player holds.
+- [ ] K5 requires at least two of K2 to K4 (or is forced when the Pursuit clock is full), and reports which pieces (`removed`, `six`, `claim`) the player holds.
 - [ ] If K4's condition is not met, report that a commercial scene should take its place.
 - [ ] Tests for ordering, deadlines, forced finale, and the pieces report.
 

@@ -155,20 +155,22 @@ All facts about Ariadne and the pursuers are **to be supplied by the owner** (se
 
 Each of K2 to K4 yields one **piece** of the picture, delivered as evidence (never as Marcus's thoughts):
 
+This change renames identifiers only. The questions and scene premises below are retained historical placeholders, not definitions of Removed, The Six or The Claim; the pending planner PR #13 supersedes them.
+
 | Piece | The question it answers |
 |---|---|
-| **Where** | Where the anchor can be found |
-| **Who** | What the anchor was to Marcus, and what they shared |
-| **Why** | Who is pursuing him, and why |
+| **Removed** (`removed`) | Where the anchor can be found |
+| **The Six** (`six`) | What the anchor was to Marcus, and what they shared |
+| **The Claim** (`claim`) | Who is pursuing him, and why |
 
 ### Keystones (working titles)
 
 | # | Keystone | Elevates | Premise | The hard choice | Evidence of the past | Piece |
 |---|---|---|---|---|---|---|
 | **K1** | **The Passenger** | Courier | A routine courier booking: the passenger is being hunted, and says they know Marcus | Shelter them, hand them over, or smuggle them out, with the Compact watching | The passenger knows details no stranger should | opens the pursuit |
-| **K2** | **The Silent Hab** | Distress call | A hab on a dark lane is failing, and nothing answers hails | Whom or what to save with limited time and air: the people or the records | Station logs with a crew roster that includes Marcus's old identity | Who |
-| **K3** | **The Dark Lane** | Scout | Chart the lane that went dark and learn who cut it and why | Publish what you find (Renown, but it exposes you) or keep it quiet | A route plotted with a ship transponder Marcus once flew | Where |
-| **K4** | **The Cargo They Want** | Trade run | Armed crews try to take a piece of cargo: a sealed case others will pay anything for | Defend it, sell it, or destroy it | The case's seal matches something in Marcus's past | Why |
+| **K2** | **The Silent Hab** | Distress call | A hab on a dark lane is failing, and nothing answers hails | Whom or what to save with limited time and air: the people or the records | Station logs with a crew roster that includes Marcus's old identity | The Six |
+| **K3** | **The Dark Lane** | Scout | Chart the lane that went dark and learn who cut it and why | Publish what you find (Renown, but it exposes you) or keep it quiet | A route plotted with a ship transponder Marcus once flew | Removed |
+| **K4** | **The Cargo They Want** | Trade run | Armed crews try to take a piece of cargo: a sealed case others will pay anything for | Defend it, sell it, or destroy it | The case's seal matches something in Marcus's past | The Claim |
 | **K5** | **Ariadne** | (finale) | Marcus can finally reach the anchor, with the pursuit at the door | Go to her, protect the fleet and the lanes, or turn and face the pursuers | Everything gathered | resolves the pieces |
 
 Working titles and premises are placeholders until the owner's answers on Ariadne and the pursuers arrive.
@@ -184,7 +186,7 @@ Working titles and premises are placeholders until the owner's answers on Ariadn
 ## 7. Branching policy (Medium)
 
 - **Contained forks.** Each scene's fork resolves inside the scene and is recorded as state, not as a separate path.
-- **Pieces and stance decide the ending.** Three pieces (where, who, why) plus one stance flag set in K5 (go to her, protect the fleet, confront the pursuers).
+- **Pieces and stance decide the ending.** Three pieces (`removed`, `six`, `claim`) plus one stance flag set in K5 (go to her, protect the fleet, confront the pursuers).
 - **Cosmetic reactions are welcome**, but never offer options that all lead to the same result.
 - **Roster for variety, spine for story.** Only keystones carry the mystery.
 

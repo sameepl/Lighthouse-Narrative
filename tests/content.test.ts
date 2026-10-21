@@ -69,6 +69,11 @@ describe('storylet catalogs', () => {
     expect(parseContent({}, {}, refs)).toEqual({ encounters: [], keystones: [] });
   });
 
+  it.each(['removed', 'six', 'claim', 'none'])('accepts piece %s without transforming it', piece => {
+    const key = { ...keystone, piece };
+    expect(parse(encounter, { [keyFile]: key }).keystones).toEqual([key]);
+  });
+
   it.each([
     [{ ...encounter, cost: -1 }, 'cost'],
     [{ ...encounter, weight: 0 }, 'weight'],
@@ -114,6 +119,9 @@ describe('storylet catalogs', () => {
     [{ ...keystone, availableWhen: { cycle: 4 } }, 'deadline'],
     [{ ...keystone, availableWhen: { lead: 'missing' } }, 'availableWhen.lead'],
     [{ ...keystone, piece: 'invalid' }, 'piece'],
+    [{ ...keystone, piece: 'where' }, 'piece'],
+    [{ ...keystone, piece: 'who' }, 'piece'],
+    [{ ...keystone, piece: 'why' }, 'piece'],
     [{ ...keystone, requires: { crew: ['missing'] } }, 'requires.crew.0'],
   ])('validates keystones with filename and field %#', (value, field) => {
     let message = '';
