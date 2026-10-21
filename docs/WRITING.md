@@ -7,7 +7,7 @@ Run `npm test`: it walks **every** branch of the story and fails on a broken div
 ## Layout
 
 ```
-src/story/main.ink            entry point: INCLUDEs, then starts the first scene
+src/story/main.ink            entry point: INCLUDEs; the bridge chooses each scene
 src/story/lib/world.ink       functions the engine provides (res, add, note)
 src/story/lib/roll.ink        the roll() check
 src/story/scenes/*.ink        one file per scene
@@ -41,7 +41,7 @@ More narration.
 - `# bg:hall` sets the background (art lives in `src/ui/assets`).
 - `#hint:...` inside a choice's brackets adds the small caption under the button. It must be inside the `[ ]`.
 - Use `+` (sticky) for menu choices so "Back" never makes an option vanish.
-- A scene ends with `-> END`. Put `# summary` on the last line to show the "what it bought, and what it cost" card.
+- A scene ends with `-> scene_end`, the bridge-owned sentinel in `lib/world.ink`. Never divert a playable scene directly to `END`. Put `# summary` on the last line to show the "what it bought, and what it cost" card.
 
 ## Rolls
 
@@ -63,7 +63,7 @@ The game runs the roll (Try it, Odds, Edge), then continues into one of the thre
 
 ```ink
 ~ note("gain", "The clause is written for every hull.")   // gain | cost | watch
-~ add("Strain", 1)                                         // Credits, Edge, Strain; clamped to their limits
+~ add("Strain", 1)                                         // Credits, Edge, Strain, Renown; clamped to their limits
 { res("Credits") < 40000: The reserve is thin. }          // read a resource
 ```
 
@@ -87,3 +87,16 @@ To make a flag boost rolls, add it to `bonuses` in `src/data/rules.json`:
 
 People, ships and skills are JSON in `src/data/` and are validated on every test run. Add a crew member by adding an
 entry to `crew.json`; a malformed entry fails `npm test` with the field name.
+
+
+## Hub and persistence contract
+
+The session starts at the Hub. The engine selects offers; ink never schedules or starts another encounter. The encounter board is drawn once per cycle and saved: finishing an action rechecks remaining offers against current requirements and busy crew without drawing new encounters or advancing the RNG. A new cycle draws a new board. On confirmation the bridge diverts to the offer's `knot`. `scene_end` contains the internal `__scene_end__` choice: the bridge consumes it, records completion and returns to the Hub. Do not use that sentinel text elsewhere. An encounter's metadata `lead`, if present, is awarded on completion; keystone evidence is likewise awarded only on completion.
+
+`GameView.phase` is `hub`, `prepare`, `scene` or `ended`. `offers` contains the metadata plus encounter/keystone kind and forced/weak flags. `cycle` holds the cycle number, actions left, and the single Pursuit clock. `assignments` holds the selected ship ID and crew IDs, and `busyCrewIds` remains unavailable until the next cycle. `boardStatus`, `unmetGuarantees`, `blockedDue` and `commercialReplacement` describe unavailable content honestly. `schedulerStatus` remains `unconfigured` until the caller supplies both keystone metadata and explicit role configuration; no story IDs or fallback scenes are invented.
+
+Use `pickOffer(id)`, `assign({ shipId, crewIds })`, `confirm()`, `cancelPrepare()` and `endCycle()`. The existing choice dock has equivalent string commands via `act()`. Preparing or cancelling spends nothing. Confirming charges the encounter cost and reserves one action, the played encounter and assigned crew exactly once. A suitable ship and all required crew must be assigned. Only the best matching assigned crew assist applies to a roll, including its trust bonus. Finishing a scene does not refund its action. Ending a cycle explicitly forfeits unused actions, pays upkeep for the catalog's ships in service, resets busy crew and advances Pursuit. Forced keystones must be resolved before ending a cycle; depleted actions require a cycle transition before another scene.
+
+Ink may read `res("Pursuit")` or call `add("Pursuit", n)` with an integer delta. This changes `GameView.cycle.pursuit.value`, clamped between zero and that clock's length. Pursuit is never a fifth resource or an ink variable. Apply a direct loud/quiet consequence once; the bridge's cycle tick does not apply it again. Unknown resource names are errors.
+
+Save version 2 contains ink, resources, ledger/feed, background and the full run state: cycle/reward history, numeric RNG state, selected board, assignments/busy crew, completed keystones, leads and played IDs with cycles. It resumes Hub, Prepare and committed scenes without another draw or charge. During a pending roll it saves the full pre-choice snapshot, as Back does, including any inline Pursuit changes. Default dice use the saved random stream; injected test dice remain caller-owned. Version 1 saves are discarded. No trust progression is invented; initially trusted crew consume their one-time Edge reward even at the cap.

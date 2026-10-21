@@ -3,4 +3,4 @@ INCLUDE lib/world.ink
 INCLUDE lib/roll.ink
 // @include-scenes
 
--> written_clause
+-> END

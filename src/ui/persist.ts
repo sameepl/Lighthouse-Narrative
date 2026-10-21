@@ -3,12 +3,14 @@ import type { SaveData } from '../bridge/types';
 import { data } from '../data';
 import inkJson from '../story/main.ink';
 
-const KEY = 'lighthouse-narrative-save-v1';
+const KEY = 'lighthouse-narrative-save-v2';
+const LEGACY_KEY = 'lighthouse-narrative-save-v1';
 
 function readSave(): SaveData | null {
   try {
+    localStorage.removeItem(LEGACY_KEY);
     const raw = JSON.parse(localStorage.getItem(KEY) ?? 'null') as SaveData | null;
-    return raw?.v === 1 ? raw : null;
+    return raw?.v === 2 ? raw : null;
   } catch {
     return null;
   }
@@ -39,6 +41,7 @@ export function writeSave(session: GameSession): void {
 export function clearSave(): void {
   try {
     localStorage.removeItem(KEY);
+    localStorage.removeItem(LEGACY_KEY);
   } catch {
     /* ignore */
   }

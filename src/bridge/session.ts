@@ -3,10 +3,16 @@
 // Ownership: ink owns narrative flags and what happens next; the engine owns resources and dice.
 // The story calls res/add/note (see story/lib/world.ink) and pauses at roll() (story/lib/roll.ink),
 // where this session runs the interactive roll and then tells the story which outcome happened.
+import { assistedSetup } from './roll';
+import { createSeededRng } from '../engine/rng';
+import { RunController, type RunOptions } from './run';
+import { validateSave } from './save';
+import { runChoices } from './run-choices';
+import type { Assignments } from './types';
 import { Story } from 'inkjs';
 import { createStore, type StoreApi } from 'zustand/vanilla';
 import type { GameData } from '../data/validate';
-import { addResource, makeRoll, newGameState, oddsOf, setupRoll, spendEdge } from '../engine/rules';
+import { addResource, makeRoll, newGameState, oddsOf, spendEdge } from '../engine/rules';
 import type { CheckRequest, GameState, Grade, NoteKind, Rng, RollResult, RollSetup } from '../engine/types';
 import type { GameEvent, GameView, SaveData, UIChoice } from './types';
 
@@ -18,7 +24,7 @@ const isSpeech = (html: string) => /^(<[^>]+>)*[“"]/.test(html);
 type Phase = 'story' | 'staged' | 'rolled' | 'ended';
 type Draft = GameEvent extends infer E ? (E extends GameEvent ? Omit<E, 'id'> : never) : never;
 
-export interface SessionOptions {
+export interface SessionOptions extends RunOptions {
   inkJson: string;
   data: GameData;
   rng?: Rng;
@@ -29,6 +35,7 @@ export class GameSession {
   readonly store: StoreApi<GameView>;
   private story!: Story;
   private game!: GameState;
+  private run!: RunController;
   private events: GameEvent[] = [];
   private nextId = 1;
   private phase: Phase = 'story';
@@ -38,24 +45,11 @@ export class GameSession {
   private checkIndex = -1;
   private showOdds = false;
   private bg = 'hall';
-  private snapshot: {
-    ink: string;
-    res: Record<string, number>;
-    ledger: GameState['ledger'];
-    eventsLen: number;
-  } | null = null;
+  private snapshot: SaveData | null = null;
   private errors: string[] = [];
 
   constructor(private opts: SessionOptions) {
-    this.store = createStore<GameView>(() => ({
-      events: [],
-      choices: [],
-      odds: null,
-      bg: 'hall',
-      ended: false,
-      res: {},
-      ledger: [],
-    }));
+    this.store = createStore<GameView>(() => ({}) as GameView);
     this.init(opts.saved ?? null);
   }
 
@@ -67,6 +61,8 @@ export class GameSession {
 
   private init(saved: SaveData | null): void {
     const { data, inkJson } = this.opts;
+    this.errors = [];
+    this.run = new RunController(data, this.opts);
     this.story = new Story(inkJson);
     this.story.onError = msg => this.errors.push(msg);
     this.bindExternals();
@@ -77,54 +73,133 @@ export class GameSession {
     this.showOdds = false;
     this.request = this.setup = this.pending = this.snapshot = null;
     this.bg = 'hall';
-    if (saved) {
-      this.story.state.LoadJson(saved.ink);
-      this.game = { res: { ...saved.res }, ledger: [...saved.ledger] };
-      this.events = [...saved.events];
-      this.nextId = Math.max(0, ...saved.events.map(e => e.id)) + 1;
-      this.refreshChoices();
+    if (saved?.v === 2) {
+      this.restore(saved);
     } else {
-      this.advance();
+      this.game = this.run.rewards(this.game);
+      this.run.refresh(this.game, this.flags());
     }
     this.publish();
   }
 
-  /** What to persist. Mid-roll, we save the state from before the choice was picked. */
+  /** A staged or unresolved roll saves the full state before its choice. */
   save(): SaveData {
-    const snap = this.phase === 'story' || this.phase === 'ended' ? null : this.snapshot;
-    return {
-      v: 1,
-      ink: snap ? snap.ink : this.story.state.toJson(),
-      res: snap ? { ...snap.res } : { ...this.game.res },
-      ledger: snap ? [...snap.ledger] : [...this.game.ledger],
-      events: snap ? this.events.slice(0, snap.eventsLen) : [...this.events],
-    };
+    return structuredClone(
+      this.snapshot && (this.phase === 'staged' || this.phase === 'rolled')
+        ? this.snapshot
+        : {
+            v: 2,
+            ink: this.story.state.toJson(),
+            res: this.game.res,
+            ledger: this.game.ledger,
+            events: this.events,
+            bg: this.bg,
+            run: this.run.state,
+          },
+    );
+  }
+
+  private restore(saved: SaveData): void {
+    validateSave(saved, this.opts.data);
+    const s = structuredClone(saved);
+    this.story.state.LoadJson(s.ink);
+    this.game = { res: s.res, ledger: s.ledger };
+    delete this.game.res.Pursuit;
+    this.run.state = s.run;
+    this.events = s.events;
+    this.bg = s.bg;
+    this.nextId = Math.max(0, ...s.events.map(e => e.id)) + 1;
+    this.snapshot = null;
+    this.request = this.setup = this.pending = null;
+    this.showOdds = false;
+    this.phase = 'story';
+    if (this.run.state.phase === 'scene') this.refreshChoices();
+  }
+
+  private flags(): Record<string, boolean> {
+    const flags: Record<string, boolean> = {};
+    const names = new Set(
+      [...this.opts.data.encounters, ...this.opts.data.keystones].flatMap(entry => entry.requires.flags ?? []),
+    );
+    for (const name of names) flags[name] = this.story.variablesState.$(name) === true;
+    return flags;
+  }
+
+  pickOffer(id: string): void {
+    this.run.pick(id);
+    this.publish();
+  }
+  assign(value: Assignments): void {
+    this.run.assign(value);
+    this.publish();
+  }
+  cancelPrepare(): void {
+    this.run.cancel();
+    this.publish();
+  }
+  confirm(): void {
+    this.run.require('prepare');
+    const before = this.save();
+    try {
+      this.run.confirm(this.game);
+      this.story.ChoosePathString(this.run.state.active!.entry.knot);
+      this.phase = 'story';
+      this.snapshot = null;
+      this.advance();
+      this.publish();
+    } catch (error) {
+      this.restore(before);
+      this.errors = [];
+      this.publish();
+      throw error;
+    }
+  }
+  endCycle(): void {
+    const credits = this.game.res.Credits ?? 0;
+    this.game = this.run.end(this.game, this.flags());
+    const note = { kind: 'cost' as const, t: `Cycle upkeep paid: Cr${credits - (this.game.res.Credits ?? 0)}.` };
+    this.game.ledger.push(note);
+    this.push({ type: 'note', ...note });
+    this.game = this.run.rewards(this.game);
+    this.publish();
   }
 
   // ---- player input ------------------------------------------------------------------
 
   /** id is a story choice index (number) or 'try' | 'odds' | 'back' | 'edge' | 'accept'. */
   act(id: number | string): void {
+    if (!this.choices().some(choice => choice.id === id)) throw new Error(`Action unavailable: ${id}`);
+    if (id === 'restart') return this.restart();
+    if (typeof id === 'string' && id.startsWith('offer:')) return this.pickOffer(id.slice(6));
+    if (id === 'restart') return this.restart();
+    if (id === 'confirm') return this.confirm();
+    if (id === 'cancel') return this.cancelPrepare();
+    if (id === 'endCycle') return this.endCycle();
+    if (typeof id === 'string' && id.startsWith('ship:'))
+      return this.assign({ ...this.run.state.assignments, shipId: id.slice(5) });
+    if (typeof id === 'string' && id.startsWith('crew:')) {
+      const crewId = id.slice(5),
+        current = this.run.state.assignments;
+      return this.assign({
+        ...current,
+        crewIds: current.crewIds.includes(crewId)
+          ? current.crewIds.filter(c => c !== crewId)
+          : [...current.crewIds, crewId],
+      });
+    }
     if (typeof id === 'number') this.pick(id);
-    else if (id === 'odds') {
-      this.showOdds = true;
-    } else if (id === 'back') this.back();
+    else if (id === 'odds') this.showOdds = true;
+    else if (id === 'back') this.back();
     else if (id === 'try') this.try();
     else if (id === 'edge') this.edge();
     else if (id === 'accept') this.finalize(this.pending!.grade);
-    else throw new Error(`Unknown action "${id}"`);
     this.publish();
   }
 
   private pick(index: number): void {
     const choice = this.story.currentChoices[index];
     if (!choice) throw new Error(`No story choice ${index}`);
-    this.snapshot = {
-      ink: this.story.state.toJson(),
-      res: { ...this.game.res },
-      ledger: [...this.game.ledger],
-      eventsLen: this.events.length,
-    };
+    this.snapshot = this.save();
     this.push({ type: 'pick', html: choice.text });
     this.story.ChooseChoiceIndex(index);
     this.advance();
@@ -133,16 +208,19 @@ export class GameSession {
   private back(): void {
     const s = this.snapshot;
     if (!s) return;
-    this.story.state.LoadJson(s.ink);
-    this.game = { res: { ...s.res }, ledger: [...s.ledger] };
-    this.events.length = s.eventsLen;
-    this.showOdds = false;
-    this.pending = null;
-    this.refreshChoices();
+    this.restore(s);
   }
 
+  private dice: Rng = () => {
+    if (this.opts.rng) return this.opts.rng();
+    const rng = createSeededRng(this.run.state.rngState);
+    const dice: ReturnType<Rng> = [1 + Math.floor(rng.next() * 6), 1 + Math.floor(rng.next() * 6)];
+    this.run.state.rngState = rng.getState();
+    return dice;
+  };
+
   private try(): void {
-    this.pending = makeRoll(this.setup!, this.opts.data.rules, this.opts.rng);
+    this.pending = makeRoll(this.setup!, this.opts.data.rules, this.dice);
     this.push({ type: 'roll', ...this.pending });
     if (this.pending.grade !== 'clean' && (this.game.res.Edge ?? 0) > 0) this.phase = 'rolled';
     else this.finalize(this.pending.grade);
@@ -150,7 +228,7 @@ export class GameSession {
 
   private edge(): void {
     addResource(this.game.res, this.opts.data.rules, 'Edge', -1);
-    this.pending = spendEdge(this.pending!, this.setup!, this.opts.data.rules, this.opts.rng);
+    this.pending = spendEdge(this.pending!, this.setup!, this.opts.data.rules, this.dice);
     this.push({ type: 'roll', ...this.pending });
     this.finalize(this.pending.grade);
   }
@@ -170,10 +248,19 @@ export class GameSession {
   private bindExternals(): void {
     const { rules } = this.opts.data;
     this.story.BindExternalFunction('res', (name: string) => {
-      if (!(name in rules.resources)) throw new Error(`res("${name}"): unknown resource`);
+      if (name === 'Pursuit') return this.run.state.cycle.pursuit.value;
+      if (!(name in rules.resources))
+        throw new Error(`res("${name}"): unknown resource. Known: ${Object.keys(rules.resources).join(', ')}, Pursuit`);
       return this.game.res[name] ?? 0;
     });
-    this.story.BindExternalFunction('add', (name: string, n: number) => addResource(this.game.res, rules, name, n));
+    this.story.BindExternalFunction('add', (name: string, n: number) => {
+      if (!Number.isFinite(n) || !Number.isInteger(n)) throw new Error('Resource delta must be a finite integer');
+      if (name !== 'Pursuit' && !(name in rules.resources))
+        throw new Error(`Unknown resource ${name}. Known: ${Object.keys(rules.resources).join(', ')}, Pursuit`);
+      if (name !== 'Pursuit') return addResource(this.game.res, rules, name, n);
+      const clock = this.run.state.cycle.pursuit;
+      return (clock.value = Math.max(0, Math.min(clock.length, clock.value + n)));
+    });
     this.story.BindExternalFunction('note', (kind: string, t: string) => {
       if (!NOTE_KINDS.includes(kind as NoteKind))
         throw new Error(`note("${kind}", ...): kind must be ${NOTE_KINDS.join(', ')}`);
@@ -201,6 +288,15 @@ export class GameSession {
   /** Decide whether the story is waiting on a player choice, a roll, or has ended. */
   private refreshChoices(): void {
     const choices = this.story.currentChoices;
+    const end = choices.find(c => c.text === '__scene_end__');
+    if (end) {
+      this.story.ChooseChoiceIndex(end.index);
+      while (this.story.canContinue) this.story.Continue();
+      this.snapshot = null;
+      this.phase = 'story';
+      this.run.finish(this.game, this.flags());
+      return;
+    }
     this.checkIndex = choices.findIndex(c => c.text === CHECK_CHOICE);
     if (this.checkIndex >= 0) {
       const v = this.story.variablesState;
@@ -215,10 +311,16 @@ export class GameSession {
           .map(s => s.trim())
           .filter(Boolean),
       };
-      this.setup = setupRoll(this.opts.data.character, this.opts.data.rules, this.request, flag => v[flag] === true);
+      this.setup = assistedSetup(
+        this.opts.data,
+        this.request,
+        flag => v[flag] === true,
+        this.run.state.assignments.crewIds,
+      );
       this.phase = 'staged';
     } else {
-      this.phase = choices.length ? 'story' : 'ended';
+      if (!choices.length) throw new Error('Scene ended without scene_end');
+      this.phase = 'story';
     }
   }
 
@@ -229,6 +331,7 @@ export class GameSession {
   // ---- view --------------------------------------------------------------------------
 
   private choices(): UIChoice[] {
+    if (this.run.state.phase !== 'scene') return runChoices(this.run.state, this.opts.data, this.game.res);
     if (this.phase === 'ended') return [];
     if (this.phase === 'staged') {
       return [
@@ -257,15 +360,37 @@ export class GameSession {
 
   private publish(): void {
     this.store.setState(
-      {
-        events: [...this.events],
+      structuredClone({
+        events: [
+          ...this.events,
+          ...(this.run.state.phase === 'hub'
+            ? [
+                {
+                  id: -1,
+                  type: 'para' as const,
+                  speech: false,
+                  html: `Cycle ${this.run.state.cycle.cycle}: ${this.run.state.cycle.actionsLeft} actions left. ${this.run.state.boardStatus === 'pursuit-full' ? 'Pursuit has reached its limit. No further encounter is available in this prototype.' : this.run.state.boardStatus === 'no-eligible-offers' ? 'No work is available. End the cycle or restart.' : this.run.state.boardStatus === 'actions-spent' ? 'End the cycle to pay upkeep and advance Pursuit.' : 'Choose an offer, then prepare your ship and crew.'}`,
+                },
+              ]
+            : []),
+        ],
         choices: this.choices(),
         odds: this.phase === 'staged' && this.showOdds && this.setup ? oddsOf(this.setup, this.opts.data.rules) : null,
         bg: this.bg,
-        ended: this.phase === 'ended',
+        ended: this.run.state.phase === 'ended',
+        phase: this.run.state.phase,
+        offers: this.run.state.offers,
+        cycle: this.run.state.cycle,
+        assignments: this.run.state.assignments,
+        busyCrewIds: this.run.state.busyCrewIds,
+        boardStatus: this.run.state.boardStatus,
+        schedulerStatus: this.run.configured ? 'configured' : 'unconfigured',
+        unmetGuarantees: this.run.state.unmetGuarantees,
+        blockedDue: this.run.state.blockedDue,
+        commercialReplacement: this.run.state.commercialReplacement,
         res: { ...this.game.res },
         ledger: [...this.game.ledger],
-      },
+      }),
       true,
     );
   }
