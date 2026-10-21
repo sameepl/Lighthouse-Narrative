@@ -5,6 +5,8 @@ import { Hud } from './components/Hud';
 import { Feed } from './components/Feed';
 import { Dock } from './components/Dock';
 import { SheetPanel } from './components/SheetPanel';
+import { hubStatusText } from './strings';
+import type { GameEvent } from '../bridge/types';
 import { clearSave, startGame, writeSave } from './persist';
 
 const THEME_KEY = 'lighthouse-narrative-theme';
@@ -29,6 +31,14 @@ export function App() {
     writeSave(session);
   }, [session, view]);
 
+  const events = useMemo<GameEvent[]>(
+    () => [
+      ...view.events,
+      ...(view.hub ? [{ id: -1, type: 'para' as const, speech: false, html: hubStatusText(view.hub) }] : []),
+    ],
+    [view.events, view.hub],
+  );
+
   const act = (id: number | string) => session.act(id);
   const restart = () => {
     clearSave();
@@ -51,7 +61,7 @@ export function App() {
           style={{ animation: 'none', transition: 'none' }}
         />
       </div>
-      <Feed events={view.events} />
+      <Feed events={events} />
       <Dock choices={view.choices} odds={view.odds} ended={view.ended} onAct={act} onRestart={restart} />
       {sheetOpen && <SheetPanel ledger={view.ledger} onClose={() => setSheetOpen(false)} />}
     </div>
