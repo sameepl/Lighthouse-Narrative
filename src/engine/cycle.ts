@@ -95,3 +95,4 @@ export function assistOf(crew: Pick<Crew[number], 'assist' | 'trust'>, rules: Ru
     n: crew.assist.n + (crew.trust >= rules.cycle.edgeTrust ? rules.cycle.trustedAssistBonus : 0),
   };
 }
+// zone test
