@@ -2,7 +2,7 @@
 
 - **Zone:** `zone:content`
 - **Suggested tier:** `tier:C`
-- **Depends on:** M0-05, M0-09
+- **Depends on:** M0-05, M0-09, and the M0 hardening issues #23 (titles), #24 (piece names), #25 (season config)
 - **Labels:** `task`, `zone:content`, `tier:C`
 
 ## Goal

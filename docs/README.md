@@ -4,6 +4,7 @@
 |---|---|---|
 | [`game-design.md`](game-design.md) | The game's design: scale targets, loop, meters, keystones, roster, branching policy, milestones | owner and core agents |
 | [`ROADMAP.md`](ROADMAP.md) | Milestones M0 to M3, task order and status | anyone (status), core (structure) |
+| [`reviews/`](reviews/) | Reviews of delivered work, with findings and the issues they produced | reviewer (core) |
 | [`tasks/`](tasks/) | Issue-ready task cards for the next milestone | core writes; others may update status |
 | [`AGENT_WORKFLOW.md`](AGENT_WORKFLOW.md) | How people and agents collaborate: zones, tiers, PRs, prompts | core |
 | [`WRITING.md`](WRITING.md) | How to write ink scenes (for writers and content agents) | core |

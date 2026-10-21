@@ -17,19 +17,38 @@ Goal: a full run is playable with fake text, and the loop feels right. See `game
 
 | # | Task | Zone | Tier | Depends on |
 |---|---|---|---|---|
-| [x] [M0-01](tasks/M0-01-cycle-contracts.md) (#14 merged) | Cycle, meters and Pursuit clock: contracts and engine | core | A | none |
-| [~] [M0-02](tasks/M0-02-encounter-data.md) (PR #15 in review) | Encounter and keystone data layout, schemas, loader, content tests | core | A | M0-01 |
-| [ ] [M0-03](tasks/M0-03-board-selector.md) | Board builder and selector with seeded RNG | feature | B | M0-01, M0-02 |
-| [ ] [M0-04](tasks/M0-04-keystone-scheduler.md) | Keystone scheduler, leads and deadlines | feature | B | M0-01, M0-02 |
-| [ ] [M0-05](tasks/M0-05-bridge-hub.md) | Bridge: Hub flow, divert to encounter knots and back | core | A | M0-03, M0-04 |
-| [ ] [M0-06](tasks/M0-06-board-ui.md) | Board screen UI | feature | B | M0-05 |
-| [ ] [M0-07](tasks/M0-07-prepare-ui.md) | Prepare screen: ship and crew assignment | feature | B | M0-05 |
-| [ ] [M0-08](tasks/M0-08-meters-ui.md) | Meters and Pursuit clock UI (Renown, Edge pool) | feature | B | M0-01 |
-| [ ] [M0-09](tasks/M0-09-scene-scaffolder.md) | `npm run new:scene` scaffolder | core | B | M0-02, M0-05 |
-| [ ] [M0-10](tasks/M0-10-stub-content.md) | 6 stub encounters and 2 stub keystones (placeholder text) | content | C | M0-05, M0-09 |
-| [ ] [M0-11](tasks/M0-11-simulation.md) | Simulation test: 1,000 seeded runs | feature | B | M0-03, M0-04 |
+| [x] [M0-01](tasks/M0-01-cycle-contracts.md) (#1, PR #14) | Cycle, meters and Pursuit clock: contracts and engine | core | A | none |
+| [x] [M0-02](tasks/M0-02-encounter-data.md) (#2, PR #15) | Encounter and keystone data layout, schemas, loader, content tests | core | A | M0-01 |
+| [x] [M0-03](tasks/M0-03-board-selector.md) (#3, PR #17) | Board builder and selector with seeded RNG | feature | B | M0-01, M0-02 |
+| [x] [M0-04](tasks/M0-04-keystone-scheduler.md) (#4, PR #16) | Keystone scheduler, leads and deadlines | feature | B | M0-01, M0-02 |
+| [~] [M0-05](tasks/M0-05-bridge-hub.md) (#5, PR #19 in review) | Bridge: Hub flow, divert to encounter knots and back | core | A | M0-03, M0-04 |
+| [ ] [M0-06](tasks/M0-06-board-ui.md) (#6) | Board screen UI | feature | B | M0-05 |
+| [ ] [M0-07](tasks/M0-07-prepare-ui.md) (#7) | Prepare screen: ship and crew assignment | feature | B | M0-05 |
+| [ ] [M0-08](tasks/M0-08-meters-ui.md) (#8) | Meters and Pursuit clock UI (Renown, Edge pool) | feature | B | M0-01 |
+| [ ] [M0-09](tasks/M0-09-scene-scaffolder.md) (#9) | `npm run new:scene` scaffolder | core | B | M0-02, M0-05 |
+| [ ] [M0-10](tasks/M0-10-stub-content.md) (#10) | 6 stub encounters and 2 stub keystones (placeholder text) | content | C | M0-05, M0-09, and now #23, #24, #25 |
+| [~] [M0-11](tasks/M0-11-simulation.md) (#11, PR #18 in review) | Simulation test: 1,000 seeded runs | feature | B | M0-03, M0-04 |
 
 Order: M0-01, then M0-02, then M0-03 and M0-04 in parallel, then M0-05, then M0-06 to M0-09 in parallel, then M0-10; M0-11 can start once 03 and 04 merge. M0-08 only needs M0-01.
+
+### M0 hardening (from the 2026-10-21 review)
+
+Small fixes to do before real content is written. Source: [`reviews/2026-10-21-m0-review.md`](reviews/2026-10-21-m0-review.md). Milestone "M0 hardening". These are GitHub issues only (no task cards); each issue is the source of truth.
+
+| Issue | Task | Zone | Tier | Depends on |
+|---|---|---|---|---|
+| [ ] #20 | Crew trust: per-run state, engine function and ink function | core | A | #19 |
+| [ ] #21 | Require a ship only when an offer needs one | core | B | #19 |
+| [ ] #22 | Crew `assignable` flag (keep Compact officials, Cass and Miri out of Prepare) | core | B | #19, #13 |
+| [ ] #23 | Display titles for encounters | core | B | #19 |
+| [ ] #24 | Rename keystone piece values to removed, six, claim | core | B | none (after #13) |
+| [ ] #25 | Season config: keystone roles in a validated data file | core | B | #19, #24 |
+| [ ] #26 | Simulation drives the real RunController and session | feature | B | #18, #19 |
+| [ ] #27 | Content test: first and final keystones always reachable | feature | B | #25 |
+| [ ] #28 | Hub status as structured data, not prose in the bridge | core | B | #19 |
+| #29 | Decision: what happens when upkeep cannot be paid? (owner) | n/a | n/a | n/a |
+
+Suggested order: merge #19 and #18, then #20 to #25 (several in parallel; #25 after #24), then #26 to #28. #6 (Board) wants #23 and #28 first; #7 (Prepare) wants #21 and #22; #10 (stubs) wants #23, #24 and #25.
 
 ## M1: 20-minute slice (about 13,500 authored words)
 
