@@ -46,7 +46,7 @@ Small fixes to do before real content is written. Source: [`reviews/2026-10-21-m
 | [ ] #26 | Simulation drives the real RunController and session | feature | B | #20, #21, #22, #25 |
 | [ ] #27 | Content test: first and final keystones always reachable | feature | B | #25 |
 | [ ] #28 | Hub status as structured data, not prose in the bridge | core | B | none (first in the bridge lane) |
-| #29 | Decision: what happens when upkeep cannot be paid? (owner) | n/a | n/a | n/a |
+| [ ] #29 | Unpaid upkeep: arrears, harder rolls, Renown burn-down, foreclosure ending (owner ruled 2026-10-21) | core | A | bridge lane (#28, #21, #20, #22, #25) |
 
 Bridge lane (one at a time, in this order): #28, #21, #20, #22, #25. Schema and data tasks are serial too (#23, #22, #25). #6 (Board) waits for #23 and #28; #7 (Prepare) waits for #20, #21 and #22; #9 (scaffolder) waits for #23; #10 (stubs) waits for #23, #25 and #9; #26 waits for #20, #21, #22 and #25; #27 waits for #25. Amended scopes are on the issues themselves (milestone "M0 hardening"); see also [`WORK_PLAN.md`](WORK_PLAN.md).
 

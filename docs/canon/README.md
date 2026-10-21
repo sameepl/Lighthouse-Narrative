@@ -12,6 +12,8 @@ The game uses the campaign as source material and a theme guide, not as a litera
 | [`planner-followup-1.md`](planner-followup-1.md) | The planner's answers on Ariadne's wants and voice, crew roles, fixed points, the authorised list, tone |
 | [`ariadne-voice.md`](ariadne-voice.md) | Writer's guide to Ariadne: what to use, how she speaks and behaves, sample lines |
 | [`mining-request.md`](mining-request.md) | A shareable request to the planner for voice cards, locations, ships, economy numbers and more, with the filing layout |
+| [`voices/`, `locations/`, `ships/`, `glossary.md`, `factions.md`, `economy.md`, `scene-seeds.md`, `documents.md`, `complications.md`, `tone.md`](#where-mined-data-is-filed) | The planner's **player-safe** export (2026-10-21): cards and data, mostly `[PLAYED]` |
+| [`../canon-gm/`](../canon-gm/README.md) | The planner's **GM-only** export: spoilers. **Do not read unless an issue names a file** |
 | [`design-impact.md`](design-impact.md) | Our review of those notes: what they settle, what they correct, how the game design changes, and open questions |
 
 ## Status tags (used in the notes and in our docs)
@@ -38,7 +40,7 @@ The game uses the campaign as source material and a theme guide, not as a litera
 
 ## Where mined data is filed
 
-Answers to `mining-request.md` are filed in these places (one file per person, place or ship, so an agent can read only what a task names):
+Answers to `mining-request.md` were received on 2026-10-21 and are filed in these places (one file per person, place or ship, so an agent can read only what a task names):
 
 - `voices/<name>.md`, `locations/<name>.md`, `ships/<name>.md`
 - `economy.md`, `scene-seeds.md`, `documents.md`, `complications.md`, `glossary.md`, `factions.md`, `tone.md`
