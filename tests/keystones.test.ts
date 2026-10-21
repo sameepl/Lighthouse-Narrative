@@ -30,7 +30,7 @@ const initial = (): KeystoneInput => ({
     finaleId: 'finale',
     minCompletedMiddle: 2,
   },
-  keystones: [key('opening'), key('a', 'where'), key('b', 'who'), key('c', 'why'), key('finale')],
+  keystones: [key('opening'), key('a', 'removed'), key('b', 'six'), key('c', 'claim'), key('finale')],
 });
 const withKey = (input: KeystoneInput, id: string, update: Partial<Keystone>): KeystoneInput => ({
   ...input,
@@ -58,7 +58,7 @@ describe('keystone scheduling', () => {
       completed.push(id);
     }
     expect(ids({ ...input, completed })).toEqual(['finale']);
-    expect(scheduleKeystones({ ...input, completed }).pieces).toEqual(['where', 'who', 'why']);
+    expect(scheduleKeystones({ ...input, completed }).pieces).toEqual(['removed', 'six', 'claim']);
   });
 
   it('supports lead OR cycle availability and forces a weak offer exactly at deadline', () => {
@@ -96,10 +96,13 @@ describe('keystone scheduling', () => {
     expect(ids({ ...input, completed: ['opening', 'a', 'a'] })).not.toContain('finale');
     const ready = scheduleKeystones({ ...input, completed: ['opening', 'a', 'b'] });
     expect(ready.offers.at(-1)?.keystone.id).toBe('finale');
-    expect(ready.pieces).toEqual(['where', 'who']);
-    const samePieces = withKey(input, 'b', { piece: 'where' });
+    expect(ready.pieces).toEqual(['removed', 'six']);
+    const samePieces = withKey(input, 'b', { piece: 'removed' });
     expect(ids({ ...samePieces, completed: ['opening', 'a', 'b'] })).toContain('finale');
-    expect(scheduleKeystones({ ...samePieces, completed: ['opening', 'a', 'b'] }).pieces).toEqual(['where']);
+    expect(scheduleKeystones({ ...samePieces, completed: ['opening', 'a', 'b'] }).pieces).toEqual(['removed']);
+    const noPiece = withKey(input, 'b', { piece: 'none' });
+    expect(ids({ ...noPiece, completed: ['opening', 'a', 'b'] })).toContain('finale');
+    expect(scheduleKeystones({ ...noPiece, completed: ['opening', 'a', 'b'] }).pieces).toEqual(['removed']);
   });
 
   it('a finale deadline alone cannot bypass evidence; full Pursuit can', () => {
@@ -155,7 +158,7 @@ describe('keystone scheduling', () => {
     expect(scheduleKeystones({ ...input, completed: ['opening', 'a', 'finale'] })).toMatchObject({
       ended: true,
       offers: [],
-      pieces: ['where'],
+      pieces: ['removed'],
     });
   });
 
