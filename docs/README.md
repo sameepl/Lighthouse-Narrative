@@ -12,3 +12,6 @@
 | [`planner-prompts.md`](planner-prompts.md) | Prompts for the campaign-planning thread, to gather canon | owner |
 | [`decisions/`](decisions/) | Decision records: why the project is the way it is | core |
 | [`BRIEF_TEMPLATE.md`](BRIEF_TEMPLATE.md) | Blank template for a brief | owner |
+
+- [M0 work plan](WORK_PLAN.md): proposed dependencies, routing and acceptance gates.
+- [Codex planner follow-up](reviews/codex-planner-followup.md): review and scope recommendations.

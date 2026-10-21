@@ -48,3 +48,7 @@ Order: M0-01, then M0-02, then M0-03 and M0-04 in parallel, then M0-05, then M0-
 - PWA support (offline, install prompt)
 - Playwright end-to-end tests in CI
 - Parallax and jump-shimmer animation
+
+## Codex planning follow-up
+
+The [work plan](WORK_PLAN.md) and [planner follow-up review](reviews/codex-planner-followup.md) record proposed scope corrections and worker routing. Hub/Prepare (#5, PR #19) and the seeded simulation (#11, PR #18) are merged. The piece-name update (#24, PR #32) is reconciled with both. Planner/canon PR #13 remains pending; its source documents are not adopted by these notes. Continue with #28 structured status and #23 encounter titles after verifying their task scopes against the merged bridge.
