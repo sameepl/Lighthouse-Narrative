@@ -88,6 +88,19 @@ Hub: brief, news, upkeep -> board of offers -> Prepare (ship, crew) -> Action 1 
 
 Renown is both reward and risk: it makes money easier and trouble faster. That tension is the design.
 
+### Unpaid upkeep: arrears and the fail state `[OWNER]`
+
+Owner ruling (2026-10-21, issue #29): unpaid upkeep must (a) **raise the difficulty of some rolls**, (b) **burn down resources such as Renown**, and (c) **eventually produce a game fail state**.
+
+Design reading (a proposal for the task card; all numbers are placeholders in `rules.json`):
+
+- **Arrears.** When upkeep cannot be paid at the end of a cycle, the shortfall is recorded and the **arrears** count rises by 1 (it falls by 1 on a cycle where upkeep is paid in full). Arrears is a counter, not a fifth meter: it replaces nothing and shows as a ledger line ("Cr 2,000 short; the Berth Office has noticed").
+- **Harder rolls.** From arrears 1, rolls that lean on the unpaid party take a penalty to the target (for example +1 on rolls that need a berth, a yard or a ship's tags). The task decides the exact rule; it must be listed in the Odds panel so the cost is said before it is paid.
+- **Burn-down.** Each arrears step also costs Renown (and, at the higher steps, Strain with the Compact). Resources fall because the world is withdrawing credit, not by dice.
+- **Fail state.** At the arrears limit the run ends in a **foreclosure ending**: a real scene with a ledger summary of what was lost and what was done, not a dead end. It respects "failure always moves the story on": the story ends here, but it ends as story, and a new run is offered.
+- **Escape valves.** The player can always act: take a cheap job, lay a ship up, sell a tag, or ask Renata (Strain). Arrears never arrives without a visible warning two cycles before the limit.
+- Ordering: this is a core change (engine, bridge, save format). It follows the bridge lane (#28, #21, #20, #22, #25).
+
 ## 4. Stats, assets, crew
 
 - **Marcus** keeps the six characteristics and skills. NPCs do not get them.

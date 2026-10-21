@@ -122,3 +122,14 @@ Source: [`planner-followup-1.md`](planner-followup-1.md). Voice guide: [`ariadne
 | Jonah | not added | a Lantern; nothing else on file |
 
 **Still open** (prompt 4 in `../planner-prompts.md`): how Ariadne addresses Marcus; whether the Season 4 "ladder" may be her progression; which `[NEW]` sample lines may be used; Miri's present age; 19 or 20 years; Jonah's role.
+
+## 7. After the 2026-10-21 exports
+
+Filed: player-safe cards and data in `docs/canon/`, GM-only material in `docs/canon-gm/` (see its README). What changes:
+
+- **Open questions answered:** Tally's role is confirmed as pilot trainee; Wren and Lysa now have cards; roster names (Dax, Nadiya, Osei and others) exist in the planner's canon but are **not** in `crew.json`; add them only through a task.
+- **Data conflicts to resolve in a normal data task, not by hand:** the placeholder ship and upkeep numbers in `src/data/` differ from `economy.md` and `ships/*.md` (for example the _Errant Pawn_ maintenance, the _Ardent Venture_ charter and upkeep). The GM-only economy is for a different system and must not be copied.
+- **Voice:** `voices/about-ariadne.md` and the Ariadne motif lines in `tone.md` supersede the `[NEW]` sample lines in `ariadne-voice.md` wherever they differ.
+- **Guardrails reinforced** by `docs/canon-gm/themes-and-fixed-points.md`: Miri is never operational; Hunters stay rare; the discontinuities are never explained; Tally's name and number stay unwritten.
+- **Still open for the owner:** whether Pursuit +2 applies to every truth request or only to an explicitly opened channel; two endings or three stances in M1; whether Ariadne is ever "busy" for assignment; whether the `[NEW]` Ariadne lines and the Season 4 "ladder" may be used.
+

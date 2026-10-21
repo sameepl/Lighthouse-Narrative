@@ -36,3 +36,19 @@ Consequences:
 - `src/data/crew.json` keeps short, spoiler-light roles, because the Sheet shows them to players. Tally stays "Young pilot". The cryogenics explanation is backstory to be shown as evidence, not stated in the Sheet.
 - Still unknown: the roles and ages of **Wren** and **Lysa** (not in the planner's notes), and the exact ages of Cass and Miri.
 - Use "they" for Tally (the notes use "their own custody"); do not guess pronouns for anyone else.
+
+## 5. Unpaid upkeep has teeth `[OWNER]` (2026-10-21, issue #29)
+
+Unpaid upkeep must (a) increase the difficulty of some rolls, (b) burn down resources such as Renown and similar, and (c) eventually produce a game fail state. See `../game-design.md` ("Unpaid upkeep: arrears and the fail state") for the design reading. Thresholds and numbers are placeholders.
+
+## 6. Planner exports received (2026-10-21)
+
+The planner's player-safe export is filed in `docs/canon/` (voices, locations, ships, glossary, factions, economy, scene seeds, documents, complications, tone). The GM-only export is filed in `docs/canon-gm/` as spoiler reference. **Filing is not authorisation:** the authorised list in section 3 is unchanged, and the planner's own rulings (PL1 to PL7, Lantern numbers, the craft strand) are campaign canon only.
+
+
+## 7. Answers to the open design questions `[OWNER]` (2026-10-21)
+
+- **Pursuit +2 applies only when a channel is opened.** Asking Ariadne a question does not tick Pursuit; opening an authenticated channel for her does (section 3).
+- **Ariadne can be busy** for assignment, like any crew member.
+- **The `[NEW]` Ariadne sample lines and the Season 4 "ladder" may be used.** Writers still follow `ariadne-voice.md` and keep the ladder as evidence, never as named powers.
+- Two endings or three stances in M1: still open (M1 is the 20-minute vertical slice in `../ROADMAP.md`).
