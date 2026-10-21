@@ -1,0 +1,19 @@
+{
+  "comment": "Terms that must not appear in player-visible files (src/story, src/data, src/ui) because they are [GM-ONLY] or HELD canon. The built game is public. Core zone only. To authorise an item, the owner lists it in docs/canon/owner-decisions.md section 3, then it is added to 'allowed' here with a reason. Matching is case-insensitive.",
+  "paths": ["src/story", "src/data", "src/ui"],
+  "terms": [
+    { "pattern": "EID-0", "why": "Ariadne's programme designation" },
+    { "pattern": "Eidolon", "why": "Name of the partner minds" },
+    { "pattern": "CRV-\\d", "why": "Machine craft strand" },
+    { "pattern": "Project Lantern", "why": "The programme" },
+    { "pattern": "Special Projects", "why": "The programme's office" },
+    { "pattern": "Resolute", "why": "Machine craft strand (ruled, not authorised)" },
+    { "pattern": "Adrian Vale", "why": "Whereabouts HELD" },
+    { "pattern": "Helena Voss", "why": "Whereabouts HELD" },
+    { "pattern": "Hollis", "why": "Merrow's first name" },
+    { "pattern": "Lantern (One|Two|Three|Four|Five|Six)\\b", "why": "Lantern numbers are not shown" },
+    { "pattern": "continuance (clause|authority)", "why": "Hearthline clause, GM-only" },
+    { "pattern": "\\bcoherence\\b", "why": "Powers are never named" }
+  ],
+  "allowed": []
+}

@@ -49,6 +49,7 @@ Marcus Torin, the player character, is never written for.
 - Do not reproduce published tabletop rulebook text or trademarked setting material (see `NOTICE`).
 - Character stats and some Credits and Strain numbers are placeholders. Do not present them as canon.
 - Failure always moves the story on. Every roll has three written outcomes: clean, cost, fail.
+- **GM-only folder:** do not read `docs/canon-gm/` (spoilers) unless your issue names a file in it. `tests/canon-guard.test.ts` fails the build if a term listed in `.github/canon-guard.json` appears in `src/story`, `src/data` or `src/ui`; do not edit that file outside the `core` zone.
 - Keep persistent state small: at most 4 visible meters, 1 clock and about 25 narrative flags.
 
 ## Tips for small-context and local models
