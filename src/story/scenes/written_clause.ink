@@ -95,4 +95,4 @@ Renata turns the third page over and writes on the back, slowly, counting as she
 === after ===
 The council room empties by degrees. Through the viewport your four hulls ride quietly at their arms, hull numbers lit amber against the dark.
 <b>End of prototype slice.</b> # summary
--> END
+-> scene_end
