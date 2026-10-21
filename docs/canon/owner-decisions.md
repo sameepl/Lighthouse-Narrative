@@ -45,3 +45,10 @@ Unpaid upkeep must (a) increase the difficulty of some rolls, (b) burn down reso
 
 The planner's player-safe export is filed in `docs/canon/` (voices, locations, ships, glossary, factions, economy, scene seeds, documents, complications, tone). The GM-only export is filed in `docs/canon-gm/` as spoiler reference. **Filing is not authorisation:** the authorised list in section 3 is unchanged, and the planner's own rulings (PL1 to PL7, Lantern numbers, the craft strand) are campaign canon only.
 
+
+## 7. Answers to the open design questions `[OWNER]` (2026-10-21)
+
+- **Pursuit +2 applies only when a channel is opened.** Asking Ariadne a question does not tick Pursuit; opening an authenticated channel for her does (section 3).
+- **Ariadne can be busy** for assignment, like any crew member.
+- **The `[NEW]` Ariadne sample lines and the Season 4 "ladder" may be used.** Writers still follow `ariadne-voice.md` and keep the ladder as evidence, never as named powers.
+- Two endings or three stances in M1: still open (M1 is the 20-minute vertical slice in `../ROADMAP.md`).
