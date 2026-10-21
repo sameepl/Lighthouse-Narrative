@@ -84,7 +84,7 @@ Hub: brief, news, upkeep -> board of offers -> Prepare (ship, crew) -> Action 1 
 | **Edge** | pool of 3 per run | Re-roll a failure, or upgrade a success-with-a-cost to clean. **One pool for the whole run; no refresh.** Earned back only when a crew member reaches trust 3 (+1 each, never above 3). |
 | **Renown** | 0 to 5 | How far your name carries. Raises the pay and quality of commercial offers. Also makes you easier to find (see Pursuit). |
 | **Strain** | 0 to 5 | Strain with the Compact: how much of Renata's patience you have used. Pays off in keystones. |
-| **Pursuit clock** | 6 segments (4 in the slice) | The narrative clock. Each cycle adds 1, plus 1 if Renown is 3 or more, plus 1 for a loud choice, minus 1 for a quiet choice. These modifiers add independently; Pursuit stays between 0 and the clock length. When it fills, the pursuers arrive and the finale is forced. |
+| **Pursuit clock** | 6 segments (4 in the slice) | The narrative clock. Each cycle adds 1, plus 1 if Renown is 3 or more, plus 1 for a loud choice, minus 1 for a quiet choice. These modifiers add independently; Pursuit stays between 0 and the clock length. The story can also advance it directly (for example asking Ariadne for a truth: +2; planned for the bridge task #5). When it fills, the pursuers arrive and the finale is forced. |
 
 Renown is both reward and risk: it makes money easier and trouble faster. That tension is the design.
 
@@ -93,6 +93,7 @@ Renown is both reward and risk: it makes money easier and trouble faster. That t
 - **Marcus** keeps the six characteristics and skills. NPCs do not get them.
 - **Ships:** tags (fast, armoured, quiet, hub, workshop, sickbay), upkeep per cycle, one committed per job. The ship decides which options appear.
 - **Gear:** about six items; each is a tag that unlocks options (a sealed data core, a long-range probe).
+- **Ariadne (companion):** always aboard the _Errant Pawn_ and never "busy". INT 14 and EDU 13 (+2 each); suggested assist Electronics, Astrogation or Recon at +1 (placeholder). She informs and never instructs; see `canon/ariadne-voice.md`.
 - **Crew (simple):**
   - **Assist:** one skill bonus when assigned (+1). Only the best assist applies to a roll; no stacking.
   - **Trait:** one tag that unlocks an option (Priya reads the fine print).
@@ -147,33 +148,33 @@ This is the quality-based storylet model proven in Fallen London and Sunless Sea
 
 The player learns each archetype in small, low-stakes encounters, then meets the high-stakes version as a keystone. Same shape, much heavier stakes, state-sensitive options, and evidence from Marcus's past. Roster encounters can also drop **leads** that make a keystone available, so the order emerges from play.
 
-### The thread: a missing past, a pursuit, and an anchor
+### The thread: a missing past, a pursuit, and a companion
 
-Marcus's missing memories link him to people. Some of them are looking for him, and he may be looking for others. **Ariadne is the anchor.** The season is about whether he goes to find her, protects what he has built, or turns on the people pursuing him.
+Marcus's missing memories link him to people, and some people want what he lost. **Ariadne is the anchor, and she is already aboard:** EID-0, recovered as an isolated core from Far Horizon, with Marcus since the start (see `canon/`). There is no reunion to reach. The story is about **what to ask her and what asking costs**, with a pursuing Section closing in. The season question: _who gets to decide what a person keeps, and what will you pay to protect that right?_ (Confirmed by the planner: it fits the files' own theme of custody against consent, with "doing right costs" as the other half.)
 
-All facts about Ariadne and the pursuers are **to be supplied by the owner** (see open questions). Until then, the design only reserves a slot for them.
+Revised after the planner's notes (`canon/design-impact.md`). Keystone titles, the pieces and K5's stances are proposals until the design PR is merged. `[GM-ONLY]` canon is usable in text only if it is on the authorised list (`canon/owner-decisions.md`).
 
-Each of K2 to K4 yields one **piece** of the picture, delivered as evidence (never as Marcus's thoughts):
+Each of K2 to K4 yields one **piece** of the picture, delivered as evidence the world shows (never as Marcus's thoughts):
 
-This change renames identifiers only. The questions and scene premises below are retained historical placeholders, not definitions of Removed, The Six or The Claim; the pending planner PR #13 supersedes them.
+| Piece | What it is | Evidence the world shows |
+|---|---|---|
+| **Removed** (`removed`) | What Marcus took out, and who took it out later | the sealed folder, Merrow's initials, the number, Jonah's report |
+| **The Six** (`six`) | Who they were: the six children | the six-place table drawn three times; a manifest of six identifiers, one matching no one |
+| **The Claim** (`claim`) | Who is pursuing him, and what they want | the cut mast and the old continuity signal; the Section's argument for custody |
 
-| Piece | The question it answers |
-|---|---|
-| **Removed** (`removed`) | Where the anchor can be found |
-| **The Six** (`six`) | What the anchor was to Marcus, and what they shared |
-| **The Claim** (`claim`) | Who is pursuing him, and why |
+**The price of knowing.** The canon facts are authorised (`canon/owner-decisions.md`): Ariadne tells Marcus things only if asked, and authenticating her on an open channel tells the Section where she is. So asking her for a truth is a choice with a cost: a Pursuit tick of +2.
 
 ### Keystones (working titles)
 
 | # | Keystone | Elevates | Premise | The hard choice | Evidence of the past | Piece |
 |---|---|---|---|---|---|---|
-| **K1** | **The Passenger** | Courier | A routine courier booking: the passenger is being hunted, and says they know Marcus | Shelter them, hand them over, or smuggle them out, with the Compact watching | The passenger knows details no stranger should | opens the pursuit |
-| **K2** | **The Silent Hab** | Distress call | A hab on a dark lane is failing, and nothing answers hails | Whom or what to save with limited time and air: the people or the records | Station logs with a crew roster that includes Marcus's old identity | The Six |
-| **K3** | **The Dark Lane** | Scout | Chart the lane that went dark and learn who cut it and why | Publish what you find (Renown, but it exposes you) or keep it quiet | A route plotted with a ship transponder Marcus once flew | Removed |
-| **K4** | **The Cargo They Want** | Trade run | Armed crews try to take a piece of cargo: a sealed case others will pay anything for | Defend it, sell it, or destroy it | The case's seal matches something in Marcus's past | The Claim |
-| **K5** | **Ariadne** | (finale) | Marcus can finally reach the anchor, with the pursuit at the door | Go to her, protect the fleet and the lanes, or turn and face the pursuers | Everything gathered | resolves the pieces |
+| **K1** | **The Passenger** | Courier | A routine courier booking: the passenger is being hunted, and recognises Marcus | Shelter them, hand them over, or smuggle them out, with the Compact watching | The passenger knows details no stranger should; a credential that still opens a terminal | opens the pursuit |
+| **K2** | **The Silent Hab** | Distress call | A hab on a dark lane is failing, and nothing answers hails | Whom or what to save with limited time and air: the people or the records | A manifest of six identifiers, one of which matches no one | The Six |
+| **K3** | **The Dark Lane** | Scout | Chart the lane that went dark, a segment with no chart | Publish what you find (Renown, but it exposes you) or keep it quiet | The sealed folder, opened on screen: its number matches the segment (placeholder "Segment SEG-0417, ship and leg (TBD)"), and Merrow's initials are on the second removal | Removed |
+| **K4** | **The Cargo They Want** | Trade run | Armed crews try to take a sealed case wanted by a buyer with a Section seal | Defend it, sell it, or destroy it; the buyer offers "continuity care" | The seal matches the cut mast's old continuity signal | The Claim |
+| **K5** | **The Asking** | (finale) | The Pursuit clock is nearly full. Ariadne gives her first honest "I am not able to say", then asks Marcus whether his old request (to tell him the truth if she found him) still stands. She holds the removal record | Reaffirm the request (learn everything, pay the Pursuit cost), withdraw it (honour what a younger Marcus chose and what Ariadne would rather not carry), or share the decision with Cass and the others | Everything gathered | resolves the pieces |
 
-Working titles and premises are placeholders until the owner's answers on Ariadne and the pursuers arrive.
+K5 is Ariadne asking, not Marcus finding. The relief is Ariadne answering, not being found; the guilt is stronger because Marcus asked her to do it, so there is a thread of unease under it. Ariadne can decline to show the record and says plainly which kind of "no" it is ("I do not know" or "I am not able to say"). The player never decides, for her, what to do with the image of her "before Marcus": that is her call.
 
 ### Order and flexibility
 
@@ -186,7 +187,7 @@ Working titles and premises are placeholders until the owner's answers on Ariadn
 ## 7. Branching policy (Medium)
 
 - **Contained forks.** Each scene's fork resolves inside the scene and is recorded as state, not as a separate path.
-- **Pieces and stance decide the ending.** Three pieces (`removed`, `six`, `claim`) plus one stance flag set in K5 (go to her, protect the fleet, confront the pursuers).
+- **Pieces and stance decide the ending.** Three pieces (`removed`, `six`, `claim`) plus one stance flag set in K5 (open it, leave it closed, share the decision).
 - **Cosmetic reactions are welcome**, but never offer options that all lead to the same result.
 - **Roster for variety, spine for story.** Only keystones carry the mystery.
 
@@ -214,10 +215,13 @@ M1 numbers: 4 keystones x ~1,300 = 5,200; 6 encounters x ~900 = 5,400; Hub ~1,20
 
 ## 10. Open questions
 
-1. **Ariadne:** who she is, what she was to Marcus, and where she fits. None of this is in the brief, so none of it is designed.
-2. **The pursuers:** who they are, what they want, and how they find him.
-3. **Marcus's missing memories:** which people are involved, and which are already known or half-known to the player.
-4. **Fixed points from the campaign** and what is free to change.
-5. **Edge:** is "earned only by crew trust 3, never refreshed" right, or do you want another way to earn it?
-6. **Ending count** (M1 has 2, M2 has 3) and how the stance flag at K5 maps to them.
-7. **Calibrate** the reading-speed assumption with a real playtest.
+Resolved: powers stay unexplained strangeness; no on-screen harm to children; the authorised `[GM-ONLY]` list; cryogenics explains the crew's ages; crew roles; which fixed points are evidence only and which are seen on screen (`canon/planner-followup-1.md`).
+
+1. **Ariadne's address to Marcus** is `(TBD)` in the files; the planner recommends formal and precise.
+2. **Her progression:** may the game use the Season 4 "ladder" (own core, shared weight, quiet board, with Cass able to end it) as her progression? It is a draft marked player-safe.
+3. **The `[NEW]` sample lines** in `canon/ariadne-voice.md`: confirm which may be used.
+4. **Open numbers:** Miri's present age; whether Halworth was 19 or 20 years before now; the real meaning of "SEG-0417" (a placeholder).
+5. **Jonah's role** (a Lantern; nothing else on file).
+6. **Edge:** is "earned only by crew trust 3, never refreshed" right?
+7. **Ending count** (M1 has 2, M2 has 3) and how the K5 stance maps to them.
+8. **Calibrate** the reading-speed assumption with a real playtest.

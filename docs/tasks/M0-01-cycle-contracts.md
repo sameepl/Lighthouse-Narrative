@@ -34,4 +34,6 @@ npm run check
 ```
 
 ## Notes
+Done in PR #14. The story-driven Pursuit criterion was deferred to M0-05 (owner decision on issue #1): #1 stayed engine and data only.
+
 Contracts are the point: keep the API small and named clearly; later tasks code against it. Numbers live in `rules.json`, not in code. After merging, add the new contract files to the `deny` lists in `.github/zones.json`.

@@ -2,7 +2,9 @@
 
 Use these in the thread that holds the real campaign, to gather canon. Paste the answers into this repo (or to an agent) as markdown.
 
-## 1. Ariadne and the missing past
+## 1. Ariadne and the missing past (answered; see `canon/ariadne-and-backstory.md`)
+
+Note: this prompt assumed a reunion with Ariadne. The planner correctly pointed out she has been aboard since Session 0, so prompt 3 corrects it.
 
 ```
 I'm designing a mobile narrative game using my campaign as source material and a theme guide (not a literal
@@ -47,3 +49,42 @@ and mark anything uncertain as (TBD) rather than guessing.
 Constraints: Marcus Torin is never written for (the game never decides his words, thoughts or actions).
 No reproduced tabletop rulebook text or trademarked setting terms.
 ```
+
+## 3. Follow-ups after the first answers (answered; see `canon/planner-followup-1.md`)
+
+Already answered by the owner: powers visibility, the authorised GM-only list, child-welfare treatment, and the crew-age question (cryogenics: Tally was frozen much longer; Marcus lost the least time).
+
+```
+Thank you. Your notes corrected our premise: Ariadne is already aboard, not someone to find. A few follow-ups;
+short answers are fine, mark anything uncertain as (TBD):
+
+1. What does Ariadne want now? Give 5 to 8 sample lines in her voice (short; spoilers are fine, I will filter).
+   How does she speak to Marcus versus to Miri?
+2. What are Wren's and Lysa's roles and relationships to Marcus? (They were not in your notes.) And roughly how
+   old do Cass and Miri appear to be, given the cryogenics?
+3. Which fixed points are backstory only (shown as evidence), and which should be seen on screen in a
+   30-minute game for new players?
+4. Which ship or Quiet Registry segment does the number refer to? A placeholder is fine.
+5. Is "relief mixed with guilt" the right ending tone, and is "who gets to decide what a person keeps, and what
+   will you pay to protect that right?" the right season question?
+```
+
+## 4. Remaining follow-ups (after follow-up 1; see `canon/design-impact.md` section 8)
+
+```
+Thank you, very useful. We have used your answers. A few small gaps; short answers are fine, mark uncertain as (TBD):
+
+1. How should Ariadne address Marcus? (By name, by rank, formally, something else.) One or two sample lines.
+2. The Season 4 "ladder" (own core, shared weight, quiet board, with Cass able to end it) is marked player-safe.
+   May the game use it as Ariadne's progression across a season?
+3. We drafted K5 around your new line: "You asked me to tell you the truth if I found you. I would like to know
+   whether that request still stands." Does that fit the files, and is it OK for Ariadne to be the one who asks?
+4. Miri's present age (roughly), and whether Halworth is 19 or 20 years before the game's present.
+5. What is Jonah's role, if any, in a Season 1 scene? (A Lantern; nothing else on file.)
+6. Is there a safe way to show Merrow's initials on the second removal in a folder scene without revealing the
+   doorway reveal until later?
+```
+
+## 5. Mining the campaign for writing and balancing data
+
+The full request is a standalone, shareable file: [`canon/mining-request.md`](canon/mining-request.md). Give that file to the planning thread as is. It lists the items in tiers (Tier 1 is what the 20-minute slice needs), the tagging and spoiler rules, the size limits, and exactly where each answer is filed. M0 does not depend on any of it.
