@@ -11,6 +11,7 @@ The game uses the campaign as source material and a theme guide, not as a litera
 | [`owner-decisions.md`](owner-decisions.md) | **Authoritative** owner rulings: what may be used, content lines, the cryogenics explanation |
 | [`planner-followup-1.md`](planner-followup-1.md) | The planner's answers on Ariadne's wants and voice, crew roles, fixed points, the authorised list, tone |
 | [`ariadne-voice.md`](ariadne-voice.md) | Writer's guide to Ariadne: what to use, how she speaks and behaves, sample lines |
+| [`mining-request.md`](mining-request.md) | A shareable request to the planner for voice cards, locations, ships, economy numbers and more, with the filing layout |
 | [`design-impact.md`](design-impact.md) | Our review of those notes: what they settle, what they correct, how the game design changes, and open questions |
 
 ## Status tags (used in the notes and in our docs)
@@ -34,6 +35,15 @@ The game uses the campaign as source material and a theme guide, not as a litera
 6. **Strangeness is evidence, not power.** Show effects as evidence (a count that matches, a voice that is recognised) and costs as headaches and exhaustion. No lights, no named powers.
 7. **Ariadne** follows `ariadne-voice.md`: she informs and never instructs, and she says whether it is "I do not know" or "I am not able to say".
 8. When a canon fact is needed and is missing, **do not invent it**; use a placeholder marked `[STUB]` and ask in the issue.
+
+## Where mined data is filed
+
+Answers to `mining-request.md` are filed in these places (one file per person, place or ship, so an agent can read only what a task names):
+
+- `voices/<name>.md`, `locations/<name>.md`, `ships/<name>.md`
+- `economy.md`, `scene-seeds.md`, `documents.md`, `complications.md`, `glossary.md`, `factions.md`, `tone.md`
+
+Each file starts with a `STATUS`/`SOURCE` header and keeps the planner's status tags. Numbers then flow into `src/data/` (ships, rules, encounter costs) through a normal task, never by hand-editing data from a canon file.
 
 ## Updating canon
 
