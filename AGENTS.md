@@ -50,6 +50,7 @@ Marcus Torin, the player character, is never written for.
 - Character stats and some Credits and Strain numbers are placeholders. Do not present them as canon.
 - **Story canon:** read `docs/canon/README.md`. Never put `[GM-ONLY]` or `HELD` material in player-visible text (ink, encounter data, UI) unless the item is on the authorised list in `docs/canon/owner-decisions.md` (section 3) or the issue names that exact item and authorises it. Coherence and Lantern powers are never named or shown as powers; no on-screen harm to children. The compiled game is public. Do not invent facts about Ariadne, the pursuers or Marcus's past; use a `[STUB]` placeholder and ask.
 - Failure always moves the story on. Every roll has three written outcomes: clean, cost, fail.
+- **GM-only folder:** do not read `docs/canon-gm/` (spoilers) unless your issue names a file in it. `tests/canon-guard.test.ts` fails the build if a term listed in `.github/canon-guard.json` appears in `src/story`, `src/data` or `src/ui`; do not edit that file outside the `core` zone.
 - Keep persistent state small: at most 4 visible meters, 1 clock and about 25 narrative flags.
 
 ## Tips for small-context and local models

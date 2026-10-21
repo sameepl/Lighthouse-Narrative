@@ -13,3 +13,4 @@
 - Encounter `repeat` is `{ "kind": "once" }` or `{ "kind": "repeatable", "cooldown": 1 }` (nonnegative cycles). Archetypes use snake_case: `trade_run`, `courier`, `salvage`, `scout`, `distress_call`, `standoff`. `weight` is positive; `cost` is nonnegative Credits; `risk` is a short player-facing hint.
 - Leads are keyed by declared keystone IDs. Encounter `lead` emits that key. Keystone `availableWhen` accepts `lead` and/or `cycle`, with OR semantics; deadline cannot precede its availability cycle. A lead need not yet have a producer. Do not invent keystones merely to satisfy a reference.
 - Schemas are strict, with no defaults or transforms: production uses raw JSON, while development/tests validate it. `tests/content.test.ts` additionally checks knots and boolean flags against compiled ink. Bad metadata reports its source filename and field.
+- GM-only terms are blocked by `tests/canon-guard.test.ts` (list in `.github/canon-guard.json`), including in JSON strings.

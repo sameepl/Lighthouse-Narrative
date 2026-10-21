@@ -6,3 +6,4 @@
 - Respect `prefers-reduced-motion`. Animation is for clarity, not decoration.
 - Put new components in `components/`, one per file. Keep text out of components: story text is ink, labels live next to the component.
 - Do not edit `src/bridge/` from a UI task. If you need new data, ask for a `zone:core` change first.
+- GM-only terms are blocked by `tests/canon-guard.test.ts` (list in `.github/canon-guard.json`), including UI labels.
