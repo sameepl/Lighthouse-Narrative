@@ -11,7 +11,7 @@
 - **Complication:** a swap-in twist that makes a repeated archetype play differently.
 - **Keystone:** a scene the story requires. Never random. An elevated version of an archetype.
 - **Lead:** a flag that makes a keystone available, dropped by an encounter or by time.
-- **Piece:** one of three things a keystone teaches about Marcus's past: Removed, The Six, The Claim.
+- **Piece:** one of three things a keystone teaches about Marcus's past: Removed (`removed`), The Six (`six`), The Claim (`claim`). A keystone that awards no piece uses `none`.
 - **Anchor:** the person Marcus's missing past ties him to: Ariadne, who is already aboard the _Errant Pawn_ (see `canon/`).
 - **Pursuit clock:** the narrative clock. Ticks each cycle; when full, the pursuers arrive and the finale is forced.
 - **Edge:** a pool of 3 per run. Re-roll a failure or upgrade a success-with-a-cost to clean. Earned back only through crew trust.

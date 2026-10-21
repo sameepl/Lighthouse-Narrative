@@ -158,9 +158,9 @@ Each of K2 to K4 yields one **piece** of the picture, delivered as evidence the 
 
 | Piece | What it is | Evidence the world shows |
 |---|---|---|
-| **Removed** | What Marcus took out, and who took it out later | the sealed folder, Merrow's initials, the number, Jonah's report |
-| **The Six** | Who they were: the six children | the six-place table drawn three times; a manifest of six identifiers, one matching no one |
-| **The Claim** | Who is pursuing him, and what they want | the cut mast and the old continuity signal; the Section's argument for custody |
+| **Removed** (`removed`) | What Marcus took out, and who took it out later | the sealed folder, Merrow's initials, the number, Jonah's report |
+| **The Six** (`six`) | Who they were: the six children | the six-place table drawn three times; a manifest of six identifiers, one matching no one |
+| **The Claim** (`claim`) | Who is pursuing him, and what they want | the cut mast and the old continuity signal; the Section's argument for custody |
 
 **The price of knowing.** The canon facts are authorised (`canon/owner-decisions.md`): Ariadne tells Marcus things only if asked, and authenticating her on an open channel tells the Section where she is. So asking her for a truth is a choice with a cost: a Pursuit tick of +2.
 
@@ -187,7 +187,7 @@ K5 is Ariadne asking, not Marcus finding. The relief is Ariadne answering, not b
 ## 7. Branching policy (Medium)
 
 - **Contained forks.** Each scene's fork resolves inside the scene and is recorded as state, not as a separate path.
-- **Pieces and stance decide the ending.** Three pieces (Removed, The Six, The Claim) plus one stance flag set in K5 (open it, leave it closed, share the decision).
+- **Pieces and stance decide the ending.** Three pieces (`removed`, `six`, `claim`) plus one stance flag set in K5 (open it, leave it closed, share the decision).
 - **Cosmetic reactions are welcome**, but never offer options that all lead to the same result.
 - **Roster for variety, spine for story.** Only keystones carry the mystery.
 

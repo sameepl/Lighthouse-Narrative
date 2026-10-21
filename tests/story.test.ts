@@ -42,7 +42,7 @@ describe('The Written Clause: scripted playthroughs', () => {
     dice.next = [5, 5];
     session.act('try');
     const v = view(session);
-    expect(v.ended).toBe(true);
+    expect(v.phase).toBe('hub');
     expect(v.events.find(e => e.type === 'roll')).toMatchObject({ total: 13, grade: 'clean' });
     expect(v.ledger.map(n => n.kind)).toEqual(['gain', 'gain']);
     expect(v.res.Strain).toBe(0);
@@ -69,7 +69,7 @@ describe('The Written Clause: scripted playthroughs', () => {
     session.act('edge');
     const v = view(session);
     expect(v.res.Edge).toBe(2);
-    expect(v.ended).toBe(true);
+    expect(v.phase).toBe('hub');
     expect(v.events.filter(e => e.type === 'roll')).toHaveLength(2);
     expect(v.ledger.some(n => n.t.includes('every hull'))).toBe(true);
   });
@@ -81,7 +81,7 @@ describe('The Written Clause: scripted playthroughs', () => {
     session.act('try');
     session.act('accept');
     const v = view(session);
-    expect(v.ended).toBe(true);
+    expect(v.phase).toBe('hub');
     expect(v.res).toMatchObject({ Strain: 1, Edge: 3 });
     expect(v.ledger.map(n => n.kind)).toEqual(['cost', 'cost']);
   });
@@ -116,7 +116,7 @@ describe('The Written Clause: scripted playthroughs', () => {
     session.act(choiceId(session, 'Decline for now'));
     session.act(choiceId(session, 'Continue'));
     const v = view(session);
-    expect(v.ended).toBe(true);
+    expect(v.phase).toBe('hub');
     expect(v.events.find(e => e.type === 'summary')).toMatchObject({ items: [{ kind: 'watch' }] });
   });
 });
@@ -161,7 +161,7 @@ describe('every branch of the story', () => {
   function explore(session: GameSession, trail: string[], depth: number): void {
     expect(depth).toBeLessThan(12); // the scene must terminate
     const v = view(session);
-    if (v.ended) {
+    if (v.phase === 'hub') {
       paths++;
       expect(v.events.some(e => e.type === 'summary')).toBe(true);
       endings.set(

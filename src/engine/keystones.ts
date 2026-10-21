@@ -64,7 +64,7 @@ export function scheduleKeystones(input: KeystoneInput): KeystoneSchedule {
   const completed = new Set(input.completed);
   const middle = roles.middleIds.map(id => catalog.get(id)!);
   const completedMiddle = middle.filter(entry => completed.has(entry.id));
-  const pieces = (['where', 'who', 'why'] as const).filter(piece =>
+  const pieces = (['removed', 'six', 'claim'] as const).filter(piece =>
     completedMiddle.some(entry => entry.piece === piece),
   );
   const result: KeystoneSchedule = {
