@@ -149,3 +149,5 @@ The reviewer never merges. The owner merges after the verdict (and the Opus revi
 - Tools are read-only plus `gh pr view/diff` and `gh issue view`; it posts one sticky comment. It cannot push or merge.
 - Opus second opinion: the Action runs Sonnet and may start an Opus subagent (`Task`) on the triggers in `REVIEW_CHECKLIST.md`. If a fixed Opus pass for every core PR is wanted, change `--model` for core PRs in a later task.
 - Residual risk: this workflow runs from the PR's own copy for same-repository PRs, so a PR that edits `.github/workflows/review.yml` could change what runs with the secret. The `zones` check forces such a PR to be `zone:core`, and the owner should read any change to this file before merging.
+
+`claude.yml` (added by the Claude GitHub app installer) lets collaborators ask `@claude` a question in an issue or PR comment. `claude-code-review.yml` from the same installer was removed: it duplicated `review.yml` (two reviews per PR, double usage) and read its instructions from the PR itself rather than from `main`.
