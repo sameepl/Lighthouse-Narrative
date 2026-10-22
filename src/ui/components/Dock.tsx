@@ -1,12 +1,11 @@
 import { motion } from 'framer-motion';
-import type { UIChoice } from '../../bridge/types';
+import type { UIChoice, ViewOdds } from '../../bridge/types';
 import { signed } from '../../engine/rules';
-import type { OddsInfo } from '../../engine/types';
-import { choiceText } from '../strings';
+import { choiceText, rollPartText } from '../strings';
 
 interface Props {
   choices: UIChoice[];
-  odds: OddsInfo | null;
+  odds: ViewOdds | null;
   ended: boolean;
   onAct: (id: number | string) => void;
   onRestart: () => void;
@@ -19,7 +18,8 @@ export function Dock({ choices, odds, ended, onAct, onRestart }: Props) {
     <div className="dock">
       {odds && (
         <div className="odds-panel">
-          Need <b>{odds.target}+</b> on 2d6 · modifier <b>{signed(odds.mod)}</b> ({odds.parts.join(', ')})<br />
+          Need <b>{odds.target}+</b> on 2d6 · modifier <b>{signed(odds.mod)}</b> (
+          {odds.parts.map(rollPartText).join(', ')})<br />
           Success <b>{odds.success}%</b> · Clean <b>{odds.clean}%</b>
         </div>
       )}

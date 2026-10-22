@@ -58,6 +58,44 @@ const roundtrip = (s: GameSession, opts: Partial<SessionOptions> = {}) =>
   make({ ...opts, saved: JSON.parse(JSON.stringify(s.save())) as SaveData });
 
 describe('Hub and scene bridge', () => {
+  it('saves structured upkeep, detaches its metadata, and retains old v2 notes', () => {
+    const s = make();
+    s.endCycle();
+    const before = s.save();
+    expect(before.ledger).toEqual([{ kind: 'cost', t: '', command: { code: 'cycleUpkeep', amount: 4000 } }]);
+    expect(before.events.at(-1)).toMatchObject(before.ledger[0]!);
+    view(s).ledger[0]!.command!.amount = 999;
+    const event = view(s).events.at(-1)!;
+    if (event.type === 'note') event.command!.amount = 998;
+    expect(s.save()).toEqual(before);
+    expect(roundtrip(s).save()).toEqual(before);
+    const legacy = structuredClone(before);
+    legacy.ledger = [{ kind: 'cost', t: 'Cycle upkeep paid: Cr4000.' }];
+    legacy.events = [{ id: 1, type: 'note', ...legacy.ledger[0]! }];
+    expect(make({ saved: legacy }).save()).toEqual(legacy);
+  });
+
+  it('publishes detached assist metadata with unchanged odds and restores Back', () => {
+    const s = make();
+    enter(s, ['priya']);
+    const before = s.save();
+    choose(s, 'Risk');
+    expect(view(s).choices.map(c => c.command?.code)).toEqual(['try', 'odds', 'back']);
+    expect(view(s).choices.every(c => c.text === '' && c.sub === undefined)).toBe(true);
+    s.act('odds');
+    const odds = view(s).odds!;
+    expect(odds).toMatchObject({ target: 8, mod: 4, success: 92, clean: 72 });
+    const part = odds.parts.find(p => p.assist)!;
+    expect(part).toMatchObject({ n: 1, assist: { crewId: 'priya', name: 'Priya' } });
+    part.assist!.name = 'Changed';
+    part.n = 999;
+    s.act('odds');
+    expect(view(s).odds!.parts.find(p => p.assist)).toMatchObject({ n: 1, assist: { name: 'Priya' } });
+    expect(s.save()).toEqual(before);
+    s.act('back');
+    expect(s.save()).toEqual(before);
+  });
+
   it('keeps a fixed encounter draw and RNG state through scene completion', () => {
     const s = make();
     const before = s.save();
@@ -223,7 +261,9 @@ describe('Hub and scene bridge', () => {
       members.map(c => c.id),
     );
     expect(setup.mod).toBe(5);
-    expect(setup.parts.filter(p => p.label.endsWith('assist'))).toHaveLength(1);
+    expect(setup.parts.filter(p => p.assist)).toEqual([
+      { label: members[0]!.name, n: 2, assist: { crewId: members[0]!.id, name: members[0]!.name } },
+    ]);
     expect(assistedSetup(fixture, { skills: ['Diplomat'], bonuses: [], target: 8 }, () => false, ['cass']).mod).toBe(3);
   });
 });
