@@ -38,7 +38,13 @@ export function App() {
 
   return (
     <div id="app">
-      <Hud res={view.res} onSheet={() => setSheetOpen(true)} onTheme={toggleTheme} onRestart={restart} />
+      <Hud
+        res={view.res}
+        pursuit={view.cycle.pursuit}
+        onSheet={() => setSheetOpen(true)}
+        onTheme={toggleTheme}
+        onRestart={restart}
+      />
       <div className="scenes">
         <motion.div
           className="scene"
