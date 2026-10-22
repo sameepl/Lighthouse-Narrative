@@ -361,19 +361,7 @@ export class GameSession {
   private publish(): void {
     this.store.setState(
       structuredClone({
-        events: [
-          ...this.events,
-          ...(this.run.state.phase === 'hub'
-            ? [
-                {
-                  id: -1,
-                  type: 'para' as const,
-                  speech: false,
-                  html: `Cycle ${this.run.state.cycle.cycle}: ${this.run.state.cycle.actionsLeft} actions left. ${this.run.state.boardStatus === 'pursuit-full' ? 'Pursuit has reached its limit. No further encounter is available in this prototype.' : this.run.state.boardStatus === 'no-eligible-offers' ? 'No work is available. End the cycle or restart.' : this.run.state.boardStatus === 'actions-spent' ? 'End the cycle to pay upkeep and advance Pursuit.' : 'Choose an offer, then prepare your ship and crew.'}`,
-                },
-              ]
-            : []),
-        ],
+        events: this.events,
         choices: this.choices(),
         odds: this.phase === 'staged' && this.showOdds && this.setup ? oddsOf(this.setup, this.opts.data.rules) : null,
         bg: this.bg,
@@ -384,6 +372,14 @@ export class GameSession {
         assignments: this.run.state.assignments,
         busyCrewIds: this.run.state.busyCrewIds,
         boardStatus: this.run.state.boardStatus,
+        hub:
+          this.run.state.phase === 'hub'
+            ? {
+                cycle: this.run.state.cycle.cycle,
+                actionsLeft: this.run.state.cycle.actionsLeft,
+                board: this.run.state.boardStatus,
+              }
+            : null,
         schedulerStatus: this.run.configured ? 'configured' : 'unconfigured',
         unmetGuarantees: this.run.state.unmetGuarantees,
         blockedDue: this.run.state.blockedDue,

@@ -1,27 +1,31 @@
 import type { GameData } from '../data/validate';
-import type { RunState, UIChoice } from './types';
+import type { Command, RunState, UIChoice } from './types';
 
-/** Basic command adapter keeps the current choice dock usable until dedicated Hub/Prepare screens land. */
+/** Scheduling commands for the choice dock. Codes and parameters only: src/ui/strings.ts writes the words. */
 export function runChoices(run: RunState, data: GameData, resources: Record<string, number>): UIChoice[] {
-  const choice = (id: string, text: string, sub?: string): UIChoice => ({ id, kind: 'choice', text, sub });
+  const choice = (id: string, command: Command): UIChoice => ({ id, kind: 'choice', text: '', command });
   if (run.phase === 'hub') {
     const choices = run.offers.map(o =>
-      choice(
-        `offer:${o.entry.id}`,
-        o.kind === 'keystone' ? o.entry.title : o.entry.id.replaceAll('_', ' '),
-        `${o.kind === 'encounter' && o.entry.cost > (resources.Credits ?? 0) ? 'Locked: insufficient Credits. ' : ''}${o.forced ? 'Forced; weaker options. ' : ''}${o.kind === 'encounter' ? `Cost Cr${o.entry.cost}. ${o.entry.risk}` : 'Keystone'}${o.entry.requires.shipTag ? ` Ship: ${o.entry.requires.shipTag}.` : ''}${o.entry.requires.crew?.length ? ` Crew: ${o.entry.requires.crew.join(', ')}.` : ''}`,
-      ),
+      choice(`offer:${o.entry.id}`, {
+        code: 'offer',
+        offerId: o.entry.id,
+        offerKind: o.kind,
+        ...(o.kind === 'keystone' ? { title: o.entry.title } : { cost: o.entry.cost, risk: o.entry.risk }),
+        locked: o.kind === 'encounter' && o.entry.cost > (resources.Credits ?? 0),
+        forced: o.forced,
+        ...(o.entry.requires.shipTag ? { shipTag: o.entry.requires.shipTag } : {}),
+        crew: o.entry.requires.crew ?? [],
+      }),
     );
     if (run.boardStatus !== 'pursuit-full' && !run.offers.some(o => o.forced))
       choices.push(
-        choice(
-          'endCycle',
-          'End cycle',
-          `${run.cycle.actionsLeft} actions left. Pay ship upkeep and advance Pursuit.${run.boardStatus === 'no-eligible-offers' ? ' No eligible offers.' : ''}`,
-        ),
+        choice('endCycle', {
+          code: 'endCycle',
+          actionsLeft: run.cycle.actionsLeft,
+          noEligibleOffers: run.boardStatus === 'no-eligible-offers',
+        }),
       );
-    if (run.boardStatus === 'pursuit-full')
-      choices.push(choice('restart', 'Restart run', 'Pursuit is full and no runnable finale is available.'));
+    if (run.boardStatus === 'pursuit-full') choices.push(choice('restart', { code: 'restart' }));
     return choices;
   }
   if (run.phase !== 'prepare') return [];
@@ -35,28 +39,26 @@ export function runChoices(run: RunState, data: GameData, resources: Record<stri
     (offer.kind !== 'encounter' || (resources.Credits ?? 0) >= offer.entry.cost);
   return [
     ...data.ships.map(ship =>
-      choice(
-        `ship:${ship.id}`,
-        `${run.assignments.shipId === ship.id ? 'Selected: ' : ''}${ship.name}`,
-        ship.tags.join(', '),
-      ),
+      choice(`ship:${ship.id}`, {
+        code: 'ship',
+        shipId: ship.id,
+        name: ship.name,
+        tags: ship.tags,
+        selected: run.assignments.shipId === ship.id,
+      }),
     ),
     ...data.crew
       .filter(c => !run.busyCrewIds.includes(c.id))
       .map(c =>
-        choice(
-          `crew:${c.id}`,
-          `${run.assignments.crewIds.includes(c.id) ? 'Unassign' : 'Assign'} ${c.name}`,
-          `${c.assist.skill} assist`,
-        ),
+        choice(`crew:${c.id}`, {
+          code: 'crew',
+          crewId: c.id,
+          name: c.name,
+          skill: c.assist.skill,
+          assigned: run.assignments.crewIds.includes(c.id),
+        }),
       ),
-    ...(ready ? [choice('confirm', 'Confirm assignment', 'Commit the action and pay the cost.')] : []),
-    choice(
-      'cancel',
-      'Cancel',
-      ready
-        ? 'Return without spending an action or Credits.'
-        : 'Not ready: choose a suitable ship and required crew, and ensure you can pay the cost.',
-    ),
+    ...(ready ? [choice('confirm', { code: 'confirm' })] : []),
+    choice('cancel', { code: 'cancel', ready: !!ready }),
   ];
 }
