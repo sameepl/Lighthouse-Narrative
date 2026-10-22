@@ -1,6 +1,6 @@
 name: Review
 # Runs the reviewer (docs/REVIEWER_PROMPT.md) on each pull request after CI is green.
-# It comments only: read-only tools, no push, no merge. Needs the repository secret ANTHROPIC_API_KEY.
+# It comments only: read-only tools, no push, no merge. Needs the repository secret CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`, Pro or Max plan).
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
@@ -49,7 +49,8 @@ jobs:
           echo "Timed out waiting for CI."; exit 1
       - uses: anthropics/claude-code-action@v1
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          classify_inline_comments: 'false'
           use_sticky_comment: true
           prompt: |
             REPO: ${{ github.repository }}
