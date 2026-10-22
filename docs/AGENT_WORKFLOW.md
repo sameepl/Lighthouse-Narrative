@@ -136,8 +136,18 @@ List problems by severity. Do not rewrite the PR.
 
 The reviewer brief is `REVIEWER_PROMPT.md`; the checklist is `REVIEW_CHECKLIST.md`. Ways to start it, in order of preference:
 
-1. **GitHub Action on each PR (a real trigger).** A workflow on `pull_request` (opened, synchronize, ready for review) runs the reviewer with the prompt and an API key stored as a repository secret. It comments the verdict. Needs a core PR for the workflow file and the owner adding the secret. Do not run it on forks, and give it read access plus permission to comment only.
+1. **GitHub Action on each PR (chosen; `.github/workflows/review.yml`).** A workflow on `pull_request` (opened, synchronize, ready for review) runs the reviewer with the prompt and a credential stored as a repository secret. It comments the verdict. Needs a core PR for the workflow file and the owner adding the secret. Do not run it on forks, and give it read access plus permission to comment only.
 2. **Scheduled task (fallback).** A cloud scheduled task that runs about hourly, lists open PRs whose latest commit has no verdict comment and a green `check`, and reviews each. Simple, but up to an hour late.
 3. **A watching session.** A Claude Code session can subscribe to a PR's activity (comments, reviews, CI results) and respond as events arrive. Good for the author following their own PR, not for a standing reviewer: it ends when the session ends and only one session watches a PR.
 
 The reviewer never merges. The owner merges after the verdict (and the Opus review for core PRs).
+
+### Reviewer Action: setup and limits
+
+- Owner setup: run `claude setup-token` locally (Pro or Max plan), save the output as the repository secret `CLAUDE_CODE_OAUTH_TOKEN` (Settings, Secrets and variables, Actions), and install the Claude GitHub app on the repo. Reviews use the plan's usage limits. To use an API key instead, swap the input to `anthropic_api_key` and the secret to `ANTHROPIC_API_KEY`.
+- The job waits for `check` and `zones` to pass, skips drafts and fork PRs, and reads its instructions from `main` (the `trusted/` checkout), so a PR cannot rewrite its reviewer.
+- Tools are read-only plus `gh pr view/diff` and `gh issue view`; it posts one sticky comment. It cannot push or merge.
+- Opus second opinion: the Action runs Sonnet and may start an Opus subagent (`Task`) on the triggers in `REVIEW_CHECKLIST.md`. If a fixed Opus pass for every core PR is wanted, change `--model` for core PRs in a later task.
+- Residual risk: this workflow runs from the PR's own copy for same-repository PRs, so a PR that edits `.github/workflows/review.yml` could change what runs with the secret. The `zones` check forces such a PR to be `zone:core`, and the owner should read any change to this file before merging.
+
+`claude.yml` (added by the Claude GitHub app installer) lets collaborators ask `@claude` a question in an issue or PR comment. `claude-code-review.yml` from the same installer was removed: it duplicated `review.yml` (two reviews per PR, double usage) and read its instructions from the PR itself rather than from `main`.
