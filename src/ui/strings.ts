@@ -1,6 +1,7 @@
-import type { BoardStatus, Command, HubStatus, UIChoice } from '../bridge/types';
+import type { AssistedRollPart, BoardStatus, Command, HubStatus, LedgerNote, UIChoice } from '../bridge/types';
+import { signed } from '../engine/rules';
 
-/** Player-visible words for scheduling. The bridge sends codes and parameters; the wording lives here. */
+/** Player-visible words for bridge commands and status. */
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
@@ -44,6 +45,16 @@ export function commandText(command: Command): { text: string; sub?: string } {
       return { text: `${command.assigned ? 'Unassign' : 'Assign'} ${command.name}`, sub: `${command.skill} assist` };
     case 'confirm':
       return { text: 'Confirm assignment', sub: 'Commit the action and pay the cost.' };
+    case 'try':
+      return { text: 'Try it' };
+    case 'odds':
+      return { text: 'Odds' };
+    case 'back':
+      return { text: 'Back' };
+    case 'accept':
+      return { text: 'Accept the result' };
+    case 'edge':
+      return { text: `Spend Edge: ${command.reroll ? 're-roll' : 'make it clean'}`, sub: `${command.left} left` };
     case 'cancel':
       return {
         text: 'Cancel',
@@ -54,7 +65,15 @@ export function commandText(command: Command): { text: string; sub?: string } {
   }
 }
 
-/** Text and hint for a dock button: ink text as written, scheduling commands from codes. */
+export function noteText(note: LedgerNote): string {
+  return note.command?.code === 'cycleUpkeep' ? `Cycle upkeep paid: Cr${note.command.amount}.` : note.t;
+}
+
+export function rollPartText(part: AssistedRollPart): string {
+  return `${part.assist ? `${part.assist.name} assist` : part.label} ${signed(part.n)}`;
+}
+
+/** Text and hint for a dock button: ink text as written, bridge commands from codes. */
 export function choiceText(choice: UIChoice): { text: string; sub?: string } {
   return choice.command
     ? commandText(choice.command)

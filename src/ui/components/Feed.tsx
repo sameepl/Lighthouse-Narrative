@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import type { GameEvent } from '../../bridge/types';
 import { signed } from '../../engine/rules';
+import { noteText } from '../strings';
 
 const rise = (delay = 0) => ({
   initial: { opacity: 0, y: 8 },
@@ -66,7 +67,7 @@ function EventView({ ev, delay, fresh }: { ev: GameEvent; delay: number; fresh: 
     case 'note':
       return (
         <motion.div className={`note ${ev.kind}`} {...common}>
-          {ev.t}
+          {noteText(ev)}
         </motion.div>
       );
     case 'summary':
@@ -76,7 +77,7 @@ function EventView({ ev, delay, fresh }: { ev: GameEvent; delay: number; fresh: 
           {ev.items.length ? (
             ev.items.map((n, i) => (
               <p key={i} className={`note ${n.kind}`}>
-                {n.t}
+                {noteText(n)}
               </p>
             ))
           ) : (

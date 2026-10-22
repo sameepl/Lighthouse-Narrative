@@ -1,10 +1,58 @@
 import { describe, expect, it } from 'vitest';
-import { commandText, hubStatusText } from '../src/ui/strings';
+import { choiceText, commandText, hubStatusText, noteText, rollPartText } from '../src/ui/strings';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { Feed } from '../src/ui/components/Feed';
+import { SheetPanel } from '../src/ui/components/SheetPanel';
+import type { LedgerNote } from '../src/bridge/types';
 import { GameSession } from '../src/bridge/session';
 import { data } from '../src/data';
 import ink from '../src/story/main.ink';
 
 describe('hub and command strings', () => {
+  it('renders roll controls, both Edge actions and unchanged ink hints', () => {
+    expect((['try', 'odds', 'back', 'accept'] as const).map(code => commandText({ code }).text)).toEqual([
+      'Try it',
+      'Odds',
+      'Back',
+      'Accept the result',
+    ]);
+    expect(commandText({ code: 'edge', reroll: true, left: 3 })).toEqual({
+      text: 'Spend Edge: re-roll',
+      sub: '3 left',
+    });
+    expect(commandText({ code: 'edge', reroll: false, left: 1 })).toEqual({
+      text: 'Spend Edge: make it clean',
+      sub: '1 left',
+    });
+    expect(choiceText({ id: 0, kind: 'choice', text: 'Story choice', sub: 'Story hint' })).toEqual({
+      text: 'Story choice',
+      sub: 'Story hint',
+    });
+    expect(rollPartText({ label: 'SOC', n: -1 })).toBe('SOC -1');
+    expect(rollPartText({ label: 'Priya', n: 2, assist: { crewId: 'priya', name: 'Priya' } })).toBe('Priya assist +2');
+  });
+
+  it('renders structured upkeep and old plain notes in feed, summary and ledger', () => {
+    const notes: LedgerNote[] = [
+      { kind: 'cost', t: '', command: { code: 'cycleUpkeep', amount: 4000 } },
+      { kind: 'watch', t: 'Saved <plain> note' },
+    ];
+    expect(notes.map(noteText)).toEqual(['Cycle upkeep paid: Cr4000.', 'Saved <plain> note']);
+    const feed = renderToStaticMarkup(
+      createElement(Feed, {
+        events: [
+          { id: 1, type: 'note', ...notes[0]! },
+          { id: 2, type: 'summary', items: notes },
+        ],
+      }),
+    );
+    expect(feed.match(/Cycle upkeep paid: Cr4000\./g)).toHaveLength(2);
+    const sheet = renderToStaticMarkup(createElement(SheetPanel, { ledger: notes, onClose: () => {} }));
+    expect(sheet).toContain('Cycle upkeep paid: Cr4000.');
+    for (const html of [feed, sheet]) expect(html).toContain('Saved &lt;plain&gt; note');
+  });
+
   it('pluralises actions left', () => {
     expect(hubStatusText({ cycle: 1, actionsLeft: 1, board: 'ready' })).toContain('1 action left');
     expect(hubStatusText({ cycle: 1, actionsLeft: 2, board: 'ready' })).toContain('2 actions left');

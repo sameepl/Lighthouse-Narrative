@@ -1,15 +1,21 @@
 import type { Encounter, Keystone } from '../data/schema';
-import type { CycleState, Dice, Grade, Note, NoteKind, OddsInfo } from '../engine/types';
+import type { CycleState, Dice, Grade, Note, OddsInfo, RollPart, RollSetup } from '../engine/types';
+
+/** Optional metadata keeps plain notes from ink and existing v2 saves compatible. */
+export type LedgerNote = Note & { command?: { code: 'cycleUpkeep'; amount: number } };
+export type AssistedRollPart = RollPart & { assist?: { crewId: string; name: string } };
+export type AssistedRollSetup = Omit<RollSetup, 'parts'> & { parts: AssistedRollPart[] };
+export type ViewOdds = Omit<OddsInfo, 'parts'> & { parts: AssistedRollPart[] };
 
 export type GameEvent = { id: number } & (
   | { type: 'para'; html: string; speech: boolean }
   | { type: 'pick'; html: string }
   | { type: 'roll'; dice: Dice; mod: number; total: number; grade: Grade; label: string; edge?: string }
-  | { type: 'note'; kind: NoteKind; t: string }
-  | { type: 'summary'; items: Note[] }
+  | ({ type: 'note' } & LedgerNote)
+  | { type: 'summary'; items: LedgerNote[] }
 );
 export type ChoiceKind = 'choice' | 'try' | 'odds' | 'back' | 'edge' | 'accept';
-/** A scheduling command in the dock. The UI strings module turns these into words; the bridge sends codes and parameters only. */
+/** A dock command. The UI strings module turns codes and parameters into words. */
 export type Command =
   | {
       code: 'offer';
@@ -29,11 +35,13 @@ export type Command =
   | { code: 'ship'; shipId: string; name: string; tags: string[]; selected: boolean }
   | { code: 'crew'; crewId: string; name: string; skill: string; assigned: boolean }
   | { code: 'confirm' }
-  | { code: 'cancel'; ready: boolean };
+  | { code: 'cancel'; ready: boolean }
+  | { code: 'try' | 'odds' | 'back' | 'accept' }
+  | { code: 'edge'; reroll: boolean; left: number };
 export interface UIChoice {
   id: number | string;
   kind: ChoiceKind;
-  /** Story and roll text from ink or the roll flow. Empty for scheduling commands, which carry `command`. */
+  /** Story text from ink. Empty for bridge commands, which carry `command`. */
   text: string;
   sub?: string;
   command?: Command;
@@ -76,11 +84,11 @@ export interface RunState {
 export interface GameView {
   events: GameEvent[];
   choices: UIChoice[];
-  odds: OddsInfo | null;
+  odds: ViewOdds | null;
   bg: string;
   ended: boolean;
   res: Record<string, number>;
-  ledger: Note[];
+  ledger: LedgerNote[];
   /** Scheduling phase, separate from the scene's internal roll interaction. */
   phase: RunPhase;
   offers: Offer[];
@@ -100,7 +108,7 @@ export interface SaveData {
   v: 2;
   ink: string;
   res: Record<string, number>;
-  ledger: Note[];
+  ledger: LedgerNote[];
   events: GameEvent[];
   bg: string;
   run: RunState;

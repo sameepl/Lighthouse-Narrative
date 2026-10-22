@@ -1,8 +1,9 @@
 import { data } from '../../data';
 import { charMod, signed } from '../../engine/rules';
-import type { Note } from '../../engine/types';
+import type { LedgerNote } from '../../bridge/types';
+import { noteText } from '../strings';
 
-export function SheetPanel({ ledger, onClose }: { ledger: Note[]; onClose: () => void }) {
+export function SheetPanel({ ledger, onClose }: { ledger: LedgerNote[]; onClose: () => void }) {
   const { character, rules, crew, ships } = data;
   return (
     <div className="sheet open" onClick={e => e.target === e.currentTarget && onClose()}>
@@ -50,7 +51,7 @@ export function SheetPanel({ ledger, onClose }: { ledger: Note[]; onClose: () =>
         {ledger.length ? (
           ledger.map((n, i) => (
             <p key={i} className={`note ${n.kind}`}>
-              {n.t}
+              {noteText(n)}
             </p>
           ))
         ) : (

@@ -13,8 +13,8 @@ import { Story } from 'inkjs';
 import { createStore, type StoreApi } from 'zustand/vanilla';
 import type { GameData } from '../data/validate';
 import { addResource, makeRoll, newGameState, oddsOf, spendEdge } from '../engine/rules';
-import type { CheckRequest, GameState, Grade, NoteKind, Rng, RollResult, RollSetup } from '../engine/types';
-import type { GameEvent, GameView, SaveData, UIChoice } from './types';
+import type { CheckRequest, GameState, Grade, NoteKind, Rng, RollResult } from '../engine/types';
+import type { AssistedRollSetup, GameEvent, GameView, LedgerNote, SaveData, UIChoice } from './types';
 
 const CHECK_CHOICE = '__check__';
 const GRADE_VALUE: Record<Grade, number> = { clean: 2, cost: 1, fail: 0 };
@@ -40,7 +40,7 @@ export class GameSession {
   private nextId = 1;
   private phase: Phase = 'story';
   private request: CheckRequest | null = null;
-  private setup: RollSetup | null = null;
+  private setup: AssistedRollSetup | null = null;
   private pending: RollResult | null = null;
   private checkIndex = -1;
   private showOdds = false;
@@ -157,7 +157,11 @@ export class GameSession {
   endCycle(): void {
     const credits = this.game.res.Credits ?? 0;
     this.game = this.run.end(this.game, this.flags());
-    const note = { kind: 'cost' as const, t: `Cycle upkeep paid: Cr${credits - (this.game.res.Credits ?? 0)}.` };
+    const note: LedgerNote = {
+      kind: 'cost',
+      t: '',
+      command: { code: 'cycleUpkeep', amount: credits - (this.game.res.Credits ?? 0) },
+    };
     this.game.ledger.push(note);
     this.push({ type: 'note', ...note });
     this.game = this.run.rewards(this.game);
@@ -335,9 +339,9 @@ export class GameSession {
     if (this.phase === 'ended') return [];
     if (this.phase === 'staged') {
       return [
-        { id: 'try', kind: 'try', text: 'Try it' },
-        { id: 'odds', kind: 'odds', text: 'Odds' },
-        { id: 'back', kind: 'back', text: 'Back' },
+        { id: 'try', kind: 'try', text: '', command: { code: 'try' } },
+        { id: 'odds', kind: 'odds', text: '', command: { code: 'odds' } },
+        { id: 'back', kind: 'back', text: '', command: { code: 'back' } },
       ];
     }
     if (this.phase === 'rolled') {
@@ -346,10 +350,10 @@ export class GameSession {
         {
           id: 'edge',
           kind: 'edge',
-          text: `Spend Edge: ${fail ? 're-roll' : 'make it clean'}`,
-          sub: `${this.game.res.Edge} left`,
+          text: '',
+          command: { code: 'edge', reroll: fail, left: this.game.res.Edge ?? 0 },
         },
-        { id: 'accept', kind: 'accept', text: 'Accept the result' },
+        { id: 'accept', kind: 'accept', text: '', command: { code: 'accept' } },
       ];
     }
     return this.story.currentChoices.map(c => {
@@ -363,7 +367,10 @@ export class GameSession {
       structuredClone({
         events: this.events,
         choices: this.choices(),
-        odds: this.phase === 'staged' && this.showOdds && this.setup ? oddsOf(this.setup, this.opts.data.rules) : null,
+        odds:
+          this.phase === 'staged' && this.showOdds && this.setup
+            ? { ...oddsOf(this.setup, this.opts.data.rules), parts: this.setup.parts }
+            : null,
         bg: this.bg,
         ended: this.run.state.phase === 'ended',
         phase: this.run.state.phase,

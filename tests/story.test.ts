@@ -64,7 +64,7 @@ describe('The Written Clause: scripted playthroughs', () => {
     dice.next = [1, 2];
     session.act('try');
     expect(view(session).choices.map(c => c.kind)).toEqual(['edge', 'accept']);
-    expect(view(session).choices[0]).toMatchObject({ text: 'Spend Edge: re-roll', sub: '3 left' });
+    expect(view(session).choices[0]).toMatchObject({ text: '', command: { code: 'edge', reroll: true, left: 3 } });
     dice.next = [6, 5];
     session.act('edge');
     const v = view(session);
@@ -91,7 +91,7 @@ describe('The Written Clause: scripted playthroughs', () => {
     session.act(choiceId(session, 'Ask for protected-escort status'));
     dice.next = [2, 3]; // 5 + 3 = 8: cost
     session.act('try');
-    expect(view(session).choices[0]).toMatchObject({ text: 'Spend Edge: make it clean' });
+    expect(view(session).choices[0]).toMatchObject({ text: '', command: { code: 'edge', reroll: false, left: 3 } });
     session.act('accept');
     expect(view(session).res.Credits).toBe(49000);
   });
@@ -108,7 +108,14 @@ describe('The Written Clause: scripted playthroughs', () => {
     ]);
     session.act(choiceId(session, 'Press for parity'));
     session.act('odds');
-    expect(view(session).odds).toMatchObject({ mod: 4, parts: ['Diplomat +2', 'SOC +1', 'Priya’s reading +1'] });
+    expect(view(session).odds).toMatchObject({
+      mod: 4,
+      parts: [
+        { label: 'Diplomat', n: 2 },
+        { label: 'SOC', n: 1 },
+        { label: 'Priya’s reading', n: 1 },
+      ],
+    });
   });
 
   it('declining writes nothing down', () => {
