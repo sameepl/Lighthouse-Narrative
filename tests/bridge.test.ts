@@ -49,6 +49,10 @@ const make = (opts: Partial<SessionOptions> = {}) =>
   new GameSession({ data: fixture, inkJson: ink, seed: 17, ...opts });
 const view = (s: GameSession) => s.store.getState();
 const choose = (s: GameSession, text: string) => s.act(view(s).choices.find(c => c.text === text)!.id);
+const expectReady = (s: GameSession, ready: boolean) => {
+  expect(view(s).choices.some(c => c.command?.code === 'confirm')).toBe(ready);
+  expect(view(s).choices.find(c => c.command?.code === 'cancel')?.command).toEqual({ code: 'cancel', ready });
+};
 const enter = (s: GameSession, crewIds: string[] = []) => {
   s.pickOffer(view(s).offers[0]!.entry.id);
   s.assign({ shipId: data.ships[0]!.id, crewIds });
@@ -112,7 +116,7 @@ describe('Hub and scene bridge', () => {
       before = s.save();
     s.act(view(s).choices[0]!.id);
     expect(view(s).phase).toBe('prepare');
-    expect(() => s.confirm()).toThrow(/ship/);
+    expectReady(s, true);
     s.act('ship:errant_pawn');
     s.act('crew:priya');
     s.act('cancel');
@@ -128,6 +132,22 @@ describe('Hub and scene bridge', () => {
     choose(s, 'Finish');
     expect(view(s).phase).toBe('hub');
     expect(s.save().run.played).toHaveLength(1);
+  });
+
+  it('confirms The Written Clause through commands without assigning a ship', () => {
+    const s = new GameSession({ inkJson: realInk, data });
+    const before = s.save();
+    s.act('offer:written_clause');
+    expect(view(s).assignments).toEqual({ shipId: null, crewIds: [] });
+    expectReady(s, true);
+    s.act('cancel');
+    expect(s.save()).toEqual(before);
+    s.act('offer:written_clause');
+    s.act('confirm');
+    expect(view(s).phase).toBe('scene');
+    expect(view(s).assignments.shipId).toBeNull();
+    expect(view(s).cycle.actionsLeft).toBe(before.run.cycle.actionsLeft - 1);
+    expect(view(s).res.Credits).toBe(before.res.Credits);
   });
 
   it('plays deterministic multiple cycles, enforces busy crew, and clears them at upkeep', () => {
@@ -313,20 +333,57 @@ describe('bridge scheduling and assignment boundaries', () => {
   it('enforces required assignments and affordability without spending on failed confirmation', () => {
     const job = { ...encounter('a'), requires: { shipTag: 'quiet', crew: ['priya'] } };
     const s = make({ data: { ...fixture, encounters: [job] } });
+    const hub = s.save();
     s.pickOffer('a');
-    s.assign({ shipId: 'ardent_venture', crewIds: ['priya'] });
-    const wrongShip = s.save();
-    expect(() => s.confirm()).toThrow(/suitable ship/);
-    expect(s.save()).toEqual(wrongShip);
+    s.assign({ shipId: null, crewIds: ['priya'] });
+    for (const shipId of [null, 'ardent_venture']) {
+      s.assign({ shipId, crewIds: ['priya'] });
+      expectReady(s, false);
+      const before = s.save();
+      expect(() => s.confirm()).toThrow('Assign a suitable ship');
+      expect(s.save()).toEqual(before);
+    }
+    s.act('cancel');
+    expect(s.save()).toEqual(hub);
+    s.act('offer:a');
     s.assign({ shipId: 'errant_pawn', crewIds: [] });
+    expectReady(s, false);
+    const missingCrew = s.save();
     expect(() => s.confirm()).toThrow(/required crew/);
+    expect(s.save()).toEqual(missingCrew);
     expect(() => s.assign({ shipId: 'errant_pawn', crewIds: ['priya', 'priya'] })).toThrow(/Duplicate/);
+    s.act('crew:priya');
+    expectReady(s, true);
+    s.act('confirm');
+    expect(view(s).phase).toBe('scene');
+    expect(view(s).cycle.actionsLeft).toBe(hub.run.cycle.actionsLeft - 1);
+    expect(view(s).res.Credits).toBe(hub.res.Credits! - job.cost);
     const expensive = make({ data: { ...fixture, encounters: [{ ...encounter('expensive'), cost: 999999 }] } });
     expensive.pickOffer('expensive');
-    expensive.assign({ shipId: 'errant_pawn', crewIds: [] });
+    expectReady(expensive, false);
     const before = expensive.save();
     expect(() => expensive.confirm()).toThrow(/Credits/);
     expect(expensive.save()).toEqual(before);
+  });
+
+  it('still requires crew for a shipless offer and pays catalog upkeep after completing it', () => {
+    const job = { ...encounter('a'), requires: { crew: ['priya'] } };
+    const s = make({ data: { ...fixture, encounters: [job] } });
+    s.act('offer:a');
+    expectReady(s, false);
+    const before = s.save();
+    expect(() => s.confirm()).toThrow(/required crew/);
+    expect(s.save()).toEqual(before);
+    s.act('crew:priya');
+    expectReady(s, true);
+    s.act('confirm');
+    expect(view(s).assignments.shipId).toBeNull();
+    choose(s, 'Finish');
+    s.act('endCycle');
+    expect(view(s).res.Credits).toBe(
+      before.res.Credits! - job.cost - data.ships.reduce((n, ship) => n + ship.upkeep, 0),
+    );
+    expect(view(s).cycle).toMatchObject({ cycle: 2, actionsLeft: 2 });
   });
 
   it('rolls back failed scene entry without charging or reserving the offer', () => {

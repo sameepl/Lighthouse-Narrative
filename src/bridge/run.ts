@@ -156,7 +156,7 @@ export class RunController {
       offer = s.active!,
       req = offer.entry.requires;
     const ship = this.data.ships.find(ship => ship.id === s.assignments.shipId);
-    if (!ship || (req.shipTag && !ship.tags.includes(req.shipTag))) throw new Error('Assign a suitable ship');
+    if (req.shipTag && (!ship || !ship.tags.includes(req.shipTag))) throw new Error('Assign a suitable ship');
     if ((req.crew ?? []).some(id => !s.assignments.crewIds.includes(id))) throw new Error('Assign the required crew');
     const cost = offer.kind === 'encounter' ? offer.entry.cost : 0;
     if ((game.res.Credits ?? 0) < cost) throw new Error('Insufficient Credits');

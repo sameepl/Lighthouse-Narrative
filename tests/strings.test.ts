@@ -63,7 +63,9 @@ describe('hub and command strings', () => {
     expect(commandText({ code: 'endCycle', actionsLeft: 1, noEligibleOffers: true }).sub).toBe(
       '1 action left. Pay ship upkeep and advance Pursuit. No eligible offers.',
     );
-    expect(commandText({ code: 'cancel', ready: false }).sub).toMatch(/^Not ready/);
+    expect(commandText({ code: 'cancel', ready: false }).sub).toBe(
+      'Not ready: complete the required assignments and ensure you can pay the cost.',
+    );
     expect(commandText({ code: 'cancel', ready: true }).sub).toMatch(/^Return without spending/);
   });
 

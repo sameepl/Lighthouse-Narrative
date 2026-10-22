@@ -33,8 +33,7 @@ export function runChoices(run: RunState, data: GameData, resources: Record<stri
     req = offer.entry.requires;
   const ship = data.ships.find(s => s.id === run.assignments.shipId);
   const ready =
-    ship &&
-    (!req.shipTag || ship.tags.includes(req.shipTag)) &&
+    (!req.shipTag || !!ship?.tags.includes(req.shipTag)) &&
     (req.crew ?? []).every(id => run.assignments.crewIds.includes(id)) &&
     (offer.kind !== 'encounter' || (resources.Credits ?? 0) >= offer.entry.cost);
   return [
