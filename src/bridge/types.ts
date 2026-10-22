@@ -9,11 +9,40 @@ export type GameEvent = { id: number } & (
   | { type: 'summary'; items: Note[] }
 );
 export type ChoiceKind = 'choice' | 'try' | 'odds' | 'back' | 'edge' | 'accept';
+/** A scheduling command in the dock. The UI strings module turns these into words; the bridge sends codes and parameters only. */
+export type Command =
+  | {
+      code: 'offer';
+      offerId: string;
+      offerKind: 'encounter' | 'keystone';
+      /** Keystone title from data; encounters are named from their id until display titles exist. */
+      title?: string;
+      cost?: number;
+      risk?: string;
+      locked: boolean;
+      forced: boolean;
+      shipTag?: string;
+      crew: string[];
+    }
+  | { code: 'endCycle'; actionsLeft: number; noEligibleOffers: boolean }
+  | { code: 'restart' }
+  | { code: 'ship'; shipId: string; name: string; tags: string[]; selected: boolean }
+  | { code: 'crew'; crewId: string; name: string; skill: string; assigned: boolean }
+  | { code: 'confirm' }
+  | { code: 'cancel'; ready: boolean };
 export interface UIChoice {
   id: number | string;
   kind: ChoiceKind;
+  /** Story and roll text from ink or the roll flow. Empty for scheduling commands, which carry `command`. */
   text: string;
   sub?: string;
+  command?: Command;
+}
+/** Hub status as data: the UI writes the sentence. */
+export interface HubStatus {
+  cycle: number;
+  actionsLeft: number;
+  board: BoardStatus;
 }
 export interface Assignments {
   shipId: string | null;
@@ -60,6 +89,8 @@ export interface GameView {
   assignments: Assignments;
   busyCrewIds: string[];
   boardStatus: BoardStatus;
+  /** Set only in the hub phase. */
+  hub: HubStatus | null;
   schedulerStatus: 'configured' | 'unconfigured';
   unmetGuarantees: string[];
   blockedDue: string[];

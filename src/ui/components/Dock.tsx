@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import type { UIChoice } from '../../bridge/types';
 import { signed } from '../../engine/rules';
 import type { OddsInfo } from '../../engine/types';
+import { choiceText } from '../strings';
 
 interface Props {
   choices: UIChoice[];
@@ -23,17 +24,20 @@ export function Dock({ choices, odds, ended, onAct, onRestart }: Props) {
         </div>
       )}
       <div className={`choices${row ? ' row' : ''}`}>
-        {list.map(c => (
-          <motion.button
-            key={`${c.kind}-${c.id}-${c.text}`}
-            className={c.kind}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => (c.id === 'restart' ? onRestart() : onAct(c.id))}
-          >
-            {c.text}
-            {c.sub && <small>{c.sub}</small>}
-          </motion.button>
-        ))}
+        {list.map(c => {
+          const { text, sub } = choiceText(c);
+          return (
+            <motion.button
+              key={`${c.kind}-${c.id}`}
+              className={c.kind}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => (c.id === 'restart' ? onRestart() : onAct(c.id))}
+            >
+              {text}
+              {sub && <small>{sub}</small>}
+            </motion.button>
+          );
+        })}
       </div>
     </div>
   );
