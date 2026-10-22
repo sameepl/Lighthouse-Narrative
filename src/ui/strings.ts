@@ -60,7 +60,7 @@ export function commandText(command: Command): { text: string; sub?: string } {
         text: 'Cancel',
         sub: command.ready
           ? 'Return without spending an action or Credits.'
-          : 'Not ready: choose a suitable ship and required crew, and ensure you can pay the cost.',
+          : 'Not ready: complete the required assignments and ensure you can pay the cost.',
       };
   }
 }
