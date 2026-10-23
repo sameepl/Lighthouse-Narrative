@@ -66,7 +66,13 @@ export function commandText(command: Command): { text: string; sub?: string } {
 }
 
 export function noteText(note: LedgerNote): string {
-  return note.command?.code === 'cycleUpkeep' ? `Cycle upkeep paid: Cr${note.command.amount}.` : note.t;
+  const command = note.command;
+  if (command?.code === 'cycleUpkeep') return `Cycle upkeep paid: Cr${command.amount}.`;
+  if (command?.code === 'trustReward')
+    return command.edgeAdded > 0
+      ? `${command.name} trusts you: Edge +${command.edgeAdded}.`
+      : `${command.name} trusts you: Edge reward consumed; pool full.`;
+  return note.t;
 }
 
 export function rollPartText(part: AssistedRollPart): string {

@@ -152,7 +152,7 @@ function run(seed: number, slice: boolean) {
           addResource(game.res, data.rules, 'Credits', -candidate.entry.cost);
         } else completed.push(candidate.entry.id);
 
-        const assist = assistOf(member, data.rules);
+        const assist = assistOf(member, member.trust, data.rules);
         const basic = setupRoll(
           data.character,
           data.rules,
@@ -179,12 +179,7 @@ function run(seed: number, slice: boolean) {
         }
         if (result.grade !== 'fail' && member.trust < 3) {
           crew = crew.map(value => (value.id === member.id ? { ...value, trust: value.trust + 1 } : value));
-          const reward = earnEdge(
-            cycle,
-            game,
-            crew.find(value => value.id === member.id)!,
-            data.rules,
-          );
+          const reward = earnEdge(cycle, game, member, crew.find(value => value.id === member.id)!.trust, data.rules);
           cycle = reward.cycle;
           game = reward.game;
         }

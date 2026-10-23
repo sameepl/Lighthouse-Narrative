@@ -1,6 +1,6 @@
 import type { Crew, Rules, Ships } from '../data/schema';
 import { addResource } from './rules';
-import type { CycleState, GameState } from './types';
+import type { CrewTrust, CycleState, GameState } from './types';
 
 export interface CycleReport {
   upkeep: number;
@@ -68,14 +68,22 @@ export function endCycle(
   };
 }
 
+/** Change one known crew member's run trust without mutating the input. */
+export function changeTrust(current: CrewTrust, id: string, delta: number): CrewTrust {
+  if (!Object.hasOwn(current, id)) throw new Error(`Unknown crew ${id}. Known: ${Object.keys(current).join(', ')}`);
+  if (!Number.isFinite(delta) || !Number.isInteger(delta)) throw new Error('Trust delta must be a finite integer');
+  return { ...current, [id]: Math.max(0, Math.min(3, current[id]! + delta)) };
+}
+
 /** A crew member can grant Edge once in a run at trust 3; a full pool still consumes that reward. */
 export function earnEdge(
   cycle: CycleState,
   game: GameState,
-  crew: Pick<Crew[number], 'id' | 'trust'>,
+  crew: Pick<Crew[number], 'id'>,
+  trust: number,
   rules: Rules,
 ): { cycle: CycleState; game: GameState; report: EdgeReport } {
-  if (crew.trust !== rules.cycle.edgeTrust || cycle.edgeEarnedCrewIds.includes(crew.id))
+  if (trust !== rules.cycle.edgeTrust || cycle.edgeEarnedCrewIds.includes(crew.id))
     return { cycle, game, report: { rewardConsumed: false, edgeAdded: 0 } };
 
   const res = { ...game.res };
@@ -89,9 +97,9 @@ export function earnEdge(
 }
 
 /** The assigned crew's single assist grows at trust 3. */
-export function assistOf(crew: Pick<Crew[number], 'assist' | 'trust'>, rules: Rules): Crew[number]['assist'] {
+export function assistOf(crew: Pick<Crew[number], 'assist'>, trust: number, rules: Rules): Crew[number]['assist'] {
   return {
     skill: crew.assist.skill,
-    n: crew.assist.n + (crew.trust >= rules.cycle.edgeTrust ? rules.cycle.trustedAssistBonus : 0),
+    n: crew.assist.n + (trust >= rules.cycle.edgeTrust ? rules.cycle.trustedAssistBonus : 0),
   };
 }

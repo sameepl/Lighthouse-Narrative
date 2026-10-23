@@ -37,20 +37,32 @@ describe('hub and command strings', () => {
     const notes: LedgerNote[] = [
       { kind: 'cost', t: '', command: { code: 'cycleUpkeep', amount: 4000 } },
       { kind: 'watch', t: 'Saved <plain> note' },
+      { kind: 'gain', t: '', command: { code: 'trustReward', crewId: 'priya', name: 'Priya', edgeAdded: 2 } },
+      { kind: 'watch', t: '', command: { code: 'trustReward', crewId: 'cass', name: 'Cass', edgeAdded: 0 } },
     ];
-    expect(notes.map(noteText)).toEqual(['Cycle upkeep paid: Cr4000.', 'Saved <plain> note']);
+    expect(notes.map(noteText)).toEqual([
+      'Cycle upkeep paid: Cr4000.',
+      'Saved <plain> note',
+      'Priya trusts you: Edge +2.',
+      'Cass trusts you: Edge reward consumed; pool full.',
+    ]);
     const feed = renderToStaticMarkup(
       createElement(Feed, {
         events: [
-          { id: 1, type: 'note', ...notes[0]! },
-          { id: 2, type: 'summary', items: notes },
+          ...notes.map((note, i) => ({ id: i + 1, type: 'note' as const, ...note })),
+          { id: notes.length + 1, type: 'summary', items: notes },
         ],
       }),
     );
     expect(feed.match(/Cycle upkeep paid: Cr4000\./g)).toHaveLength(2);
     const sheet = renderToStaticMarkup(createElement(SheetPanel, { ledger: notes, onClose: () => {} }));
     expect(sheet).toContain('Cycle upkeep paid: Cr4000.');
-    for (const html of [feed, sheet]) expect(html).toContain('Saved &lt;plain&gt; note');
+    expect(feed.match(/Priya trusts you: Edge \+2\./g)).toHaveLength(2);
+    for (const html of [feed, sheet]) {
+      expect(html).toContain('Saved &lt;plain&gt; note');
+      expect(html).toContain('Priya trusts you: Edge +2.');
+      expect(html).toContain('Cass trusts you: Edge reward consumed; pool full.');
+    }
   });
 
   it('pluralises actions left', () => {
