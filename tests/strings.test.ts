@@ -124,7 +124,8 @@ describe('the bridge sends data, not sentences', () => {
     expect(hub.hub).toMatchObject({ cycle: 1, actionsLeft: 2 });
     expect(hub.events.some(e => e.id === -1)).toBe(false);
     expect(hub.choices.length).toBeGreaterThan(0);
-    expect(choiceText(hub.choices.find(c => c.id === 'offer:written_clause')!).text).toBe('The Written Clause');
+    const offer = hub.offers[0]!.entry;
+    expect(choiceText(hub.choices.find(c => c.id === `offer:${offer.id}`)!).text).toBe(offer.title);
     for (const c of hub.choices) {
       expect(c.command).toBeDefined();
       expect(c.text).toBe('');

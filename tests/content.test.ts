@@ -23,7 +23,7 @@ const refs = {
     return errors.length === 0;
   },
 };
-const encounter = data.encounters[0]!;
+const encounter = data.encounters.find(entry => entry.id === 'written_clause')!;
 const file = './encounters/written_clause.json';
 const keystone = {
   id: 'test_keystone',

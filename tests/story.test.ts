@@ -4,7 +4,7 @@ import inkJson from '../src/story/main.ink';
 import { GameSession } from '../src/bridge/session';
 import type { SaveData } from '../src/bridge/types';
 import type { Dice, Grade } from '../src/engine/types';
-import { choiceId, makeSession, view } from './helpers';
+import { choiceId, makeSession, storyData, view } from './helpers';
 
 const sums: Record<Grade, (target: number, mod: number) => number> = {
   clean: (t, m) => t + data.rules.cleanMargin - m,
@@ -163,7 +163,7 @@ describe('every branch of the story', () => {
   let paths = 0;
 
   const fresh = (saved: SaveData, dice: { next: Dice }) =>
-    new GameSession({ inkJson, data, rng: () => dice.next, saved });
+    new GameSession({ inkJson, data: storyData, rng: () => dice.next, saved });
 
   function explore(session: GameSession, trail: string[], depth: number): void {
     expect(depth).toBeLessThan(12); // the scene must terminate
