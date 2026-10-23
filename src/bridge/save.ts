@@ -5,10 +5,10 @@ import type { SaveData } from './types';
 /** Reject broken persisted state before applying any part of it; caller can start fresh. */
 export function validateSave(save: SaveData, data: GameData): void {
   const fail = () => {
-    throw new Error('Invalid version 2 save');
+    throw new Error('Invalid version 3 save');
   };
   if (
-    save.v !== 2 ||
+    save.v !== 3 ||
     typeof save.ink !== 'string' ||
     typeof save.bg !== 'string' ||
     !save.res ||
@@ -42,6 +42,17 @@ export function validateSave(save: SaveData, data: GameData): void {
     !Array.isArray(s.busyCrewIds) ||
     !s.assignments ||
     !Array.isArray(s.assignments.crewIds)
+  )
+    fail();
+  const trust = s.crewTrust;
+  if (
+    !trust ||
+    typeof trust !== 'object' ||
+    Array.isArray(trust) ||
+    Object.keys(trust).length !== data.crew.length ||
+    data.crew.some(
+      ({ id }) => !Object.hasOwn(trust, id) || !Number.isInteger(trust[id]) || trust[id]! < 0 || trust[id]! > 3,
+    )
   )
     fail();
   createSeededRng(s.rngState);

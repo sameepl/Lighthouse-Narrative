@@ -27,6 +27,16 @@ A test assignment.
     ~ add("Pursuit", 99)
     Pursuit now {res("Pursuit")}.
     -> scene_end
++ [Trust]
+    ~ trust("priya", 3)
+    -> roll("Diplomat", 12, "", -> done, -> done, -> done)
++ [Trust again]
+    ~ trust("priya", -99)
+    ~ trust("priya", 99)
+    -> scene_end
++ [Bad trust]
+    ~ trust("missing", 1)
+    -> scene_end
 === done ===
 A resolved test.
 -> scene_end
@@ -62,15 +72,86 @@ const roundtrip = (s: GameSession, opts: Partial<SessionOptions> = {}) =>
   make({ ...opts, saved: JSON.parse(JSON.stringify(s.save())) as SaveData });
 
 describe('Hub and scene bridge', () => {
-  it('saves structured upkeep, detaches its metadata, and retains old v2 notes', () => {
+  it.each([1, 3])('updates trust and rewards once, rolling back every pending change with Edge %s', edge => {
+    const original = make().save();
+    expect(original.run.crewTrust).toEqual(Object.fromEntries(fixture.crew.map(c => [c.id, c.trust])));
+    original.res.Edge = edge;
+    original.run.crewTrust.priya = 2;
+    const s = make({ saved: original, rng: () => [1, 1] });
+    enter(s, ['priya']);
+    const before = s.save();
+    choose(s, 'Trust');
+    const reward = { code: 'trustReward', crewId: 'priya', name: 'Priya', edgeAdded: edge === 3 ? 0 : 1 };
+    expect(view(s).crewTrust.priya).toBe(3);
+    expect(view(s).res.Edge).toBe(Math.min(3, edge + 1));
+    expect(view(s).ledger.at(-1)).toMatchObject({ t: '', command: reward });
+    expect(view(s).events.at(-1)).toMatchObject({ type: 'note', command: reward });
+    s.act('odds');
+    expect(view(s).odds!.parts.find(p => p.assist)?.n).toBe(2);
+    view(s).crewTrust.priya = 0;
+    expect(roundtrip(s).save()).toEqual(before);
+    s.act('back');
+    expect(s.save()).toEqual(before);
+    choose(s, 'Trust');
+    s.act('try');
+    expect(view(s).choices.some(c => c.id === 'accept')).toBe(true);
+    expect(roundtrip(s).save()).toEqual(before);
+    s.act('accept');
+    const committed = s.save();
+    expect(committed.run.crewTrust.priya).toBe(3);
+    expect(committed.run.cycle.edgeEarnedCrewIds).toContain('priya');
+    expect(roundtrip(s).save()).toEqual(committed);
+    enter(s);
+    choose(s, 'Trust again');
+    expect(view(s).res.Edge).toBe(Math.min(3, edge + 1));
+    expect(view(s).ledger.filter(n => n.command?.code === 'trustReward')).toHaveLength(1);
+    expect(fixture.crew.find(c => c.id === 'priya')!.trust).toBe(0);
+  });
+
+  it('rejects unknown crew from ink and lists valid IDs', () => {
+    const s = make();
+    enter(s);
+    expect(() => choose(s, 'Bad trust')).toThrow(`Known: ${fixture.crew.map(c => c.id).join(', ')}`);
+    expect(view(s).crewTrust).toEqual(Object.fromEntries(fixture.crew.map(c => [c.id, c.trust])));
+  });
+
+  it('rejects incomplete or invalid trust maps and discards old version caches and snapshots', () => {
+    const s = make();
+    enter(s);
+    const valid = s.save();
+    const trust = valid.run.crewTrust;
+    for (const bad of [
+      undefined,
+      null,
+      [],
+      {},
+      { ...trust, unknown: 0 },
+      Object.fromEntries(Object.entries(trust).filter(([id]) => id !== 'priya')),
+      ...[-1, 4, 0.5, NaN, Infinity, '1'].map(priya => ({ ...trust, priya })),
+      ...['__proto__', 'constructor', 'toString'].map(id => ({ ...trust, [id]: 0 })),
+    ]) {
+      expect(() => make({ saved: { ...valid, run: { ...valid.run, crewTrust: bad } } as SaveData })).toThrow(
+        'Invalid version 3 save',
+      );
+    }
+    choose(s, 'Trust');
+    for (const v of [1, 2]) {
+      const fresh = make({ saved: { ...s.save(), v } as unknown as SaveData }).save();
+      expect(fresh.run).toEqual(make().save().run);
+      expect(fresh.events).toEqual([]);
+      expect(fresh.v).toBe(3);
+    }
+  });
+
+  it('saves structured upkeep, detaches its metadata, and retains plain ink notes', () => {
     const s = make();
     s.endCycle();
     const before = s.save();
     expect(before.ledger).toEqual([{ kind: 'cost', t: '', command: { code: 'cycleUpkeep', amount: 4000 } }]);
     expect(before.events.at(-1)).toMatchObject(before.ledger[0]!);
-    view(s).ledger[0]!.command!.amount = 999;
+    Object.assign(view(s).ledger[0]!.command!, { amount: 999 });
     const event = view(s).events.at(-1)!;
-    if (event.type === 'note') event.command!.amount = 998;
+    if (event.type === 'note') Object.assign(event.command!, { amount: 998 });
     expect(s.save()).toEqual(before);
     expect(roundtrip(s).save()).toEqual(before);
     const legacy = structuredClone(before);
@@ -279,12 +360,15 @@ describe('Hub and scene bridge', () => {
       { skills: ['Diplomat'], bonuses: [], target: 8 },
       () => false,
       members.map(c => c.id),
+      Object.fromEntries(members.map(c => [c.id, c.trust])),
     );
     expect(setup.mod).toBe(5);
     expect(setup.parts.filter(p => p.assist)).toEqual([
       { label: members[0]!.name, n: 2, assist: { crewId: members[0]!.id, name: members[0]!.name } },
     ]);
-    expect(assistedSetup(fixture, { skills: ['Diplomat'], bonuses: [], target: 8 }, () => false, ['cass']).mod).toBe(3);
+    expect(
+      assistedSetup(fixture, { skills: ['Diplomat'], bonuses: [], target: 8 }, () => false, ['cass'], { cass: 0 }).mod,
+    ).toBe(3);
   });
 });
 

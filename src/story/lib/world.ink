@@ -6,6 +6,8 @@
 EXTERNAL res(name)
 EXTERNAL add(name, n)
 EXTERNAL note(kind, text)
+// Change current crew trust by an integer delta, clamped to 0..3; returns the new value.
+EXTERNAL trust(id, delta)
 
 // Bridge consumes this sentinel; it never appears as a player choice.
 === scene_end ===

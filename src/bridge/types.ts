@@ -1,8 +1,11 @@
 import type { Encounter, Keystone } from '../data/schema';
-import type { CycleState, Dice, Grade, Note, OddsInfo, RollPart, RollSetup } from '../engine/types';
+import type { CrewTrust, CycleState, Dice, Grade, Note, OddsInfo, RollPart, RollSetup } from '../engine/types';
 
-/** Optional metadata keeps plain notes from ink and existing v2 saves compatible. */
-export type LedgerNote = Note & { command?: { code: 'cycleUpkeep'; amount: number } };
+/** Plain ink notes retain their text; bridge notes carry data for the UI formatter. */
+export type LedgerNote = Note & {
+  command?:
+    { code: 'cycleUpkeep'; amount: number } | { code: 'trustReward'; crewId: string; name: string; edgeAdded: number };
+};
 export type AssistedRollPart = RollPart & { assist?: { crewId: string; name: string } };
 export type AssistedRollSetup = Omit<RollSetup, 'parts'> & { parts: AssistedRollPart[] };
 export type ViewOdds = Omit<OddsInfo, 'parts'> & { parts: AssistedRollPart[] };
@@ -65,6 +68,7 @@ export type BoardStatus = 'ready' | 'no-eligible-offers' | 'actions-spent' | 'pu
 export interface RunState {
   phase: RunPhase;
   cycle: CycleState;
+  crewTrust: CrewTrust;
   rngState: number;
   played: { id: string; cycle: number }[];
   completed: string[];
@@ -89,6 +93,7 @@ export interface GameView {
   ended: boolean;
   res: Record<string, number>;
   ledger: LedgerNote[];
+  crewTrust: CrewTrust;
   /** Scheduling phase, separate from the scene's internal roll interaction. */
   phase: RunPhase;
   offers: Offer[];
@@ -105,7 +110,7 @@ export interface GameView {
   commercialReplacement: boolean;
 }
 export interface SaveData {
-  v: 2;
+  v: 3;
   ink: string;
   res: Record<string, number>;
   ledger: LedgerNote[];

@@ -2,6 +2,7 @@ export type Grade = 'clean' | 'cost' | 'fail';
 export type NoteKind = 'gain' | 'cost' | 'watch';
 export type Dice = [number, number];
 export type Rng = () => Dice;
+export type CrewTrust = Record<string, number>;
 
 export interface Note {
   kind: NoteKind;

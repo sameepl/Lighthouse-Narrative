@@ -1,8 +1,9 @@
 // Glue between the ink story (writing), the rules engine (numbers) and the UI.
 //
 // Ownership: ink owns narrative flags and what happens next; the engine owns resources and dice.
-// The story calls res/add/note (see story/lib/world.ink) and pauses at roll() (story/lib/roll.ink),
+// The story calls res/add/note/trust (see story/lib/world.ink) and pauses at roll() (story/lib/roll.ink),
 // where this session runs the interactive roll and then tells the story which outcome happened.
+import { changeTrust } from '../engine/cycle';
 import { assistedSetup } from './roll';
 import { createSeededRng } from '../engine/rng';
 import { RunController, type RunOptions } from './run';
@@ -73,10 +74,10 @@ export class GameSession {
     this.showOdds = false;
     this.request = this.setup = this.pending = this.snapshot = null;
     this.bg = 'hall';
-    if (saved?.v === 2) {
+    if (saved?.v === 3) {
       this.restore(saved);
     } else {
-      this.game = this.run.rewards(this.game);
+      this.rewards();
       this.run.refresh(this.game, this.flags());
     }
     this.publish();
@@ -88,7 +89,7 @@ export class GameSession {
       this.snapshot && (this.phase === 'staged' || this.phase === 'rolled')
         ? this.snapshot
         : {
-            v: 2,
+            v: 3,
             ink: this.story.state.toJson(),
             res: this.game.res,
             ledger: this.game.ledger,
@@ -164,8 +165,15 @@ export class GameSession {
     };
     this.game.ledger.push(note);
     this.push({ type: 'note', ...note });
-    this.game = this.run.rewards(this.game);
+    this.rewards();
     this.publish();
+  }
+
+  private rewards(): void {
+    const { game, notes } = this.run.rewards(this.game);
+    this.game = game;
+    this.game.ledger.push(...notes);
+    for (const note of notes) this.push({ type: 'note', ...note });
   }
 
   // ---- player input ------------------------------------------------------------------
@@ -265,6 +273,11 @@ export class GameSession {
       const clock = this.run.state.cycle.pursuit;
       return (clock.value = Math.max(0, Math.min(clock.length, clock.value + n)));
     });
+    this.story.BindExternalFunction('trust', (id: string, delta: number) => {
+      this.run.state.crewTrust = changeTrust(this.run.state.crewTrust, id, delta);
+      this.rewards();
+      return this.run.state.crewTrust[id];
+    });
     this.story.BindExternalFunction('note', (kind: string, t: string) => {
       if (!NOTE_KINDS.includes(kind as NoteKind))
         throw new Error(`note("${kind}", ...): kind must be ${NOTE_KINDS.join(', ')}`);
@@ -320,6 +333,7 @@ export class GameSession {
         this.request,
         flag => v[flag] === true,
         this.run.state.assignments.crewIds,
+        this.run.state.crewTrust,
       );
       this.phase = 'staged';
     } else {
@@ -376,6 +390,7 @@ export class GameSession {
         phase: this.run.state.phase,
         offers: this.run.state.offers,
         cycle: this.run.state.cycle,
+        crewTrust: this.run.state.crewTrust,
         assignments: this.run.state.assignments,
         busyCrewIds: this.run.state.busyCrewIds,
         boardStatus: this.run.state.boardStatus,

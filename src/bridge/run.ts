@@ -5,7 +5,7 @@ import { scheduleKeystones, type KeystoneRoles } from '../engine/keystones';
 import { createSeededRng } from '../engine/rng';
 import { addResource } from '../engine/rules';
 import type { GameState } from '../engine/types';
-import type { Assignments, RunState } from './types';
+import type { Assignments, LedgerNote, RunState } from './types';
 
 export interface RunOptions {
   seed?: number;
@@ -25,6 +25,7 @@ export class RunController {
     this.state = {
       phase: 'hub',
       cycle: newCycleState(data.rules, options.slice),
+      crewTrust: Object.fromEntries(data.crew.map(member => [member.id, member.trust])),
       rngState: createSeededRng(options.seed ?? 0).getState(),
       played: [],
       completed: [],
@@ -191,12 +192,19 @@ export class RunController {
     this.refresh(result.game, flags);
     return result.game;
   }
-  rewards(game: GameState): GameState {
+  rewards(game: GameState): { game: GameState; notes: LedgerNote[] } {
+    const notes: LedgerNote[] = [];
     for (const crew of this.data.crew) {
-      const result = earnEdge(this.state.cycle, game, crew, this.data.rules);
+      const result = earnEdge(this.state.cycle, game, crew, this.state.crewTrust[crew.id]!, this.data.rules);
       this.state.cycle = result.cycle;
       game = result.game;
+      if (result.report.rewardConsumed)
+        notes.push({
+          kind: result.report.edgeAdded ? 'gain' : 'watch',
+          t: '',
+          command: { code: 'trustReward', crewId: crew.id, name: crew.name, edgeAdded: result.report.edgeAdded },
+        });
     }
-    return game;
+    return { game, notes };
   }
 }
