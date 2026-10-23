@@ -294,7 +294,7 @@ describe('bridge scheduling and assignment boundaries', () => {
     const keys = ['opening', 'middle', 'finale'].map(id => ({
       id,
       knot: 'job',
-      title: id,
+      title: `Test ${id} title`,
       elevates: 'courier' as const,
       availableWhen: { cycle: 1 },
       deadline: 9,
@@ -306,6 +306,17 @@ describe('bridge scheduling and assignment boundaries', () => {
       keystoneRoles: { firstId: 'opening', middleIds: ['middle'], finaleId: 'finale', minCompletedMiddle: 1 },
     };
     const s = make(opts);
+    expect(view(s).choices.find(c => c.id === 'offer:opening')?.command).toMatchObject({
+      code: 'offer',
+      offerKind: 'keystone',
+      title: 'Test opening title',
+    });
+    expect(
+      view(s).choices.find(c => c.command?.code === 'offer' && c.command.offerKind === 'encounter')?.command,
+    ).toMatchObject({
+      code: 'offer',
+      title: 'The Written Clause',
+    });
     s.pickOffer('opening');
     s.assign({ shipId: 'errant_pawn', crewIds: [] });
     s.confirm();

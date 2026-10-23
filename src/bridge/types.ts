@@ -21,8 +21,8 @@ export type Command =
       code: 'offer';
       offerId: string;
       offerKind: 'encounter' | 'keystone';
-      /** Keystone title from data; encounters are named from their id until display titles exist. */
-      title?: string;
+      /** Display title from encounter or keystone data. */
+      title: string;
       cost?: number;
       risk?: string;
       locked: boolean;

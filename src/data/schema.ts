@@ -97,6 +97,7 @@ const Requirements = z.strictObject({
 export const EncounterSchema = z.strictObject({
   id: ContentId,
   knot: ContentId,
+  title: z.string().min(1),
   layer: z.enum(['crisis', 'commercial']),
   archetype: Archetype,
   tags: z.array(ContentId),

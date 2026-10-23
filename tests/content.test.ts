@@ -43,7 +43,12 @@ describe('storylet catalogs', () => {
     const parsed = parseContent(encounterFiles, keystoneFiles, refs);
     expect(parsed.encounters).toEqual(data.encounters);
     expect(parsed.keystones).toEqual(data.keystones);
-    expect(encounter).toMatchObject({ id: 'written_clause', layer: 'crisis', archetype: 'standoff' });
+    expect(encounter).toMatchObject({
+      id: 'written_clause',
+      title: 'The Written Clause',
+      layer: 'crisis',
+      archetype: 'standoff',
+    });
     const loaded = parseData({ ...data, encounters: encounterFiles, keystones: keystoneFiles });
     expect(loaded.encounters).toEqual(data.encounters);
     expect(refs.flagExists('priya_read')).toBe(true);
@@ -75,6 +80,9 @@ describe('storylet catalogs', () => {
   });
 
   it.each([
+    [{ ...encounter, title: undefined }, 'title'],
+    [{ ...encounter, title: '' }, 'title'],
+    [{ ...encounter, title: 42 }, 'title'],
     [{ ...encounter, cost: -1 }, 'cost'],
     [{ ...encounter, weight: 0 }, 'weight'],
     [{ ...encounter, id: 'Bad ID' }, 'id'],

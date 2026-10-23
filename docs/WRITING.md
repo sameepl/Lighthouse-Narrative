@@ -95,6 +95,8 @@ To make a flag boost rolls, add it to `bonuses` in `src/data/rules.json`:
 People, ships and skills are JSON in `src/data/` and are validated on every test run. Add a crew member by adding an
 entry to `crew.json`; a malformed entry fails `npm test` with the field name.
 
+Every encounter file (`src/data/encounters/<id>.json`) requires a nonempty string `title`, the player-facing display name (for example, `"title": "The Written Clause"`). The title is separate from the stable snake_case `id` and ink `knot`; offer commands forward it unchanged for both encounters and keystones. Scene scaffolds must include this required field.
+
 
 ## Hub and persistence contract
 
@@ -107,3 +109,5 @@ Use `pickOffer(id)`, `assign({ shipId, crewIds })`, `confirm()`, `cancelPrepare(
 Ink may read `res("Pursuit")` or call `add("Pursuit", n)` with an integer delta. This changes `GameView.cycle.pursuit.value`, clamped between zero and that clock's length. Pursuit is never a fifth resource or an ink variable. Apply a direct loud/quiet consequence once; the bridge's cycle tick does not apply it again. Loud and quiet choices are written exactly this way: `add("Pursuit", 1)` for a loud choice and `add("Pursuit", -1)` for a quiet one (a positive or negative n), because `endCycle` does not take loud or quiet flags from the bridge. Unknown resource names are errors.
 
 Save version 2 contains ink, resources, ledger/feed, background and the full run state: cycle/reward history, numeric RNG state, selected board, assignments/busy crew, completed keystones, leads and played IDs with cycles. It resumes Hub, Prepare and committed scenes without another draw or charge. During a pending roll it saves the full pre-choice snapshot, as Back does, including any inline Pursuit changes. Default dice use the saved random stream; injected test dice remain caller-owned. Version 1 saves are discarded. No trust progression is invented; initially trusted crew consume their one-time Edge reward even at the cap.
+
+Cached entries in version 2 `run.offers`, `run.active` and `run.encounterBoard` must also have nonempty string titles. Saves missing those titles are rejected and browser startup discards them, starting a fresh Hub. Valid version 2 saves retain their cached titles and roundtrip unchanged; the save version stays 2.

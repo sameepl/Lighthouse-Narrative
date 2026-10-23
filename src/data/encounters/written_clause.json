@@ -1,6 +1,7 @@
 {
   "id": "written_clause",
   "knot": "written_clause",
+  "title": "The Written Clause",
   "layer": "crisis",
   "archetype": "standoff",
   "tags": ["compact", "social"],

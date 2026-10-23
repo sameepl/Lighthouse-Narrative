@@ -75,13 +75,25 @@ describe('hub and command strings', () => {
         code: 'offer',
         offerId: 'written_clause',
         offerKind: 'encounter',
+        title: 'The Written Clause',
         cost: 0,
         risk: 'low',
         locked: false,
         forced: false,
         crew: [],
       }),
-    ).toEqual({ text: 'written clause', sub: 'Cost Cr0. low' });
+    ).toEqual({ text: 'The Written Clause', sub: 'Cost Cr0. low' });
+    expect(
+      commandText({
+        code: 'offer',
+        offerId: 'fixture_key',
+        offerKind: 'keystone',
+        title: 'A Different Display Title',
+        locked: false,
+        forced: false,
+        crew: [],
+      }),
+    ).toEqual({ text: 'A Different Display Title', sub: 'Keystone' });
     expect(commandText({ code: 'ship', shipId: 's', name: 'Pawn', tags: ['fast', 'quiet'], selected: true })).toEqual({
       text: 'Selected: Pawn',
       sub: 'fast, quiet',
@@ -100,6 +112,7 @@ describe('the bridge sends data, not sentences', () => {
     expect(hub.hub).toMatchObject({ cycle: 1, actionsLeft: 2 });
     expect(hub.events.some(e => e.id === -1)).toBe(false);
     expect(hub.choices.length).toBeGreaterThan(0);
+    expect(choiceText(hub.choices.find(c => c.id === 'offer:written_clause')!).text).toBe('The Written Clause');
     for (const c of hub.choices) {
       expect(c.command).toBeDefined();
       expect(c.text).toBe('');
