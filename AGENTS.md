@@ -15,6 +15,7 @@ Marcus Torin, the player character, is never written for.
 |---|---|
 | `npm ci` | Install exactly what the lockfile says (do this first) |
 | `npm run dev` | Dev server |
+| `npm run new:scene -- --id <id> --archetype <a> --layer <crisis\|commercial>` | Create an ink scene and encounter JSON with valid `[STUB]` placeholders; see `docs/WRITING.md` |
 | `npm run check` | **Run before every commit and PR.** Format check, typecheck, tests, build |
 | `npm test` | Rules tests, data validation, scripted playthroughs and an exhaustive walk of every story branch |
 | `npm run format` | Fix formatting (Prettier). Do not hand-format or reformat unrelated files |

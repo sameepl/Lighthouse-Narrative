@@ -44,7 +44,7 @@ A resolved test.
   .Compile()
   .ToJson()!;
 const encounter = (id: string): Encounter => ({
-  ...data.encounters[0]!,
+  ...data.encounters.find(entry => entry.id === 'written_clause')!,
   id,
   knot: 'job',
   cost: 10,
@@ -216,7 +216,10 @@ describe('Hub and scene bridge', () => {
   });
 
   it('confirms The Written Clause through commands without assigning a ship', () => {
-    const s = new GameSession({ inkJson: realInk, data });
+    const s = new GameSession({
+      inkJson: realInk,
+      data: { ...data, encounters: data.encounters.filter(entry => entry.id === 'written_clause') },
+    });
     const before = s.save();
     s.act('offer:written_clause');
     expect(view(s).assignments).toEqual({ shipId: null, crewIds: [] });
@@ -329,8 +332,12 @@ describe('Hub and scene bridge', () => {
     expect(s.save()).toEqual(scene);
   });
 
-  it('discards v1 even through direct construction and exposes honest real-catalog exhaustion', () => {
-    const s = new GameSession({ inkJson: realInk, data, saved: { v: 1 } as unknown as SaveData });
+  it('discards v1 even through direct construction and exposes honest single-encounter exhaustion', () => {
+    const s = new GameSession({
+      inkJson: realInk,
+      data: { ...data, encounters: data.encounters.filter(entry => entry.id === 'written_clause') },
+      saved: { v: 1 } as unknown as SaveData,
+    });
     expect(view(s).phase).toBe('hub');
     expect(view(s).schedulerStatus).toBe('unconfigured');
     enter(s);

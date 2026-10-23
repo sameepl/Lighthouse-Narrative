@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Mobile-first narrative game: ink (writing) + TypeScript rules engine + React UI",
   "scripts": {
+    "new:scene": "node scripts/new-scene.mjs",
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",

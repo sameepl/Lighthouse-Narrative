@@ -4,9 +4,12 @@ import { GameSession } from '../src/bridge/session';
 import type { Dice } from '../src/engine/types';
 import type { SaveData } from '../src/bridge/types';
 
+/** Written Clause playthroughs must not depend on a random draw from the growing catalog. */
+export const storyData = { ...data, encounters: data.encounters.filter(entry => entry.id === 'written_clause') };
+
 /** A session whose dice are whatever `dice.next` says. */
 export function makeSession(saved: SaveData | null = null, dice: { next: Dice } = { next: [4, 4] }) {
-  const session = new GameSession({ inkJson, data, rng: () => dice.next, saved });
+  const session = new GameSession({ inkJson, data: storyData, rng: () => dice.next, saved });
   if (!saved) {
     session.pickOffer('written_clause');
     session.assign({ shipId: data.ships[0]!.id, crewIds: [] });

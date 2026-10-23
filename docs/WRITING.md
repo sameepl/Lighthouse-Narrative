@@ -15,6 +15,16 @@ src/story/scenes/*.ink        one file per scene
 
 New scene: create `scenes/my_scene.ink`. Every file in `scenes/` is included automatically (the `// @include-scenes` line in `main.ink`), so you never edit `main.ink`. Divert to it with `-> my_scene`.
 
+To generate a scene and its encounter metadata together, run from the repository root:
+
+```sh
+npm run new:scene -- --id my_scene --archetype courier --layer commercial
+```
+
+This creates `src/story/scenes/my_scene.ink` and `src/data/encounters/my_scene.json`, refusing to overwrite either file. IDs must be lowercase snake_case. Archetypes are `trade_run`, `courier`, `salvage`, `scout`, `distress_call` or `standoff`; layers are `crisis` or `commercial`. Unknown, duplicate and missing arguments are errors.
+
+The untouched scaffold compiles and validates: it has a required `[STUB]` display title, setup, three approaches with hints, three outcomes for each roll, consequence notes, a summary and `scene_end`. The entry knot is `<id>_scene` (also set in the JSON); internal knots use the ID plus `__` so separate scaffolds do not share menu or outcome names. Every writing placeholder is marked `[STUB]`; `placeholder: true` also marks provisional numeric metadata. Replace the placeholder prose, title, hints, checks and metadata with authorised writing and values, keep failure moving forward, then run `npm test`. Generation does not edit `main.ink` or any other source file.
+
 ## Voice rules
 
 - **Marcus is never written for.** Narrate the world and the NPCs. Never put words, thoughts or actions in his mouth.

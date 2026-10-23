@@ -15,7 +15,8 @@ describe('versioned browser persistence', () => {
     });
     const session = startGame();
     const fresh = session.save();
-    session.pickOffer('written_clause');
+    const selected = fresh.run.offers.find(offer => offer.kind === 'encounter')!.entry;
+    session.pickOffer(selected.id);
     const valid = session.save();
     writeSave(session);
     expect(startGame().save()).toEqual(valid);
@@ -24,14 +25,14 @@ describe('versioned browser persistence', () => {
       // JSON makes the three cached entries independent, as they are in browser storage.
       const broken = JSON.parse(JSON.stringify(valid)) as SaveData;
       const entries = {
-        offers: broken.run.offers[0]!.entry,
+        offers: broken.run.offers.find(offer => offer.entry.id === selected.id)!.entry,
         active: broken.run.active!.entry,
-        encounterBoard: broken.run.encounterBoard![0]!,
+        encounterBoard: broken.run.encounterBoard!.find(entry => entry.id === selected.id)!,
       };
       if (title === undefined) Reflect.deleteProperty(entries[path], 'title');
       else Object.assign(entries[path], { title });
       for (const other of ['offers', 'active', 'encounterBoard'] as const)
-        if (other !== path) expect(entries[other].title).toBe('The Written Clause');
+        if (other !== path) expect(entries[other].title).toBe(selected.title);
       expect(() => new GameSession({ inkJson, data, saved: broken })).toThrow('Invalid version 3 save');
       values.set('lighthouse-narrative-save-v3', JSON.stringify(broken));
       const restarted = startGame().save();
