@@ -1,56 +1,53 @@
 # M0 implementation plan after planner review
 
-Status: proposed execution order for review. Source: [Codex follow-up](reviews/codex-planner-followup.md)
-and the [planner review](https://github.com/sameepl/Lighthouse-Narrative/blob/99197c1f95dd8baa24332e047615c0712ab35c44/docs/reviews/2026-10-21-m0-review.md). No task below is started by this document.
-GitHub issue bodies remain the implementation source of truth; agree their scope corrections before dispatch.
+Status refreshed 2026-10-23 against GitHub. Source: [Codex follow-up](reviews/codex-planner-followup.md)
+and the [planner review](reviews/2026-10-21-m0-review.md).
+GitHub issue bodies remain the implementation source of truth; agree scope corrections before dispatch. Pending rows are plans, not completion claims.
 
 ## Baseline and release gate
 
-At the original review snapshot, #1–#4 were merged. Since then, #5/PR #19 and #11/PR #18 have merged. #24/PR #32 is also merged after reconciliation with their fixtures.
-PR #13 still holds the pending planner/canon updates and hardening roadmap. Review it separately;
-recheck their exact heads, reconcile overlaps and run checks on the resulting main before dependent work.
-Do not describe pending work or this proposed plan as merged.
+Merged: #1–#5, #11, #24/PR #32, planner PR #13, #8/PR #41, #28/PR #37 with completion PR #47, #21/PR #48, #23/PR #49, #20/PR #50 and #9/PR #52. Main through PR #52 includes current trust, once-only Edge rewards, version-3 saves and the scene scaffolder. Old v1/v2 saves are discarded.
 
-This documentation change is based on main and contains only Codex review/planning notes. It does not merge #13 or promote its canon sources. Reconcile overlapping roadmap and index additions when #13 lands.
+#9/PR #52 passed 185 tests, a real generated-scene trial, CI and automated review before merging. Existing seeded simulation remains synthetic: #26 still needs to drive actual sessions. The real season is still unconfigured; a complete playable run is not claimed.
+
+The planner merge does not turn every proposal into a ruling. Existing owner decisions and public/private canon boundaries remain authoritative.
 
 ## Work batches and routing
 
 | Batch | Work | Suggested implementer | Reviewer / gate |
 |---|---|---|---|
-| 0 | Review #13, #18, #19; align task scopes below | Codex + owner | Owner merge decision; full check and zones |
+| 0 complete | Planner and baseline reconciliation (#13, #18, #19) | Codex + owner | Merged; no pending planner merge gate |
 | 1A complete | #24 piece names (PR #32 merged) | Sol | Codex review and checks passed |
-| 1B | #28 structured Hub status and UI strings | Codex | Owner or independent tier-A/B review |
-| 2A | #23 encounter titles, then #9 scaffolder | Sol | Contract review for #23; generated scene compile/content tests for #9 |
-| 2B | #21 optional ship, then #20 persistent trust | Sol for #21; Astra/Codex for #20 | Review action atomicity, trust/Edge and save boundaries |
-| 3 | #22 assignment permission, then #25 season config | Sol, with tier-A review | Wait for both schema and bridge lanes; #22 also needs #13 |
-| 4 | Proposed UI projection card below | Astra/Codex | Freeze before #6/#7 |
-| 5 | #6 Board, then #7 Prepare and #8 meters | Sol | Screenshots and keyboard/mobile review; serialize shared App/theme edits |
-| 5 parallel | #26 session simulation; #27 reachability tests | Sol / bounded test worker | Distinct test files; do not edit engine bugs from tests-only issues |
-| 6 | #10 stub content and season activation | Qwen or Luna, one scene/data pair per worker | Codex checks + owner voice/canon read-through |
+| 1B complete | #28 structured Hub status and UI strings (PR #37, #47) | Codex; Astra reviewed | Typed command/note/assist metadata; UI owns wording |
+| 2A complete | #23 titles (PR #49); #9 scaffolder (PR #52) | Sol; Codex review | Generated scene compile/content/outcome and overwrite tests passed |
+| 2B complete | #21 optional ship (PR #48), #20 persistent trust (PR #50) | Sol for #21; Astra for #20 | Codex review, rollback/save tests and browser checks passed |
+| 3 next | #22 assignment permission, then #25 season config | Sol | Sequential bridge/schema work; focused contract review where needed |
+| 4 | Proposed UI projection card below | Sol; targeted high-risk review | Freeze before #6/#7 |
+| 5 | #6 Board, then #7 Prepare; #8 meters already merged | Sol | Screenshots and keyboard/mobile review; serialize shared App/theme edits |
+| 5 parallel | #26 session simulation; #27 reachability tests | Sol; Luna for bounded fixtures | Distinct test files; source bugs require separate core issues |
+| 6 | #10 stub content and season activation | Luna for reliable bounded work; Qwen for exploratory variants | One scene/data pair per worker; Codex checks + owner voice/canon review |
 | 7 | Proposed mobile playtest card below | Codex + owner | Timed real-catalog run; decide whether to expand to M1 |
 
-Batches express dependencies, not a promise of unrestricted parallelism. #24 and #28 may overlap in test files:
-reserve exact file ownership first, and serialize them if either needs the other's files.
+Batches express dependencies, not a promise of unrestricted parallelism. Reserve exact file ownership and use separate branches/worktrees; reconcile shared documentation/tests before publication.
 All schema-editing tasks (#24, #23, #22, #25) are serial within their lane.
 All bridge-editing tasks (#28, #21, #20, #22, #25) are serial within their lane.
-Batch 2 starts only after the relevant batch-1 PRs merge; tests must use the merged contract, not a private branch.
+Downstream work uses merged contracts, not a worker's private branch.
 Worker names are preferred roles, not availability guarantees; do not claim a worker ran or reviewed work until it did.
 
-## Existing issue amendments to make first
+Owner routing preference (2026-10-23): Sol is the default implementer and reviewer. Reserve Astra for short, focused reviews of high-risk contracts/state ownership or unresolved edge cases; do not routinely assign it implementation or duplicate reviews. Luna handles bounded docs/mechanical tasks when confidence matters. Qwen supplies exploratory drafts or variety; Codex reviews every accepted result and runs repository checks.
 
-- #20: allow only the save-version wiring in `src/ui/persist.ts` alongside the existing engine/bridge/ink-library scope. Show actual Edge gained at cap; test full snapshot rollback with trust changes.
-- #23: allow the writing/scaffolder documentation named by its acceptance. Include cached-offer save compatibility in review.
-- #24: include all now-merged fixtures and metadata compatibility checks. If rejecting old cached metadata needs `src/bridge/save.ts`, amend that exact allowance or schedule a separate core compatibility task before release. Keep the same logical pieces; change identifiers consistently.
+## Remaining scope gates
+
+- Completed scope amendments are recorded on #20/#21/#23/#24/#28. For #20, the owner additionally approved `src/ui/strings.ts` only for typed trust/Edge note rendering; component changes remained forbidden. Save and snapshot rollback tests passed.
 - #25: allow `.github/zones.json` and its existing zone tests for the content-path correction. Protect schema/loader contracts while permitting `src/data/keystones/**`. Decide and document content permission for `src/data/season.json`.
 - #25/#10: choose one atomic activation path. Recommended: core #25 supports an explicit unconfigured value; #10 may edit only validated season data with its initial keystones, under an amended allowlist. Content never edits the schema or loader.
-- #6: wait for #23, #28 and the UI projection card. #7: wait for #20–#22 and that projection. #8: wait for #19 and allow minimal App wiring when needed.
-- #9: wait for #23 as well as #5; explicitly allow the required root AGENTS documentation. Generate titles and the current `scene_end` contract.
+- #6: #23/#28 are merged, but the UI projection card remains. #7 still waits for #22 and that projection. #8 is complete.
+- #9: completed in PR #52 with root AGENTS documentation, titles and the current `scene_end` contract. Checks and review passed.
 - #10: retain #9/#23/#24/#25 dependencies; use The Asking and the planner's current authority rules. Use placeholders, not unapproved sample dialogue or backstory.
 - #26: wait for #20/#21/#22/#25 to avoid testing an immediately obsolete session contract. Add regression seeds for any genuine source bug on a separate core issue.
 - #27: tests can land with explicit unconfigured coverage, but real-catalog reachability is not complete until #10 activates the season. Starting-state checks alone are insufficient.
 
-Do not create replacements for #20–#29. These amendments are proposed here for review;
-update each live issue when scheduling it. Do not quietly enlarge a worker's scope.
+Do not create replacements for #20–#29. Verify each live issue when scheduling it; record any further scope amendment before dispatch. Do not quietly enlarge a worker's scope.
 
 ## Proposed additional task: UI preparation projection
 
@@ -75,13 +72,11 @@ Create a `zone:feature` QA task after the playable catalog is in place; no GitHu
 - **Acceptance:** play from a fresh save to an actual configured ending at 390 px in dark/light themes; verify 44 px targets, no horizontal overflow, keyboard focus, reduced motion, cost/lock explanations and save/resume. Record duration, choices that confused the player and defects with reproduction steps.
 - **Verification:** `npm run check` plus the agreed browser checks; attach screenshots. Distinguish a real-catalog run from synthetic fixtures. Do not add a browser-test dependency without a separately scoped approval.
 
-## Decision gate: #29 upkeep
+## Implementation gate: #29 upkeep
 
-Owner decision, not an implementation assignment. Record what happens to unpaid amounts,
-how ships enter/leave service, who chooses payment priority and whether recovery consumes an action.
-A laid-up-ship proposal must preserve a ship-free recovery route and must not silently choose a ship for the player.
-Then create a bounded core task with data/save/UI implications listed explicitly.
-UI scaffolding can proceed before this decision; economic balance cannot be signed off before it.
+The owner ruled on 2026-10-21: unpaid upkeep increases an arrears counter, makes affected rolls harder, burns Renown (and Strain at higher steps), and eventually reaches a foreclosure ending with advance warning. Numeric thresholds remain placeholders in `rules.json`; the live #29 issue is authoritative.
+
+Wait for #22/#25 and split implementation into engine/data, bridge/UI/save wiring, then a separate content issue for the foreclosure scene. Preserve a ship-free recovery route and player control over material commitments. Economic balance cannot be signed off before this behavior and its playthrough tests exist.
 
 ## Every worker handoff
 
