@@ -5,6 +5,7 @@ import type { KeystoneRoles } from '../src/engine/keystones';
 const encounter = (id: string, layer: Encounter['layer'], change: Partial<Encounter> = {}): Encounter => ({
   id,
   knot: 'written_clause',
+  title: 'Simulation encounter fixture',
   layer,
   archetype: layer === 'crisis' ? 'standoff' : 'courier',
   tags: [],

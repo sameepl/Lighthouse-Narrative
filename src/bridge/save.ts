@@ -56,10 +56,11 @@ export function validateSave(save: SaveData, data: GameData): void {
       fail();
   }
   const ids = new Set([...data.encounters, ...data.keystones].map(entry => entry.id));
+  const hasTitle = (entry: { title: unknown }) => typeof entry.title === 'string' && entry.title.length > 0;
   for (const offer of [...s.offers, ...(s.active ? [s.active] : [])])
-    if (!offer?.entry || !ids.has(offer.entry.id)) fail();
+    if (!offer?.entry || !ids.has(offer.entry.id) || !hasTitle(offer.entry)) fail();
   for (const entry of s.encounterBoard ?? [])
-    if (!entry || !data.encounters.some(value => value.id === entry.id)) fail();
+    if (!entry || !data.encounters.some(value => value.id === entry.id) || !hasTitle(entry)) fail();
   if ((s.phase === 'scene' || s.phase === 'prepare') !== Boolean(s.active)) fail();
   if (s.assignments.shipId !== null && !data.ships.some(ship => ship.id === s.assignments.shipId)) fail();
   for (const id of [...s.busyCrewIds, ...s.assignments.crewIds, ...c.edgeEarnedCrewIds])
