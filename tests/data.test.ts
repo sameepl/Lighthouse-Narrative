@@ -3,10 +3,11 @@ import rules from '../src/data/rules.json';
 import character from '../src/data/character.json';
 import crew from '../src/data/crew.json';
 import ships from '../src/data/ships.json';
+import season from '../src/data/season.json';
 import { data } from '../src/data';
 import { parseData } from '../src/data/validate';
 
-const raw = { rules, character, crew, ships };
+const raw = { rules, character, crew, ships, season };
 
 describe('data files', () => {
   it('load and validate', () => {

@@ -1,4 +1,4 @@
-import type { Encounter, Keystone } from '../src/data/schema';
+import type { Encounter, Keystone, Season } from '../src/data/schema';
 import type { KeystoneRoles } from '../src/engine/keystones';
 
 // Test-only catalog: the current production catalog has one once-only encounter and no keystones.
@@ -64,4 +64,10 @@ export const simulationRoles: KeystoneRoles = {
   conditionalId: 'middle_why',
   finaleId: 'finale',
   minCompletedMiddle: 2,
+};
+
+export const simulationSeason: Extract<Season, { status: 'configured' }> = {
+  status: 'configured',
+  slice: { firstId: 'opening', middleIds: ['middle_where', 'middle_who'], finaleId: 'finale', minCompletedMiddle: 2 },
+  full: { ...simulationRoles, middleIds: [...simulationRoles.middleIds], conditionalId: 'middle_why' },
 };

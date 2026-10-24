@@ -2,6 +2,7 @@ import rulesJson from './rules.json';
 import characterJson from './character.json';
 import crewJson from './crew.json';
 import shipsJson from './ships.json';
+import seasonJson from './season.json';
 import type { GameData } from './validate';
 
 export const encounterFiles = import.meta.glob('./encounters/*.json', { eager: true, import: 'default' });
@@ -11,6 +12,7 @@ const raw = {
   character: characterJson,
   crew: crewJson,
   ships: shipsJson,
+  season: seasonJson,
   encounters: encounterFiles,
   keystones: keystoneFiles,
 };
@@ -38,4 +40,4 @@ if (import.meta.env.DEV) {
 }
 
 export type { GameData } from './validate';
-export type { Rules, Character, Crew, Ships, Encounter, Keystone } from './schema';
+export type { Rules, Character, Crew, Ships, Encounter, Keystone, Season } from './schema';

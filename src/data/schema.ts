@@ -135,3 +135,23 @@ export const KeystoneSchema = z
 
 export type Encounter = z.infer<typeof EncounterSchema>;
 export type Keystone = z.infer<typeof KeystoneSchema>;
+
+const SeasonRoleFields = { firstId: ContentId, finaleId: ContentId };
+export const SeasonSchema = z.discriminatedUnion('status', [
+  z.strictObject({ status: z.literal('unconfigured') }),
+  z.strictObject({
+    status: z.literal('configured'),
+    slice: z.strictObject({
+      ...SeasonRoleFields,
+      middleIds: z.array(ContentId).length(2),
+      minCompletedMiddle: z.literal(2),
+    }),
+    full: z.strictObject({
+      ...SeasonRoleFields,
+      middleIds: z.array(ContentId).length(3),
+      conditionalId: ContentId,
+      minCompletedMiddle: z.number().int().min(2).max(3),
+    }),
+  }),
+]);
+export type Season = z.infer<typeof SeasonSchema>;

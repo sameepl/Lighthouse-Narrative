@@ -42,8 +42,14 @@ export class RunController {
       commercialReplacement: false,
     };
   }
+  private get keystoneRoles(): KeystoneRoles | undefined {
+    return (
+      this.options.keystoneRoles ??
+      (this.data.season.status === 'configured' ? this.data.season[this.options.slice ? 'slice' : 'full'] : undefined)
+    );
+  }
   get configured(): boolean {
-    return this.data.keystones.length > 0 && this.options.keystoneRoles !== undefined;
+    return this.data.keystones.length > 0 && this.keystoneRoles !== undefined;
   }
   require(phase: RunState['phase']): void {
     if (this.state.phase !== phase) throw new Error(`Action requires ${phase} phase`);
@@ -67,7 +73,7 @@ export class RunController {
           leads: s.leads,
           completed: s.completed,
           keystones: this.data.keystones,
-          roles: this.options.keystoneRoles!,
+          roles: this.keystoneRoles!,
         })
       : null;
     if (scheduled?.ended) {
@@ -96,10 +102,16 @@ export class RunController {
       return;
     }
     const rng = createSeededRng(s.rngState);
+    const roles = this.keystoneRoles;
+    const roleIds = roles ? [roles.firstId, ...roles.middleIds, roles.finaleId] : [];
     const dueLead = this.configured
       ? [...this.data.keystones]
           .filter(
-            key => !s.completed.includes(key.id) && key.availableWhen.lead && !s.leads.includes(key.availableWhen.lead),
+            key =>
+              roleIds.includes(key.id) &&
+              !s.completed.includes(key.id) &&
+              key.availableWhen.lead &&
+              !s.leads.includes(key.availableWhen.lead),
           )
           .sort((a, b) => a.deadline - b.deadline || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))[0]?.availableWhen.lead
       : undefined;

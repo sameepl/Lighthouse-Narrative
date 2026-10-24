@@ -27,6 +27,8 @@
       "allow": [
         "src/story/scenes/**",
         "src/data/encounters/**",
+        "src/data/keystones/**",
+        "src/data/season.json",
         "src/data/crew.json",
         "src/data/ships.json",
         "src/ui/assets/**"
