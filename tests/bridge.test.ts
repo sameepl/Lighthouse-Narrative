@@ -3,6 +3,9 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { data, type Encounter } from '../src/data';
 import type { GameData } from '../src/data/validate';
+import { RunController } from '../src/bridge/run';
+import { newGameState } from '../src/engine/rules';
+import { simulationKeystones, simulationRoles } from './simulation-fixtures';
 import { GameSession } from '../src/bridge/session';
 import type { SessionOptions } from '../src/bridge/session';
 import type { SaveData } from '../src/bridge/types';
@@ -215,6 +218,71 @@ describe('Hub and scene bridge', () => {
     expect(s.save().run.played).toHaveLength(1);
   });
 
+  it('only offers assignable crew in Prepare and rejects protected assignments without changing state', () => {
+    const s = make();
+    s.pickOffer(view(s).offers[0]!.entry.id);
+    const before = s.save();
+    expect(
+      view(s)
+        .choices.filter(c => c.command?.code === 'crew')
+        .map(c => c.id),
+    ).toEqual(['crew:priya', 'crew:tally', 'crew:lysa', 'crew:eli', 'crew:ariadne']);
+    for (const id of ['renata', 'halvorsen', 'wren', 'cass', 'miri']) {
+      expect(() => s.assign({ shipId: null, crewIds: [id] })).toThrow(`Crew unavailable: ${id}`);
+      expect(() => s.act(`crew:${id}`)).toThrow(/unavailable/);
+      expect(s.save()).toEqual(before);
+    }
+    expect(Object.keys(before.run.crewTrust)).toEqual(data.crew.map(c => c.id));
+    s.cancelPrepare();
+    enter(s, ['ariadne']);
+    choose(s, 'Finish');
+    s.pickOffer(view(s).offers[0]!.entry.id);
+    expect(view(s).choices.some(c => c.id === 'crew:ariadne')).toBe(false);
+    expect(() => s.assign({ shipId: null, crewIds: ['ariadne'] })).toThrow(/unavailable/);
+  });
+
+  it.each(['renata', 'halvorsen', 'wren', 'cass', 'miri'])(
+    'filters %s from encounter and keystone eligibility even with unvalidated data',
+    id => {
+      const gameData = {
+        ...fixture,
+        encounters: [{ ...encounter('blocked'), requires: { crew: [id] } }],
+        keystones: simulationKeystones.map(k => (k.id === 'opening' ? { ...k, requires: { crew: [id] } } : k)),
+      };
+      const s = make({ data: gameData, keystoneRoles: simulationRoles });
+      expect(view(s).offers).toEqual([]);
+      const allowed = make({
+        data: { ...gameData, crew: gameData.crew.map(c => (c.id === id ? { ...c, assignable: true } : c)) },
+        keystoneRoles: simulationRoles,
+      });
+      expect(view(allowed).offers.map(o => o.entry.id)).toEqual(['opening', 'blocked']);
+    },
+  );
+
+  it.each(['cass', 'miri', 'priya'])(
+    'rechecks forged and restored assignments for unavailable %s before confirmation',
+    id => {
+      const controller = new RunController(fixture, {}),
+        game = newGameState(data.rules);
+      controller.refresh(game, {});
+      controller.pick(controller.state.offers[0]!.entry.id);
+      controller.state.assignments = { shipId: null, crewIds: [id] };
+      if (id === 'priya') controller.state.busyCrewIds = [id];
+      const before = structuredClone({ run: controller.state, game });
+      expect(() => controller.confirm(game)).toThrow(`Crew unavailable: ${id}`);
+      expect({ run: controller.state, game }).toEqual(before);
+      const s = make();
+      s.pickOffer(view(s).offers[0]!.entry.id);
+      const saved = s.save();
+      saved.run.assignments = controller.state.assignments;
+      saved.run.busyCrewIds = controller.state.busyCrewIds;
+      const restored = make({ saved });
+      expectReady(restored, false);
+      expect(() => restored.confirm()).toThrow(`Crew unavailable: ${id}`);
+      expect(restored.save()).toEqual(saved);
+    },
+  );
+
   it('confirms The Written Clause through commands without assigning a ship', () => {
     const s = new GameSession({
       inkJson: realInk,
@@ -241,7 +309,7 @@ describe('Hub and scene bridge', () => {
     expect(view(s).busyCrewIds).toEqual(['priya']);
     s.pickOffer(view(s).offers[0]!.entry.id);
     expect(() => s.assign({ shipId: 'errant_pawn', crewIds: ['priya'] })).toThrow(/unavailable/);
-    s.assign({ shipId: 'errant_pawn', crewIds: ['cass'] });
+    s.assign({ shipId: 'errant_pawn', crewIds: ['tally'] });
     s.confirm();
     choose(s, 'Finish');
     expect(view(s).boardStatus).toBe('actions-spent');

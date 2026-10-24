@@ -4,6 +4,7 @@
     "name": "Renata",
     "role": "Compact chair",
     "faction": "compact",
+    "assignable": false,
     "assist": {
       "skill": "Leadership",
       "n": 1
@@ -17,6 +18,7 @@
     "name": "Priya",
     "role": "Seneschal and liaison",
     "faction": "alliance",
+    "assignable": true,
     "assist": {
       "skill": "Diplomat",
       "n": 1
@@ -30,6 +32,7 @@
     "name": "Halvorsen",
     "role": "Compact officer",
     "faction": "compact",
+    "assignable": false,
     "assist": {
       "skill": "Tactics",
       "n": 1
@@ -43,6 +46,7 @@
     "name": "Cass",
     "role": "Analyst, cooperating",
     "faction": "alliance",
+    "assignable": false,
     "assist": {
       "skill": "Recon",
       "n": 1
@@ -56,6 +60,7 @@
     "name": "Miri",
     "role": "Young engineer-scientist",
     "faction": "alliance",
+    "assignable": false,
     "assist": {
       "skill": "Mechanic",
       "n": 1
@@ -69,6 +74,7 @@
     "name": "Tally",
     "role": "Pilot trainee",
     "faction": "alliance",
+    "assignable": true,
     "assist": {
       "skill": "Pilot",
       "n": 1
@@ -82,6 +88,7 @@
     "name": "Wren",
     "role": "Compact liaison",
     "faction": "compact",
+    "assignable": false,
     "assist": {
       "skill": "Persuade",
       "n": 1
@@ -95,6 +102,7 @@
     "name": "Lysa",
     "role": "Pilot and executive officer",
     "faction": "alliance",
+    "assignable": true,
     "assist": {
       "skill": "Pilot",
       "n": 1
@@ -108,6 +116,7 @@
     "name": "Eli",
     "role": "Gunner",
     "faction": "alliance",
+    "assignable": true,
     "assist": {
       "skill": "Gunnery",
       "n": 1
@@ -121,6 +130,7 @@
     "name": "Ariadne",
     "role": "Ship intelligence",
     "faction": "alliance",
+    "assignable": true,
     "assist": {
       "skill": "Electronics",
       "n": 1

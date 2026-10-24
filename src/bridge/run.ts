@@ -1,4 +1,5 @@
 import type { GameData } from '../data/validate';
+import { availableCrew } from './crew';
 import { buildBoard } from '../engine/board';
 import { earnEdge, endCycle, newCycleState } from '../engine/cycle';
 import { scheduleKeystones, type KeystoneRoles } from '../engine/keystones';
@@ -57,7 +58,7 @@ export class RunController {
       s.boardStatus = 'ended';
       return;
     }
-    const crew = this.data.crew.filter(c => !s.busyCrewIds.includes(c.id));
+    const crew = availableCrew(this.data, s.busyCrewIds);
     const common = { resources: game.res, ships: this.data.ships, crew, gear: this.options.gear ?? [], flags };
     const scheduled = this.configured
       ? scheduleKeystones({
@@ -138,12 +139,14 @@ export class RunController {
   }
   assign(value: Assignments): void {
     this.require('prepare');
+    this.validateAssignments(value);
+    this.state.assignments = structuredClone(value);
+  }
+  private validateAssignments(value: Assignments): void {
     if (value.shipId !== null && !this.data.ships.some(s => s.id === value.shipId)) throw new Error('Unknown ship');
     if (new Set(value.crewIds).size !== value.crewIds.length) throw new Error('Duplicate crew assignment');
-    for (const id of value.crewIds)
-      if (!this.data.crew.some(c => c.id === id) || this.state.busyCrewIds.includes(id))
-        throw new Error(`Crew unavailable: ${id}`);
-    this.state.assignments = structuredClone(value);
+    const crew = availableCrew(this.data, this.state.busyCrewIds);
+    for (const id of value.crewIds) if (!crew.some(c => c.id === id)) throw new Error(`Crew unavailable: ${id}`);
   }
   cancel(): void {
     this.require('prepare');
@@ -156,6 +159,7 @@ export class RunController {
     const s = this.state,
       offer = s.active!,
       req = offer.entry.requires;
+    this.validateAssignments(s.assignments);
     const ship = this.data.ships.find(ship => ship.id === s.assignments.shipId);
     if (req.shipTag && (!ship || !ship.tags.includes(req.shipTag))) throw new Error('Assign a suitable ship');
     if ((req.crew ?? []).some(id => !s.assignments.crewIds.includes(id))) throw new Error('Assign the required crew');

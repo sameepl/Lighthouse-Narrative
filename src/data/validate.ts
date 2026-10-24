@@ -23,7 +23,17 @@ export function parseData(raw: {
 }): GameData {
   const rules = RulesSchema.parse(raw.rules);
   const character = CharacterSchema.parse(raw.character);
-  const crew = CrewSchema.parse(raw.crew);
+  const parsedCrew = CrewSchema.safeParse(raw.crew);
+  if (!parsedCrew.success)
+    throw new Error(
+      parsedCrew.error.issues
+        .map(issue => {
+          const entry = Array.isArray(raw.crew) ? raw.crew[Number(issue.path[0])] : undefined;
+          return `crew.json ${entry?.id ?? issue.path[0] ?? 'catalog'}: ${issue.path.slice(1).join('.')}: ${issue.message}`;
+        })
+        .join('\n'),
+    );
+  const crew = parsedCrew.data;
   const ships = ShipsSchema.parse(raw.ships);
   const unknown = Object.keys(character.skills).filter(s => !(s in rules.skillChar));
   if (unknown.length) {
@@ -49,7 +59,7 @@ export function parseData(raw: {
   if (new Set(shipIds).size !== shipIds.length) throw new Error('ships.json has duplicate ids');
   const content = parseContent(raw.encounters ?? {}, raw.keystones ?? {}, {
     shipTags: ships.flatMap(ship => ship.tags),
-    crewIds: crew.map(member => member.id),
+    crewIds: crew.filter(member => member.assignable).map(member => member.id),
   });
   return { rules, character, crew, ships, ...content };
 }
@@ -57,6 +67,7 @@ export function parseData(raw: {
 /** Optional ink references are supplied by content tests, not by the production loader. */
 export interface ContentReferences {
   shipTags: readonly string[];
+  /** IDs permitted in operational requirements, excluding non-assignable catalog members. */
   crewIds: readonly string[];
   flagExists?: (flag: string) => boolean;
   knotExists?: (knot: string) => boolean;
