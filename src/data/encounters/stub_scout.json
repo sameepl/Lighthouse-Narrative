@@ -1,0 +1,16 @@
+{
+  "id": "stub_scout",
+  "knot": "stub_scout_scene",
+  "title": "[STUB] Survey Window",
+  "layer": "crisis",
+  "archetype": "scout",
+  "tags": [],
+  "requires": {},
+  "repeat": {
+    "kind": "once"
+  },
+  "weight": 1,
+  "cost": 0,
+  "risk": "[STUB] Conflicting route records can close the current observation window.",
+  "placeholder": true
+}

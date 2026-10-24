@@ -1,0 +1,16 @@
+{
+  "id": "stub_salvage",
+  "knot": "stub_salvage_scene",
+  "title": "[STUB] Recovery Window",
+  "layer": "commercial",
+  "archetype": "salvage",
+  "tags": [],
+  "requires": {},
+  "repeat": {
+    "kind": "once"
+  },
+  "weight": 1,
+  "cost": 0,
+  "risk": "[STUB] A disputed inventory entry can delay recovery access.",
+  "placeholder": true
+}
