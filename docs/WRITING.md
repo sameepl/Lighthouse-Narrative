@@ -89,6 +89,15 @@ Narrative facts are ink variables: `VAR priya_read = false`, then `~ priya_read 
 To make a flag boost rolls, add it to `bonuses` in `src/data/rules.json`:
 `"priya_read": { "label": "Priya’s reading", "n": 1 }` and pass its name to `roll()`.
 
+## Outcome rules (all scenes)
+
+- **Clean** gives the player what they wanted and a visible gain. **Cost** gives it with a named price. **Fail** withholds it, shows a specific route forward, and carries a smaller cost. Nine outcomes in a scene, nine different results.
+- Each `note()` must match its `add()` exactly (for example `~ add("Credits", 1500)` with the note "Credits +1,500"). A note that promises something no effect or prose delivers is a bug.
+- Never write that the menu or the roll "succeeds". Show the world changing.
+- The shared `after` passage must be true after every outcome, so it names no state an outcome can change.
+
+For generated placeholder scenes (briefs, effect bands, banned phrases, the writer-model prompt, and the roster-variety rules), see `CONTENT_GENERATION.md`.
+
 ## Canon and voice
 
 - Read `docs/canon/README.md` before writing anything about Ariadne, the Section, or Marcus's past. Unauthorised `[GM-ONLY]` and HELD material never appears in text; use `[STUB]` and ask.
