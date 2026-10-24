@@ -6,7 +6,7 @@ GitHub issue bodies remain the implementation source of truth; agree scope corre
 
 ## Baseline and release gate
 
-Merged: #1–#5, #11, #24/PR #32, planner PR #13, #8/PR #41, #28/PR #37 with completion PR #47, #21/PR #48, #23/PR #49, #20/PR #50 and #9/PR #52. Main through PR #52 includes current trust, once-only Edge rewards, version-3 saves and the scene scaffolder. Old v1/v2 saves are discarded.
+Merged: #1–#5, #11, #24/PR #32, planner PR #13, #8/PR #41, #28/PR #37 with completion PR #47, #21/PR #48, #23/PR #49, #20/PR #50, #9/PR #52, #22/PR #54 and #25/PR #56. Main through PR #56 includes current trust, once-only Edge rewards, version-3 saves, the scene scaffolder, assignment permissions and validated slice/full season contracts. Old v1/v2 saves are discarded.
 
 #9/PR #52 passed 185 tests, a real generated-scene trial, CI and automated review before merging. Existing seeded simulation remains synthetic: #26 still needs to drive actual sessions. The real season is still unconfigured; a complete playable run is not claimed.
 
@@ -21,7 +21,7 @@ The planner merge does not turn every proposal into a ruling. Existing owner dec
 | 1B complete | #28 structured Hub status and UI strings (PR #37, #47) | Codex; Astra reviewed | Typed command/note/assist metadata; UI owns wording |
 | 2A complete | #23 titles (PR #49); #9 scaffolder (PR #52) | Sol; Codex review | Generated scene compile/content/outcome and overwrite tests passed |
 | 2B complete | #21 optional ship (PR #48), #20 persistent trust (PR #50) | Sol for #21; Astra for #20 | Codex review, rollback/save tests and browser checks passed |
-| 3 next | #22 assignment permission, then #25 season config | Sol | Sequential bridge/schema work; focused contract review where needed |
+| 3 complete | #22 assignment permission (PR #54); #25 season configuration (PR #56) | Sol | Codex review; 231 tests and disposable configured-catalog trial passed |
 | 4 | Proposed UI projection card below | Sol; targeted high-risk review | Freeze before #6/#7 |
 | 5 | #6 Board, then #7 Prepare; #8 meters already merged | Sol | Screenshots and keyboard/mobile review; serialize shared App/theme edits |
 | 5 parallel | #26 session simulation; #27 reachability tests | Sol; Luna for bounded fixtures | Distinct test files; source bugs require separate core issues |
@@ -39,11 +39,12 @@ Owner routing preference (2026-10-23): Sol is the default implementer and review
 ## Remaining scope gates
 
 - Completed scope amendments are recorded on #20/#21/#23/#24/#28. For #20, the owner additionally approved `src/ui/strings.ts` only for typed trust/Edge note rendering; component changes remained forbidden. Save and snapshot rollback tests passed.
-- #25: allow `.github/zones.json` and its existing zone tests for the content-path correction. Protect schema/loader contracts while permitting `src/data/keystones/**`. Decide and document content permission for `src/data/season.json`.
-- #25/#10: choose one atomic activation path. Recommended: core #25 supports an explicit unconfigured value; #10 may edit only validated season data with its initial keystones, under an amended allowlist. Content never edits the schema or loader.
-- #6: #23/#28 are merged, but the UI projection card remains. #7 still waits for #22 and that projection. #8 is complete.
+- #25 completed: content may edit `src/data/keystones/**` and `src/data/season.json`; schema/loader contracts remain protected. Exact slice/full shape is documented in `src/data/AGENTS.md`.
+- #25/#10 activation is atomic: core supports explicit unconfigured state; #10 adds its initial keystones, compiled knots and validated season data together. Content never edits the schema or loader.
+- #6/#7 still need the UI projection card; their other listed bridge dependencies are merged. #8 is complete.
 - #9: completed in PR #52 with root AGENTS documentation, titles and the current `scene_end` contract. Checks and review passed.
 - #10: retain #9/#23/#24/#25 dependencies; use The Asking and the planner's current authority rules. Use placeholders, not unapproved sample dialogue or backstory.
+- #10 owner amendment (2026-10-23): five placeholder keystones, matching opening + two middle + finale in slice and the additional conditional middle in full mode. Initial keystones and validated season configuration still activate atomically.
 - #26: wait for #20/#21/#22/#25 to avoid testing an immediately obsolete session contract. Add regression seeds for any genuine source bug on a separate core issue.
 - #27: tests can land with explicit unconfigured coverage, but real-catalog reachability is not complete until #10 activates the season. Starting-state checks alone are insufficient.
 
@@ -86,6 +87,10 @@ One worker per branch/worktree; no concurrent edits to shared schemas, App, them
 Keep Qwen tasks to one scene/data pair or a similarly bounded mechanical edit with supplied context.
 Qwen's plain local API has no filesystem/tools; native MCP permission was previously denied and is not assumed enabled.
 Codex reviews output before accepting it and never treats a completion message as validation.
+
+Qwen preparation for #10: two scene/data draft pairs (trade run and courier) are held outside the checkout, not merged. Schema, compile, all nine outcome paths and 40–80-word passage checks pass after review/revision; Codex corrected trade-run continuity/agency text. Four encounter pairs, five keystones, final repository checks and real-catalog activation evidence remain. This draft progress does not mark #10 complete.
+
+A disposable public-source copy with five configured synthetic keys and both reviewed pairs passed all 231 tests and build after the #25 fixture correction. No test edits were needed in the copy. This demonstrates content-only activation compatibility, not five authored keystones or #10's ending gate. No Astra calls were used for this batch.
 
 Run `npm ci`, then `npm run check` and the zone check against the actual PR base before commit/PR.
 Use Prettier only on task files. On Windows, normalise checkout line endings without unrelated Git content changes;
