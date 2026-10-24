@@ -54,6 +54,7 @@ export const CrewSchema = z.array(
     name: z.string(),
     role: z.string(),
     faction: z.string(),
+    assignable: z.boolean(),
     assist: z.object({ skill: z.string(), n: z.number().int().min(0) }),
     trait: z.string().min(1),
     trust: z.number().int().min(0).max(3),

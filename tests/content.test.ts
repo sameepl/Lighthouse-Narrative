@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 const variables = new Story(inkJson).variablesState;
 const refs = {
   shipTags: data.ships.flatMap(ship => ship.tags),
-  crewIds: data.crew.map(member => member.id),
+  crewIds: data.crew.filter(member => member.assignable).map(member => member.id),
   flagExists: (flag: string) => variables.GlobalVariableExistsWithName(flag) && typeof variables.$(flag) === 'boolean',
   knotExists: (knot: string) => {
     const story = new Story(inkJson);
@@ -105,6 +105,20 @@ describe('storylet catalogs', () => {
     }
     expect(message).toContain(file);
     expect(message).toContain(field);
+  });
+
+  it.each(['renata', 'halvorsen', 'wren', 'cass', 'miri'])('rejects operational requirements for %s', id => {
+    const requires = { crew: [id] };
+    expect(() => parse({ ...encounter, requires })).toThrow(`requires.crew.0: unknown reference "${id}"`);
+    expect(() => parse(encounter, { [keyFile]: { ...keystone, requires } })).toThrow(
+      `requires.crew.0: unknown reference "${id}"`,
+    );
+    expect(() => parseData({ ...data, encounters: { [file]: { ...encounter, requires } }, keystones: {} })).toThrow(
+      file,
+    );
+    expect(() => parseData({ ...data, encounters: {}, keystones: { [keyFile]: { ...keystone, requires } } })).toThrow(
+      keyFile,
+    );
   });
 
   it('rejects duplicate IDs across catalogs and IDs that differ from filenames', () => {

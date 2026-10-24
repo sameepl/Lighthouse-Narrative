@@ -1,4 +1,5 @@
 import type { GameData } from '../data/validate';
+import { availableCrew } from './crew';
 import type { Command, RunState, UIChoice } from './types';
 
 /** Scheduling commands for the choice dock. Codes and parameters only: src/ui/strings.ts writes the words. */
@@ -33,7 +34,10 @@ export function runChoices(run: RunState, data: GameData, resources: Record<stri
   const offer = run.active!,
     req = offer.entry.requires;
   const ship = data.ships.find(s => s.id === run.assignments.shipId);
+  const crew = availableCrew(data, run.busyCrewIds);
   const ready =
+    new Set(run.assignments.crewIds).size === run.assignments.crewIds.length &&
+    run.assignments.crewIds.every(id => crew.some(member => member.id === id)) &&
     (!req.shipTag || !!ship?.tags.includes(req.shipTag)) &&
     (req.crew ?? []).every(id => run.assignments.crewIds.includes(id)) &&
     (offer.kind !== 'encounter' || (resources.Credits ?? 0) >= offer.entry.cost);
@@ -47,17 +51,15 @@ export function runChoices(run: RunState, data: GameData, resources: Record<stri
         selected: run.assignments.shipId === ship.id,
       }),
     ),
-    ...data.crew
-      .filter(c => !run.busyCrewIds.includes(c.id))
-      .map(c =>
-        choice(`crew:${c.id}`, {
-          code: 'crew',
-          crewId: c.id,
-          name: c.name,
-          skill: c.assist.skill,
-          assigned: run.assignments.crewIds.includes(c.id),
-        }),
-      ),
+    ...crew.map(c =>
+      choice(`crew:${c.id}`, {
+        code: 'crew',
+        crewId: c.id,
+        name: c.name,
+        skill: c.assist.skill,
+        assigned: run.assignments.crewIds.includes(c.id),
+      }),
+    ),
     ...(ready ? [choice('confirm', { code: 'confirm' })] : []),
     choice('cancel', { code: 'cancel', ready: !!ready }),
   ];

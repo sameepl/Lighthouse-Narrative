@@ -59,7 +59,7 @@ describe('new:scene CLI', () => {
         {},
         {
           shipTags: data.ships.flatMap(ship => ship.tags),
-          crewIds: data.crew.map(crew => crew.id),
+          crewIds: data.crew.filter(crew => crew.assignable).map(crew => crew.id),
           knotExists: knot => {
             const story = new Story(compiled);
             story.ChoosePathString(knot);

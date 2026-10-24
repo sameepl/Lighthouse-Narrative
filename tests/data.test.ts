@@ -19,6 +19,24 @@ describe('data files', () => {
     const ids = data.crew.map(c => c.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
+  it('keeps the full catalog with explicit assignment permissions', () => {
+    const parsed = parseData(raw);
+    expect(parsed.crew).toEqual(crew);
+    expect(parsed.crew.filter(c => c.assignable).map(c => c.id)).toEqual(['priya', 'tally', 'lysa', 'eli', 'ariadne']);
+    expect(parsed.crew.filter(c => !c.assignable).map(c => c.id)).toEqual([
+      'renata',
+      'halvorsen',
+      'cass',
+      'miri',
+      'wren',
+    ]);
+  });
+  it.each([undefined, 'true', 1, null])(
+    'requires boolean assignable and identifies the crew entry (%s)',
+    assignable => {
+      expect(() => parseData({ ...raw, crew: [{ ...crew[0], assignable }] })).toThrow(/crew\.json renata: assignable:/);
+    },
+  );
   it('rejects out-of-range characteristic scores', () => {
     const bad = { ...raw, character: { ...character, chars: { ...character.chars, SOC: 15 } } };
     expect(() => parseData(bad)).toThrow();
@@ -34,7 +52,7 @@ describe('data files', () => {
     expect(() => parseData({ ...raw, rules: { ...rules, resources: withoutRenown } })).toThrow(/Renown/);
   });
   it('rejects malformed crew entries', () => {
-    expect(() => parseData({ ...raw, crew: [{ id: 'x' }] })).toThrow();
+    expect(() => parseData({ ...raw, crew: [{ id: 'x' }] })).toThrow(/crew\.json x:/);
   });
   it('validates crew assist skills and trust bounds', () => {
     expect(() => parseData({ ...raw, crew: [{ ...crew[0], assist: { skill: 'Unknown', n: 1 } }] })).toThrow(
