@@ -1,0 +1,16 @@
+{
+  "id": "stub_courier",
+  "knot": "stub_courier_scene",
+  "title": "[STUB] Sealed Dispatch",
+  "layer": "commercial",
+  "archetype": "courier",
+  "tags": [],
+  "requires": {},
+  "repeat": {
+    "kind": "once"
+  },
+  "weight": 1,
+  "cost": 0,
+  "risk": "[STUB] Delivery windows can close while a manifest discrepancy is reviewed.",
+  "placeholder": true
+}
