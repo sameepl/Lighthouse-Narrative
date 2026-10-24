@@ -26,7 +26,7 @@ Goal: a full run is playable with fake text, and the loop feels right. See `game
 | [ ] [M0-07](tasks/M0-07-prepare-ui.md) (#7) | Prepare screen: ship and crew assignment | feature | B | M0-05 |
 | [x] [M0-08](tasks/M0-08-meters-ui.md) (#8, PR #41) | Meters and Pursuit clock UI (Renown, Edge pool) | feature | B | M0-01 |
 | [x] [M0-09](tasks/M0-09-scene-scaffolder.md) (#9, PR #52) | `npm run new:scene` scaffolder | core | B | M0-02, M0-05, #23 |
-| [ ] [M0-10](tasks/M0-10-stub-content.md) (#10) | 6 stub encounters and 2 stub keystones (placeholder text) | content | C | M0-05, M0-09, and now #23, #25 |
+| [~] [M0-10](tasks/M0-10-stub-content.md) (#10) | 6 stub encounters and 5 stub keystones (two isolated encounter drafts reviewed; activation pending) | content | C | M0-05, M0-09, and now #23, #25 |
 | [x] [M0-11](tasks/M0-11-simulation.md) (#11, PR #18) | Simulation test: 1,000 seeded runs | feature | B | M0-03, M0-04 |
 
 The original M0-01 through M0-05 engine/bridge sequence is complete. Follow the amended dependency lanes below for remaining work; M0-06 through M0-09 no longer form an unrestricted parallel batch.
@@ -39,10 +39,10 @@ Small fixes to do before real content is written. Source: [`reviews/2026-10-21-m
 |---|---|---|---|---|
 | [x] #20 (PR #50) | Crew trust: per-run state, engine function and ink function | core | A | #21 (bridge lane) |
 | [x] #21 (PR #48) | Require a ship only when an offer needs one | core | B | #28 (bridge lane) |
-| [ ] #22 | Crew `assignable` flag (keep Compact officials, Cass and Miri out of Prepare) | core | B | #20 (bridge lane), #13 |
+| [x] #22 (PR #54) | Crew `assignable` flag (keep Compact officials, Cass and Miri out of Prepare) | core | B | #20 (bridge lane), #13 |
 | [x] #23 (PR #49) | Display titles for encounters | core | B | none (before #9) |
 | [x] #24 | Rename keystone piece values to removed, six, claim (PR #32) | core | B | none |
-| [ ] #25 | Season config: keystone roles in a validated data file | core | B | #22 (bridge lane) |
+| [x] #25 (PR #56) | Season config: keystone roles in a validated data file | core | B | #22 (bridge lane) |
 | [ ] #26 | Simulation drives the real RunController and session | feature | B | #20, #21, #22, #25 |
 | [ ] #27 | Content test: first and final keystones always reachable | feature | B | #25 |
 | [x] #28 (PR #37, completed by PR #47) | Hub status as structured data, not prose in the bridge | core | B | none (first in the bridge lane) |
@@ -73,4 +73,4 @@ Bridge lane (one at a time, in this order): #28, #21, #20, #22, #25. Schema and 
 
 As of 2026-10-23, planner PR #13 and the implementation PRs listed above are merged. The [work plan](WORK_PLAN.md) records current evidence, remaining scope gates and routing. The planner and canon documents are indexed in `canon/README.md`; owner rulings there govern what may be used. These status notes adopt no new canon rulings.
 
-Next in the bridge/schema lanes: #22 assignment permission, then #25 season configuration. #9 is merged; #6/#7 still need the preparation projection gate before UI work. Use Sol by default, Luna for bounded docs/mechanical work, Qwen for exploratory drafts, and Astra only for focused high-risk contract/state reviews or unresolved edge cases (owner preference, 2026-10-23).
+Assignment permission (#22, PR #54) and season configuration (#25, PR #56) are merged. #10 now calls for five placeholder keystones (owner approved 2026-10-23). Two Qwen encounter pairs have been reviewed outside the repository; neither content nor season activation is merged. Remaining content and session QA can use the merged contracts; #6/#7 still need the preparation projection gate before UI work. Use Sol by default, Luna for bounded docs/mechanical work, Qwen for exploratory drafts, and Astra only for focused high-risk contract/state reviews or unresolved edge cases (owner preference, 2026-10-23).
