@@ -3,7 +3,7 @@ import { data, type Encounter } from '../src/data';
 import { buildBoard, type BoardInput } from '../src/engine/board';
 import { createSeededRng } from '../src/engine/rng';
 
-const base = data.encounters[0]!;
+const base = data.encounters.find(entry => entry.id === 'written_clause')!;
 const make = (id: string, layer: Encounter['layer'], cost = 0, change: Partial<Encounter> = {}): Encounter => ({
   ...base,
   id,

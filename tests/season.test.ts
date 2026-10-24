@@ -12,10 +12,12 @@ const configuredData = { ...data, encounters: [], keystones: simulationKeystones
 const files = Object.fromEntries(simulationKeystones.map(k => [`./keystones/${k.id}.json`, k]));
 
 describe('season configuration', () => {
-  it('loads the real explicit unconfigured state without inventing a catalog', () => {
+  it('loads production JSON and handles explicit unconfigured fixtures without inventing a catalog', () => {
     expect(data.season).toEqual(seasonFile);
-    expect(parseData({ ...data, encounters: {}, keystones: {} }).season).toEqual({ status: 'unconfigured' });
-    expect(new RunController(data, {}).configured).toBe(false);
+    const unconfigured = { ...data, keystones: [], season: { status: 'unconfigured' } as const };
+    expect(parseData({ ...unconfigured, encounters: {}, keystones: {} }).season).toEqual({ status: 'unconfigured' });
+    expect(new RunController(unconfigured, {}).configured).toBe(false);
+    expect(new RunController({ ...unconfigured, keystones: simulationKeystones }, {}).configured).toBe(false);
     expect(() => parseData({ ...data, encounters: {}, keystones: {}, season: undefined })).toThrow('season.json');
     expect(new RunController({ ...configuredData, keystones: [] }, {}).configured).toBe(false);
     expect(new RunController({ ...data, keystones: [] }, { keystoneRoles: simulationRoles }).configured).toBe(false);

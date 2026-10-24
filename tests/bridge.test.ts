@@ -6,6 +6,7 @@ import type { GameData } from '../src/data/validate';
 import { RunController } from '../src/bridge/run';
 import { newGameState } from '../src/engine/rules';
 import { simulationKeystones, simulationRoles } from './simulation-fixtures';
+import { storyData } from './helpers';
 import { GameSession } from '../src/bridge/session';
 import type { SessionOptions } from '../src/bridge/session';
 import type { SaveData } from '../src/bridge/types';
@@ -54,7 +55,7 @@ const encounter = (id: string): Encounter => ({
   repeat: { kind: 'repeatable', cooldown: 0 },
 });
 const fixture: GameData = {
-  ...data,
+  ...storyData,
   encounters: [encounter('a'), { ...encounter('b'), layer: 'commercial' }],
   keystones: [],
 };
@@ -286,7 +287,7 @@ describe('Hub and scene bridge', () => {
   it('confirms The Written Clause through commands without assigning a ship', () => {
     const s = new GameSession({
       inkJson: realInk,
-      data: { ...data, encounters: data.encounters.filter(entry => entry.id === 'written_clause') },
+      data: storyData,
     });
     const before = s.save();
     s.act('offer:written_clause');
@@ -403,7 +404,7 @@ describe('Hub and scene bridge', () => {
   it('discards v1 even through direct construction and exposes honest single-encounter exhaustion', () => {
     const s = new GameSession({
       inkJson: realInk,
-      data: { ...data, encounters: data.encounters.filter(entry => entry.id === 'written_clause') },
+      data: storyData,
       saved: { v: 1 } as unknown as SaveData,
     });
     expect(view(s).phase).toBe('hub');
