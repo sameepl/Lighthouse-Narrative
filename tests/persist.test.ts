@@ -4,6 +4,20 @@ import { GameSession } from '../src/bridge/session';
 import type { SaveData } from '../src/bridge/types';
 import { data } from '../src/data';
 import inkJson from '../src/story/main.ink';
+// Persistence tests need a stable encounter cache, independent of the active production season.
+vi.mock('../src/data', async importOriginal => {
+  const actual = await importOriginal<typeof import('../src/data')>();
+  return {
+    ...actual,
+    data: {
+      ...actual.data,
+      encounters: actual.data.encounters.filter(entry => entry.id === 'written_clause'),
+      keystones: [],
+      season: { status: 'unconfigured' },
+    },
+  };
+});
+
 afterEach(() => vi.unstubAllGlobals());
 describe('versioned browser persistence', () => {
   it.each(['offers', 'active', 'encounterBoard'] as const)('discards invalid cached %s titles', path => {

@@ -6,7 +6,7 @@ import ships from '../src/data/ships.json';
 import { data } from '../src/data';
 import { parseData } from '../src/data/validate';
 
-const raw = { rules, character, crew, ships };
+const raw = { rules, character, crew, ships, season: { status: 'unconfigured' } };
 
 describe('data files', () => {
   it('load and validate', () => {

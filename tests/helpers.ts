@@ -1,11 +1,16 @@
-import { data } from '../src/data';
+import { data, type GameData } from '../src/data';
 import inkJson from '../src/story/main.ink';
 import { GameSession } from '../src/bridge/session';
 import type { Dice } from '../src/engine/types';
 import type { SaveData } from '../src/bridge/types';
 
 /** Written Clause playthroughs must not depend on a random draw from the growing catalog. */
-export const storyData = { ...data, encounters: data.encounters.filter(entry => entry.id === 'written_clause') };
+export const storyData: GameData = {
+  ...data,
+  encounters: data.encounters.filter(entry => entry.id === 'written_clause'),
+  keystones: [],
+  season: { status: 'unconfigured' },
+};
 
 /** A session whose dice are whatever `dice.next` says. */
 export function makeSession(saved: SaveData | null = null, dice: { next: Dice } = { next: [4, 4] }) {

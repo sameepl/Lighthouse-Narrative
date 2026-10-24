@@ -1,7 +1,15 @@
 // Validation of the data files. Used by the tests and, in dev only, on startup; never shipped to players.
 import { z } from 'zod';
-import { CharacterSchema, CrewSchema, RulesSchema, ShipsSchema, EncounterSchema, KeystoneSchema } from './schema';
-import type { Character, Crew, Rules, Ships, Encounter, Keystone } from './schema';
+import {
+  CharacterSchema,
+  CrewSchema,
+  RulesSchema,
+  ShipsSchema,
+  EncounterSchema,
+  KeystoneSchema,
+  SeasonSchema,
+} from './schema';
+import type { Character, Crew, Rules, Ships, Encounter, Keystone, Season } from './schema';
 
 export interface GameData {
   rules: Rules;
@@ -10,6 +18,7 @@ export interface GameData {
   ships: Ships;
   encounters: Encounter[];
   keystones: Keystone[];
+  season: Season;
 }
 
 /** Parses and cross-checks all data files. Throws with a message naming the bad field. */
@@ -18,6 +27,7 @@ export function parseData(raw: {
   character: unknown;
   crew: unknown;
   ships: unknown;
+  season: unknown;
   encounters?: Record<string, unknown>;
   keystones?: Record<string, unknown>;
 }): GameData {
@@ -61,7 +71,8 @@ export function parseData(raw: {
     shipTags: ships.flatMap(ship => ship.tags),
     crewIds: crew.filter(member => member.assignable).map(member => member.id),
   });
-  return { rules, character, crew, ships, ...content };
+  const season = parseSeason(raw.season, content.keystones);
+  return { rules, character, crew, ships, ...content, season };
 }
 
 /** Optional ink references are supplied by content tests, not by the production loader. */
@@ -111,4 +122,33 @@ export function parseContent(
   for (const { file, value } of ks)
     if (value.availableWhen.lead) known(file, 'availableWhen.lead', value.availableWhen.lead, leads);
   return { encounters: es.map(entry => entry.value), keystones: ks.map(entry => entry.value) };
+}
+
+/** Season activation is atomic: configured roles must all resolve in the same catalog. */
+export function parseSeason(raw: unknown, keystones: readonly Keystone[]): Season {
+  const result = SeasonSchema.safeParse(raw);
+  if (!result.success) throw new Error(`season.json: ${result.error.message}`);
+  const season = result.data;
+  if (season.status === 'unconfigured') return season;
+  const fail = (field: string, message: string): never => {
+    throw new Error(`season.json: ${field}: ${message}`);
+  };
+  const known = new Set(keystones.map(key => key.id));
+  for (const mode of ['slice', 'full'] as const) {
+    const roles = season[mode];
+    const ids = [roles.firstId, ...roles.middleIds, roles.finaleId];
+    if (new Set(ids).size !== ids.length) fail(mode, 'duplicate keystone roles');
+    for (const [field, id] of [
+      ['firstId', roles.firstId],
+      ['finaleId', roles.finaleId],
+      ...roles.middleIds.map((id, index) => [`middleIds.${index}`, id]),
+    ] as [string, string][])
+      if (!known.has(id)) fail(`${mode}.${field}`, `unknown keystone "${id}"`);
+  }
+  if (!season.full.middleIds.includes(season.full.conditionalId)) fail('full.conditionalId', 'must name a middle role');
+  if (season.slice.firstId !== season.full.firstId) fail('full.firstId', 'must match slice.firstId');
+  if (season.slice.finaleId !== season.full.finaleId) fail('full.finaleId', 'must match slice.finaleId');
+  if (season.slice.middleIds.some(id => !season.full.middleIds.includes(id) || id === season.full.conditionalId))
+    fail('full.middleIds', 'must contain the slice middles plus a separate conditional middle');
+  return season;
 }

@@ -37,6 +37,14 @@ describe('checking files', () => {
     );
     expect(bad.violations).toEqual(['src/engine/rules.ts', 'src/story/lib/roll.ink']);
   });
+  it('lets content activate season data while keeping all code contracts protected', () => {
+    expect(
+      checkZones({ zone: 'content', files: ['src/data/season.json', 'src/data/keystones/opening.json'] }, config).ok,
+    ).toBe(true);
+    const contracts = ['src/data/schema.ts', 'src/data/validate.ts', 'src/data/index.ts', 'src/bridge/run.ts'];
+    for (const zone of ['content', 'feature'])
+      expect(checkZones({ zone, files: contracts }, config).violations).toEqual(contracts);
+  });
   it('lets feature agents add engine and UI files but not edit contract files or the bridge', () => {
     expect(
       checkZones(
