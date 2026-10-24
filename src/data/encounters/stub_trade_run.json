@@ -1,0 +1,16 @@
+{
+  "id": "stub_trade_run",
+  "knot": "stub_trade_run_scene",
+  "title": "[STUB] Berth Exchange",
+  "layer": "commercial",
+  "archetype": "trade_run",
+  "tags": [],
+  "requires": {},
+  "repeat": {
+    "kind": "once"
+  },
+  "weight": 1,
+  "cost": 0,
+  "risk": "[STUB] Paperwork delays can close the current berth window.",
+  "placeholder": true
+}
