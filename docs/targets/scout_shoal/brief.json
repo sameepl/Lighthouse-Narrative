@@ -1,0 +1,105 @@
+{
+  "id": "target_scout_shoal",
+  "archetype": "scout",
+  "layer": "commercial",
+  "location": "docs/canon/locations/the-shoal.md",
+  "who": "convoy master of a short-crewed hauler convoy",
+  "want": "Find which of eleven wreck beacons is false and mark a safe line through the Shoal.",
+  "at_stake": "A wrong turn costs the convoy a contract day, and going active announces the ship.",
+  "complication": "Eleven wreck beacons are in passive reach and one is wrong; going active would announce the ship. (complications.md, scout 1)",
+  "approaches": [
+    {
+      "label": "Go dark and listen to the beacons",
+      "skills": [
+        "Recon",
+        "Electronics"
+      ],
+      "npc_reaction": "does not want to wait",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            2000
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -500
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Plot the lane against old hauler logs",
+      "skills": [
+        "Astrogation",
+        "Tactics"
+      ],
+      "npc_reaction": "reads over your shoulder",
+      "effects": {
+        "clean": [
+          [
+            "Renown",
+            1
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            500
+          ],
+          [
+            "Strain",
+            1
+          ]
+        ],
+        "fail": [
+          [
+            "Strain",
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Ask a passing salvage crew which beacon they avoid",
+      "skills": [
+        "Persuade",
+        "Diplomat"
+      ],
+      "npc_reaction": "keeps one hand on the throttle",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            1000
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -1000
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    }
+  ],
+  "sensory_details_used": {
+    "sound": "opening and approach 1 fail",
+    "light": "approach 1 clean and approach 3 cost",
+    "temperature": "approach 3 clean"
+  }
+}
