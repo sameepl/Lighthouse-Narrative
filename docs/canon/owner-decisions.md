@@ -52,3 +52,8 @@ The planner's player-safe export is filed in `docs/canon/` (voices, locations, s
 - **Ariadne can be busy** for assignment, like any crew member.
 - **The `[NEW]` Ariadne sample lines and the Season 4 "ladder" may be used.** Writers still follow `ariadne-voice.md` and keep the ladder as evidence, never as named powers.
 - Two endings or three stances in M1: still open (M1 is the 20-minute vertical slice in `../ROADMAP.md`).
+
+## 8. Stub content (2026-10-24) `[OWNER]`
+
+For the M0 stub scenes (issue #10): stubs may carry small **placeholder effects** (`add` calls) so a run can be tuned; clean outcomes carry a visible gain; each stub uses a **different location** from `docs/canon/locations/`. The rules are in `../CONTENT_GENERATION.md`. Effects stay placeholders until the economy is reconciled (issue #35).
+
