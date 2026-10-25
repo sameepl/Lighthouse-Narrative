@@ -1,0 +1,16 @@
+{
+  "id": "target_trade_berth",
+  "knot": "target_trade_berth_scene",
+  "title": "[STUB] The Fee Sheet",
+  "layer": "commercial",
+  "archetype": "trade_run",
+  "tags": [],
+  "requires": {},
+  "repeat": {
+    "kind": "once"
+  },
+  "weight": 1,
+  "cost": 0,
+  "risk": "[STUB] A held filing can close the berth window and send the buyer elsewhere.",
+  "placeholder": true
+}

@@ -1,0 +1,111 @@
+{
+  "id": "target_trade_berth",
+  "archetype": "trade_run",
+  "layer": "commercial",
+  "location": "docs/canon/locations/hearthline-berths.md",
+  "who": "chief of the berth crew",
+  "want": "Get forty crates of water filters through a berth to the buyer's tug waiting at the gate.",
+  "at_stake": "If the crates miss this window the buyer walks and the crates sit on the deck.",
+  "complication": "A filing is held for a second countersign; the hold posts an hour or two late. (complications.md, trade run 5)",
+  "approaches": [
+    {
+      "label": "Haggle the berth fee down",
+      "skills": [
+        "Persuade",
+        "Diplomat"
+      ],
+      "npc_reaction": "weighs the fee against a long queue",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            1500
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            1000
+          ],
+          [
+            "Strain",
+            1
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Reshuffle the unloading order",
+      "skills": [
+        "Leadership",
+        "Tactics"
+      ],
+      "npc_reaction": "resents being told how to run her bay",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            2000
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            500
+          ],
+          [
+            "Strain",
+            1
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -1000
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Check the crate seals for a fault",
+      "skills": [
+        "Electronics",
+        "Mechanic"
+      ],
+      "npc_reaction": "watches your hands for a mistake",
+      "effects": {
+        "clean": [
+          [
+            "Renown",
+            1
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -1000
+          ]
+        ],
+        "fail": [
+          [
+            "Strain",
+            1
+          ]
+        ]
+      }
+    }
+  ],
+  "sensory_details_used": {
+    "temperature": "opening",
+    "texture": "approach 1 clean",
+    "sound": "approach 1 cost",
+    "light": "approach 2 clean",
+    "smell": "approach 3 clean"
+  }
+}

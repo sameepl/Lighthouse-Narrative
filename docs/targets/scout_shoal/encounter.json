@@ -1,0 +1,16 @@
+{
+  "id": "target_scout_shoal",
+  "knot": "target_scout_shoal_scene",
+  "title": "[STUB] The Wrong Lamp",
+  "layer": "commercial",
+  "archetype": "scout",
+  "tags": [],
+  "requires": {},
+  "repeat": {
+    "kind": "once"
+  },
+  "weight": 1,
+  "cost": 0,
+  "risk": "[STUB] Powering up to look for the false beacon would announce the ship to every watcher in the Shoal.",
+  "placeholder": true
+}

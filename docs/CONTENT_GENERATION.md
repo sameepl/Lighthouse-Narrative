@@ -130,6 +130,8 @@ A lint in `tests/` (core zone) should fail on: word count outside 40 to 80; a mi
 
 ## 9. Worked example
 
+Two complete reference scenes, with a rubric and the improvement loop for the writer models, are in `targets/README.md`. This section is the short version.
+
 Brief (abridged):
 
 ```
