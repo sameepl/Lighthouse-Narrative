@@ -1,240 +1,309 @@
+import { Compiler } from 'inkjs/full';
+import { deepStrictEqual, ok } from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { data, type Crew, type Encounter, type Keystone, type Ships } from '../src/data';
-import { EncounterSchema, KeystoneSchema } from '../src/data/schema';
+import { data } from '../src/data';
+import { parseData } from '../src/data/validate';
+import { GameSession } from '../src/bridge/session';
+import type { SaveData } from '../src/bridge/types';
 import { buildBoard } from '../src/engine/board';
-import { assistOf, earnEdge, endCycle, newCycleState } from '../src/engine/cycle';
+import { newCycleState } from '../src/engine/cycle';
 import { scheduleKeystones } from '../src/engine/keystones';
 import { createSeededRng } from '../src/engine/rng';
-import { addResource, makeRoll, newGameState, setupRoll, spendEdge } from '../src/engine/rules';
-import { simulationEncounters, simulationKeystones, simulationRoles } from './simulation-fixtures';
+import { simulationEncounters, simulationKeystones, simulationRoles, simulationSeason } from './simulation-fixtures';
 
-type Candidate = { kind: 'encounter'; entry: Encounter } | { kind: 'keystone'; entry: Keystone; forced: boolean };
+// Synthetic consequences only: flags/trust/resources flow through the real Ink bridge.
+const inkJson = new Compiler(`${readFileSync('src/story/lib/world.ink', 'utf8')}
+${readFileSync('src/story/lib/roll.ink', 'utf8')}
+VAR aid = false
+-> END
+=== job ===
+A synthetic assignment.
++ [Quiet]
+    ~ add("Pursuit", -1)
+    -> check
++ [Routine]
+    -> check
++ [Loud]
+    ~ add("Pursuit", 1)
+    -> check
+=== check ===
+~ trust("priya", 1)
+~ aid = true
+-> roll("Diplomat", 12, "", -> clean, -> cost, -> fail)
+=== clean ===
+~ add("Credits", 1500)
+~ add("Renown", 1)
+~ note("gain", "synthetic clean")
+-> scene_end
+=== cost ===
+~ add("Credits", 500)
+~ add("Strain", 1)
+~ note("cost", "synthetic cost")
+-> scene_end
+=== fail ===
+~ add("Strain", 2)
+~ note("watch", "synthetic fail")
+-> scene_end
+`)
+  .Compile()
+  .ToJson()!;
+const fixture = parseData({
+  ...data,
+  season: simulationSeason,
+  encounters: Object.fromEntries(simulationEncounters.map(e => [`${e.id}.json`, { ...e, knot: 'job' }])),
+  keystones: Object.fromEntries(simulationKeystones.map(k => [`${k.id}.json`, { ...k, knot: 'job' }])),
+});
 
 function run(seed: number, slice: boolean) {
-  const rng = createSeededRng(seed);
-  const pick = <T>(items: readonly T[]): T => items[Math.floor(rng.next() * items.length)]!;
-  const dice = (): [number, number] => [1 + Math.floor(rng.next() * 6), 1 + Math.floor(rng.next() * 6)];
-  const ships = data.ships;
-  let crew: Crew = data.crew.map(member => ({ ...member }));
-  let cycle = newCycleState(data.rules, slice);
-  let game = newGameState(data.rules);
-  let gear = rng.next() < 0.5 ? ['probe'] : [];
-  let flags = { aid: rng.next() < 0.5 };
-  const completed: string[] = [];
-  const leads: string[] = [];
-  const played: { id: string; cycle: number }[] = [];
-  const onceCompletions = new Set<string>();
+  const policy = createSeededRng((seed ^ 0x13579bdf) >>> 0);
+  let dice = createSeededRng((seed ^ 0x2468ace0) >>> 0);
+  const pick = <T>(items: readonly T[]): T => items[Math.floor(policy.next() * items.length)]!;
+  const gear = policy.next() < 0.5 ? ['probe'] : [];
+  const reloadPoint = pick(['hub', 'prepare', 'scene']);
+  const make = (saved?: SaveData) =>
+    new GameSession({
+      data: fixture,
+      inkJson,
+      seed,
+      slice,
+      gear,
+      saved,
+      rng: () => [1 + Math.floor(dice.next() * 6), 1 + Math.floor(dice.next() * 6)],
+    });
+  let s: GameSession;
+  const view = () => s.store.getState();
+  const coverage = new Set<string>();
   const trail: string[] = [];
-  let phase = 'initial';
-  let earlyLead = false;
-  let clockFinale = false;
-  let blockedDue = false;
-  let sawGated = false;
-  let passes = 0;
-
+  const once = new Set<string>();
+  const reload = (label: string) => {
+    const saved = JSON.parse(JSON.stringify(s.save())) as SaveData;
+    const before = view();
+    s = make(saved);
+    deepStrictEqual(s.save(), saved);
+    deepStrictEqual(view(), before);
+    coverage.add(`reload:${label}`);
+    trail.push(`reload:${label}`);
+  };
   try {
-    for (let turn = 0; turn < 12 && !completed.includes('finale'); turn++) {
-      phase = `cycle ${cycle.cycle} board`;
-      const dueLead =
-        !completed.includes('middle_where') && cycle.cycle <= 2
-          ? 'middle_where'
-          : !completed.includes('middle_who') && cycle.cycle <= 4
-            ? 'middle_who'
-            : undefined;
-      const board = buildBoard(
-        {
-          cycle: cycle.cycle,
-          resources: game.res,
-          ships,
-          crew,
-          gear,
-          flags,
-          played,
-          encounters: simulationEncounters,
-          dueLead,
-        },
-        rng,
+    trail.push('start');
+    s = make();
+    for (let turn = 0; turn < 40 && !view().ended; turn++) {
+      ok(view().phase === 'hub');
+      if ((turn === 0 && reloadPoint === 'hub') || policy.next() < 0.2) reload('hub');
+      const hub = view();
+      const hubSave = s.save();
+      const roles = simulationSeason[slice ? 'slice' : 'full'];
+      const completed = new Set(hubSave.run.completed);
+      trail.push(
+        `cycle=${hub.cycle.cycle} actions=${hub.cycle.actionsLeft} pursuit=${hub.cycle.pursuit.value} board=${hub.boardStatus} offers=${hub.offers.map(o => `${o.entry.id}${o.forced ? '!' : ''}`).join(',')}`,
       );
-      trail.push(`${phase}: ${board.offers.map(entry => entry.id).join(',')} unmet=${board.unmetGuarantees.join(',')}`);
-      if (board.status !== 'ready' || board.offers.length === 0) throw new Error('Feasible board became empty');
-      if (board.offers.some(entry => entry.id === 'gated')) sawGated = true;
-
-      const busy = new Set<string>();
-      const inService = new Map<string, Ships[number]>();
-      for (let action = 0; action < data.rules.cycle.actions && !completed.includes('finale'); action++) {
-        phase = `cycle ${cycle.cycle} action ${action + 1}`;
-        const availableCrew = crew.filter(member => !busy.has(member.id));
-        const schedule = scheduleKeystones({
-          cycle,
-          resources: game.res,
-          ships,
-          crew: availableCrew,
-          gear,
-          flags,
-          leads,
-          completed,
-          keystones: simulationKeystones,
-          roles: simulationRoles,
-        });
-        blockedDue ||= schedule.blockedDue.length > 0;
-        const full = cycle.pursuit.value === cycle.pursuit.length;
-        if (full && completed.includes('opening') && !completed.includes('finale')) {
-          clockFinale = true;
-          if (!schedule.offers.some(offer => offer.keystone.id === 'finale' && offer.forced))
-            throw new Error('Full Pursuit did not force the finale');
-        }
-        const due = !completed.includes('opening')
-          ? ['opening']
-          : full
-            ? ['finale']
-            : [...simulationRoles.middleIds, 'finale'];
-        for (const id of due) {
-          const key = simulationKeystones.find(entry => entry.id === id)!;
-          if (
-            cycle.cycle >= key.deadline &&
-            !completed.includes(id) &&
-            !schedule.offers.some(offer => offer.keystone.id === id && offer.forced) &&
-            !schedule.blockedDue.includes(id)
-          )
-            throw new Error(`Deadline disappeared: ${id}`);
-        }
-        for (const offer of schedule.offers)
-          if (offer.keystone.id.startsWith('middle_') && cycle.cycle < (offer.keystone.availableWhen.cycle ?? 0))
-            earlyLead = true;
-
-        // Revalidate the fixed Hub offers after action one without consuming the policy RNG.
-        const currentBoard = buildBoard(
-          {
-            cycle: cycle.cycle,
-            resources: game.res,
-            ships,
-            crew: availableCrew,
-            gear,
-            flags,
-            played,
-            encounters: board.offers,
-          },
-          createSeededRng(rng.getState()),
-        );
-        const options: Candidate[] = [
-          ...currentBoard.offers.map(entry => ({ kind: 'encounter' as const, entry })),
-          ...schedule.offers.map(offer => ({ kind: 'keystone' as const, entry: offer.keystone, forced: offer.forced })),
-        ];
-        const legal = options.filter(
-          option =>
-            availableCrew.length > 0 && (option.kind === 'keystone' || option.entry.cost <= (game.res.Credits ?? 0)),
-        );
-        const forced = legal.filter(option => option.kind === 'keystone' && option.forced);
-        if (legal.length === 0) {
-          passes++;
-          trail.push(`${phase}: pass (fixed board has no currently legal action)`);
-          cycle = { ...cycle, actionsLeft: cycle.actionsLeft - 1 };
-          continue;
-        }
-        const candidate = pick(forced.length ? forced : legal);
-        cycle = { ...cycle, actionsLeft: cycle.actionsLeft - 1 };
-
-        const member = candidate.entry.requires.crew?.length
-          ? availableCrew.find(value => value.id === candidate.entry.requires.crew![0])!
-          : pick(availableCrew);
-        const eligibleShips = ships.filter(ship =>
-          candidate.entry.requires.shipTag ? ship.tags.includes(candidate.entry.requires.shipTag) : true,
-        );
-        const ship = pick(eligibleShips);
-        busy.add(member.id);
-        inService.set(ship.id, ship);
-        if (candidate.kind === 'encounter') {
-          if (candidate.entry.repeat.kind === 'once') {
-            if (onceCompletions.has(candidate.entry.id)) throw new Error(`Once-only repeated: ${candidate.entry.id}`);
-            onceCompletions.add(candidate.entry.id);
-          }
-          played.push({ id: candidate.entry.id, cycle: cycle.cycle });
-          addResource(game.res, data.rules, 'Credits', -candidate.entry.cost);
-        } else completed.push(candidate.entry.id);
-
-        const assist = assistOf(member, member.trust, data.rules);
-        const basic = setupRoll(
-          data.character,
-          data.rules,
-          { skills: [assist.skill], target: data.rules.defaultTarget, bonuses: [] },
-          () => false,
-        );
-        const setup = {
-          ...basic,
-          mod: basic.mod + assist.n,
-          parts: [...basic.parts, { label: member.name, n: assist.n }],
-        };
-        let result = makeRoll(setup, data.rules, dice);
-        if (result.grade !== 'clean' && (game.res.Edge ?? 0) > 0 && rng.next() < 0.3) {
-          result = spendEdge(result, setup, data.rules, dice);
-          addResource(game.res, data.rules, 'Edge', -1);
-        }
-        if (result.grade === 'clean') addResource(game.res, data.rules, 'Renown', 1);
-        if (result.grade === 'fail') addResource(game.res, data.rules, 'Strain', 1);
-        if (candidate.kind === 'encounter') {
-          if (result.grade !== 'fail') addResource(game.res, data.rules, 'Credits', 1500);
-          if (candidate.entry.lead && result.grade !== 'fail' && !leads.includes(candidate.entry.lead))
-            leads.push(candidate.entry.lead);
-          if (candidate.entry.id === 'gated' && result.grade === 'clean') flags = { aid: true };
-        }
-        if (result.grade !== 'fail' && member.trust < 3) {
-          crew = crew.map(value => (value.id === member.id ? { ...value, trust: value.trust + 1 } : value));
-          const reward = earnEdge(cycle, game, member, crew.find(value => value.id === member.id)!.trust, data.rules);
-          cycle = reward.cycle;
-          game = reward.game;
-        }
-        if (result.grade === 'clean' && gear.length === 0 && rng.next() < 0.3) gear = ['probe'];
-        trail.push(
-          `${phase}: ${candidate.entry.id} crew=${member.id} ship=${ship.id} ${result.grade} pursuit=${cycle.pursuit.value}`,
-        );
+      ok(hub.boardStatus !== 'no-eligible-offers', 'Feasible fixture exhausted its board');
+      if (hub.cycle.actionsLeft === 0) {
+        ok(hub.boardStatus === 'actions-spent');
+        coverage.add('actions-spent');
+        const cycle = hub.cycle.cycle;
+        trail.push('endCycle');
+        s.endCycle();
+        ok(view().cycle.cycle === cycle + 1);
+        ok(view().cycle.actionsLeft === data.rules.cycle.actions);
+        deepStrictEqual(view().busyCrewIds, []);
+        continue;
       }
-      if (completed.includes('finale')) break;
-      phase = `cycle ${cycle.cycle} end`;
-      if (cycle.actionsLeft !== 0) throw new Error(`Expected zero actions left, got ${cycle.actionsLeft}`);
-      const advance = endCycle(
-        cycle,
-        game,
-        [...inService.values()],
-        { loud: rng.next() < 0.25, quiet: rng.next() < 0.25 },
-        data.rules,
+      ok(hub.boardStatus === 'ready');
+      const legal = hub.offers.filter(o => o.kind === 'keystone' || o.entry.cost <= (hub.res.Credits ?? 0));
+      ok(legal.length > 0, 'No runnable offer');
+      const forced = hub.offers.filter(o => o.forced);
+      if (forced.length) {
+        coverage.add('forced');
+        ok(!hub.choices.some(c => c.id === 'endCycle'));
+        ok(hub.offers.every(o => o.forced));
+      }
+      // Fixture requirements are feasible: every completed job enables the conditional's aid flag.
+      const clockFull = hub.cycle.pursuit.value === hub.cycle.pursuit.length;
+      const dueRoles = !completed.has(roles.firstId)
+        ? [roles.firstId]
+        : clockFull
+          ? [roles.finaleId]
+          : [
+              ...roles.middleIds,
+              ...(roles.middleIds.filter(id => completed.has(id)).length >= roles.minCompletedMiddle
+                ? [roles.finaleId]
+                : []),
+            ];
+      for (const key of fixture.keystones) {
+        if (completed.has(key.id) || !dueRoles.includes(key.id)) continue;
+        if (hub.cycle.cycle >= key.deadline || (key.id === roles.finaleId && clockFull)) {
+          ok(
+            hub.offers.some(o => o.entry.id === key.id && o.forced),
+            `Missing forced due offer: ${key.id}`,
+          );
+          if (hub.cycle.cycle >= key.deadline) coverage.add('deadline');
+        }
+      }
+      for (const offer of hub.offers) {
+        if (offer.entry.id === 'gated') coverage.add('gated');
+        if (
+          offer.kind === 'keystone' &&
+          offer.entry.id.startsWith('middle_') &&
+          hub.cycle.cycle < (offer.entry.availableWhen.cycle ?? 0)
+        )
+          coverage.add('early-lead');
+      }
+      const offer = pick(legal);
+      trail.push(`pick=${offer.entry.id}`);
+      if (offer.entry.id === 'finale') {
+        coverage.add(hub.cycle.pursuit.value === hub.cycle.pursuit.length ? 'clock-finale' : 'evidence-finale');
+        if (hub.cycle.pursuit.value < hub.cycle.pursuit.length) {
+          ok(roles.middleIds.filter(id => completed.has(id)).length >= roles.minCompletedMiddle);
+        }
+      }
+      const beforePrepare = hubSave;
+      s.pickOffer(offer.entry.id);
+      if (policy.next() < 0.15) {
+        trail.push('cancelPrepare');
+        s.cancelPrepare();
+        deepStrictEqual(s.save(), beforePrepare);
+        coverage.add('cancel');
+        s.pickOffer(offer.entry.id);
+      }
+      const available = view().choices.flatMap(c => (c.command?.code === 'crew' ? [c.command.crewId] : []));
+      ok(available.every(id => fixture.crew.some(c => c.id === id && c.assignable) && !hub.busyCrewIds.includes(id)));
+      if (hub.busyCrewIds.length) coverage.add('busy');
+      const crewIds = [...(offer.entry.requires.crew ?? [])];
+      const extra = available.filter(id => !crewIds.includes(id));
+      if (extra.length && policy.next() < 0.6) crewIds.push(pick(extra));
+      const ships = fixture.ships.filter(
+        ship => !offer.entry.requires.shipTag || ship.tags.includes(offer.entry.requires.shipTag),
       );
-      cycle = advance.cycle;
-      game = advance.game;
-      if (cycle.actionsLeft !== data.rules.cycle.actions) throw new Error('endCycle did not reset actions');
-      trail.push(`${phase}: pursuit=${cycle.pursuit.value}/${cycle.pursuit.length} credits=${game.res.Credits}`);
+      const shipId = !offer.entry.requires.shipTag && policy.next() < 0.5 ? null : pick(ships).id;
+      trail.push(`assign ship=${shipId} crew=${crewIds.join(',')}`);
+      s.assign({ shipId, crewIds });
+      ok(view().choices.some(c => c.id === 'confirm'));
+      if ((turn === 0 && reloadPoint === 'prepare') || policy.next() < 0.2) reload('prepare');
+      trail.push('confirm');
+      s.confirm();
+      ok(view().cycle.actionsLeft === hub.cycle.actionsLeft - 1);
+      ok(view().res.Credits === hub.res.Credits! - (offer.kind === 'encounter' ? offer.entry.cost : 0));
+      ok(crewIds.every(id => view().busyCrewIds.includes(id)));
+      if (shipId === null) coverage.add('ship-free');
+      if (offer.kind === 'encounter' && offer.entry.repeat.kind === 'once') {
+        ok(!once.has(offer.entry.id), `Once-only repeated: ${offer.entry.id}`);
+        once.add(offer.entry.id);
+      }
+      if ((turn === 0 && reloadPoint === 'scene') || policy.next() < 0.2) reload('scene');
+      const prechoice = s.save();
+      const choice = pick(view().choices).id;
+      trail.push(`choice=${choice} crew=${crewIds.join(',')} ship=${shipId}`);
+      s.act(choice);
+      deepStrictEqual(s.save(), prechoice);
+      const replay = (label: string) => {
+        const saved = s.save();
+        s = make(saved);
+        deepStrictEqual(s.save(), prechoice);
+        s.act(choice);
+        coverage.add(`reload:${label}`);
+        trail.push(`reload:${label}`);
+      };
+      if (policy.next() < 0.15) replay('staged');
+      if (policy.next() < 0.1) {
+        trail.push('odds/back');
+        s.act('odds');
+        ok(view().odds !== null);
+        s.act('back');
+        deepStrictEqual(s.save(), prechoice);
+        s.act(choice);
+        coverage.add('back');
+      }
+      const diceBefore = dice.getState();
+      trail.push('try');
+      s.act('try');
+      if (view().choices.some(c => c.id === 'accept')) {
+        deepStrictEqual(s.save(), prechoice);
+        if (policy.next() < 0.15) {
+          const rolled = view();
+          dice = createSeededRng(diceBefore);
+          replay('rolled');
+          s.act('try');
+          deepStrictEqual(view(), rolled);
+        }
+        const action = policy.next() < 0.5 ? 'edge' : 'accept';
+        trail.push(action);
+        coverage.add(action);
+        s.act(action);
+      }
+      const lastRoll = view()
+        .events.filter(e => e.type === 'roll')
+        .at(-1)!;
+      ok(lastRoll.type === 'roll');
+      coverage.add(lastRoll.grade);
+      const reward = view().cycle.edgeEarnedCrewIds;
+      ok(new Set(reward).size === reward.length);
+      const trustNotes = view().ledger.filter(n => n.command?.code === 'trustReward');
+      ok(trustNotes.length <= 1, 'Repeated trust reward');
+      if (view().crewTrust.priya === 3) {
+        coverage.add('trust-reward');
+        ok(reward.includes('priya') && trustNotes.length === 1);
+      }
+      ok(view().phase === 'hub' || view().ended);
     }
-    if (!completed.includes('finale')) throw new Error('Finale not reached by cycle 12');
-    return { earlyLead, clockFinale, blockedDue, sawGated, passes };
+    ok(view().ended, 'Finale not reached within 40 public actions');
+    ok(s.save().run.completed.includes('finale'));
+    reload('ended');
+    return coverage;
   } catch (error) {
-    throw new Error(`seed=${seed} slice=${slice} phase=${phase}\n${trail.join('\n')}\n${String(error)}`);
+    throw new Error(`SIM_SEED=${seed} SIM_MODE=${slice ? 'slice' : 'full'}\n${trail.join('\n')}\n${String(error)}`, {
+      cause: error,
+    });
   }
 }
 
-describe('seeded cycle simulation', () => {
-  it('validates the synthetic catalog against current schemas', () => {
-    for (const entry of simulationEncounters) expect(EncounterSchema.parse(entry)).toEqual(entry);
-    for (const entry of simulationKeystones) expect(KeystoneSchema.parse(entry)).toEqual(entry);
-  });
-
-  it('completes 1,000 seeded full and slice runs with legal offers and deadlines', () => {
-    let lead = 0,
-      clock = 0,
-      blocked = 0,
-      gated = 0,
-      passes = 0;
-    for (let seed = 0; seed < 1000; seed++) {
-      const result = run(seed, seed % 2 === 1);
-      lead += Number(result.earlyLead);
-      clock += Number(result.clockFinale);
-      blocked += Number(result.blockedDue);
-      gated += Number(result.sawGated);
-      passes += result.passes;
+describe('seeded GameSession simulation', () => {
+  it('completes 1,000 distinct seeds across full and slice seasons using public APIs', () => {
+    // Reproduce with SIM_SEED=... SIM_MODE=full|slice; unset both for the complete cohort.
+    const selectedSeed = process.env.SIM_SEED;
+    ok(!process.env.SIM_MODE || ['full', 'slice'].includes(process.env.SIM_MODE), 'SIM_MODE must be full or slice');
+    if (selectedSeed !== undefined)
+      ok(/^\d+$/.test(selectedSeed) && Number(selectedSeed) <= 0xffffffff, 'SIM_SEED must be a uint32');
+    for (const slice of [false, true]) {
+      if (process.env.SIM_MODE && process.env.SIM_MODE !== (slice ? 'slice' : 'full')) continue;
+      const covered = new Set<string>();
+      const seeds =
+        selectedSeed !== undefined
+          ? [Number(selectedSeed)]
+          : Array.from({ length: 500 }, (_, i) => i * 2 + Number(slice));
+      for (const seed of seeds) for (const event of run(seed, slice)) covered.add(event);
+      if (!process.env.SIM_SEED)
+        for (const event of [
+          'actions-spent',
+          'cancel',
+          'busy',
+          'ship-free',
+          'forced',
+          'deadline',
+          'gated',
+          'early-lead',
+          'clock-finale',
+          'evidence-finale',
+          'trust-reward',
+          'edge',
+          'back',
+          'clean',
+          'cost',
+          'fail',
+          'reload:hub',
+          'reload:prepare',
+          'reload:scene',
+          'reload:staged',
+          'reload:rolled',
+          'reload:ended',
+        ])
+          expect(covered, `${slice ? 'slice' : 'full'} missing ${event}`).toContain(event);
     }
-    expect(Math.min(lead, clock, blocked, gated)).toBeGreaterThan(0);
-    expect(passes).toBeGreaterThan(0);
   }, 30_000);
 
-  it('seed 77 can pass its second action after assigning the only required crew', () => {
+  // Independent engine boundaries: deliberately infeasible inputs are outside the runnable session cohort.
+  it('seed 77 distinguishes remaining unaffordable offers from an empty draw', () => {
     const fixedOffers = simulationEncounters.filter(entry =>
       ['first_crisis', 'lead_who', 'gated', 'stretch'].includes(entry.id),
     );
@@ -253,7 +322,6 @@ describe('seeded cycle simulation', () => {
     );
     expect(afterFirstAction.offers.map(entry => entry.id)).toEqual(['stretch']);
     expect(afterFirstAction.offers.filter(entry => entry.cost <= 51000)).toEqual([]);
-    expect(run(77, true)).toBeTruthy();
   });
 
   it('reports an exhausted board and a hard-blocked due finale honestly', () => {
