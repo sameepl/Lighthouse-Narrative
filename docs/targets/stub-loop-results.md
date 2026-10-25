@@ -1,6 +1,6 @@
 # Stub-quality loop results — issue #66
 
-Outcome: neither writer qualified. No numeric rubric result was eligible because every candidate failed gates.
+Initial Qwen/Luna outcome: neither writer qualified. No numeric rubric result was eligible because every candidate failed gates.
 `NS` means rejected before scoring, not zero and not an estimated score. Targets retain their supplied 19/20.
 The contract, rubric, reference targets and draft PRs #60/#61 were not changed. Nothing is merged by this task.
 
@@ -86,8 +86,8 @@ Do not change the rubric or targets in this results PR. Clarify these separately
 
 - The copying gate rejects shared five-word phrases supplied by the brief, including “forty crates of water
   filters” and “chief of the berth crew”. Separate input overlap from learned copying in a future ruling.
-- The scout sensory allocation explicitly repeats sound/light; the contract says never reuse a detail.
-  Writers were held to the stricter contract, not permitted to weaken it to fit that allocation.
+- Distinguish a sensory category from a detail: amber beacons and distant hab work lights are different
+  details. Reusing the category light or sound is not, on its own, a no-reuse failure.
 - The scout label above exceeds the contract's 3–8-word limit, and its first cost/fail both lose 500 Credits.
   “Smaller cost” cannot mean strictly smaller numerical loss for that fixed pair; cross-resource costs lack a scale.
 - “Sentence opener” has no specified token length, and “noun phrase” needs a reproducible definition.
@@ -95,7 +95,27 @@ Do not change the rubric or targets in this results PR. Clarify these separately
 - Both judges agree on rejection, but differed on whether Luna's initial scout ending and sensory reuse fail.
   Preserve those reports for calibration; there are no eligible numeric totals to compare for the >3-point flag.
 
-## Evidence
+## Sol drafting follow-up — 2026-10-25
+
+Same frozen benchmark briefs and coordinator checker, writer `gpt-6.1-sol`, no full target exposure.
+Independent blind judges were `gpt-6-sol` and `gpt-6-luna`, both different from the writer model.
+
+| Scene | Contract-only first pass | Final judges A / B | Gates and checks | Feedback needed |
+|---|---|---|---|---|
+| Trade / Hearthline berths | NS / NS | 19 / 20 | All pass | Copying/repetition and payment clarification, then an opening-only sentence repair |
+| Scout / the Shoal | NS / NS | 20 / 20 | All pass | Repeated noun phrases and sentence openers |
+
+All five preserved Sol versions individually passed `npm run check` (230 tests, types, format, build).
+Only the two final versions pass the additional content gates. Targeted revisions are not new independent
+baseline samples, and two different briefs do not establish the required three-brief streak.
+The trade's remaining one-point deduction is ambiguity about receipt versus payment of a handling bonus.
+No content is shipped and no general guidance is promoted. Readable drafts and full raw/review evidence are
+outside the checkout at `../../outputs/sol-stub-trial-2026-10-25/`, including `DRAFTS.md` and `REVIEW.md`.
+One judge initially conflated categories with details and a shared goal with repeated result objects;
+fact-checking withdrew those unsupported claims. Original and corrected verdicts remain preserved.
+That calibration correction explains the sensory clarification above; the rubric itself is unchanged.
+
+## Initial Qwen/Luna evidence
 
 Local-only evidence is outside the Git checkout at `../../outputs/stub-loop/` relative to this worktree:
 raw JSON/text, frozen prompts, Qwen native requests/responses/usage, plan passes, brief/location copies,

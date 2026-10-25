@@ -28,3 +28,16 @@ benchmark candidates met all ten bands. Gate-clean rate stayed zero for both.
 Keep Qwen exploratory and Luna supervised; do not route these archetypes to either for acceptance without review.
 For accepted prose now, route to a stronger writer and owner review. Implement #63 before another loop.
 Use new held-outs, isolated single-rule ablations and fresh writer sessions before promoting guidance.
+
+## Sol follow-up — 2026-10-25
+
+The owner requested the same scenes from `gpt-6.1-sol`, with full targets still hidden.
+Contract-only first drafts met all passage length/shape rules but failed copying/repetition gates (both NS).
+After targeted feedback, scout passed with one revision; trade needed that revision plus an opening-only
+short-sentence repair. Each of five saved versions passed repository checks; rejected versions remain preserved.
+The final trade scored 19/20 and 20/20; scout scored 20/20 and 20/20 from independent blind
+`gpt-6-sol` and `gpt-6-luna` judges. Both passed all prose/semantic gates, with no >3-point disagreement.
+The trade's one-point deduction concerned whether a handling bonus is actually paid to the player's ship.
+This supports Sol for supervised drafting with specific feedback. It is two briefs, not a three-brief
+qualification streak or a demonstrated lowest guidance level. Revisions used a continuing writer session.
+No general guidance rule is promoted; the feedback repaired those particular drafts.
