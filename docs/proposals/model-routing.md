@@ -26,6 +26,7 @@ Route by **cost of a mistake and player attention**, not by a model's general qu
 | Roster variants, complication swap-ins, barks, ledger notes, board-card text | Qwen and Luna (or equivalents) via the loop in `docs/targets/README.md` | The loop decides who qualifies per archetype. |
 | Code: default implementer and reviewer | Sol | Unchanged from `WORK_PLAN.md`. |
 | High-risk contract and state-ownership reviews | Astra | Unchanged: short, focused reviews only. |
+| Bake-off writing candidates | Sonnet, Opus, Sol, Astra, Luna and Qwen | All six write the same trial briefs, including Opus and Astra. This is an experiment, not a production-writing assignment. |
 | Bounded mechanical work: fixtures, scaffolds, data entry from canon files, docs | Luna | Unchanged. |
 | Reviewer of every PR | Sonnet in the GitHub Action, Opus second opinion on core PRs | Already wired (`.github/workflows/review.yml`). |
 
@@ -33,7 +34,7 @@ Not decided by this proposal: prices, rate limits and the exact capability of ea
 
 ## 4. Rules
 
-1. **Cross-review.** A model family does not review its own output as the only check. Claude reviews OpenAI-written code; Sol or Astra reviews Claude-written code. A content judge is never the writer's model.
+1. **Cross-review.** A model family does not review its own output as the only check. Claude reviews OpenAI-written code; Sol or Astra reviews Claude-written code. For the bake-off, the owner approved Opus and Astra as both writers and judges (2026-10-26): both independently judge every anonymous candidate, including their own model's or family's output, in fresh judge sessions separate from writing. Neither is the sole check on its own output; the other judge and the owner's blind ratings provide independent checks. This experiment-specific exception does not change production review policy.
 2. **Escalate by archetype.** If a writer model cannot reach the bar on a scene type after five rounds, that type moves up a tier. The pipeline stays the same.
 3. **Automation first.** The content lint (issue #63), the canon guard and the zone check carry the volume. Model review is for what they cannot see.
 4. **Canon access by role.** Only the canon steward reads `docs/canon-gm/`. Writer models get briefs and player-safe location files only.
@@ -53,11 +54,11 @@ Measures to record per phase: rubric score, gate failures, rounds, tokens per sc
 
 ## 5b. Quality bake-off (all six models, including Sonnet and Opus)
 
-Sonnet and Opus are proposed as writers in section 3 but have **not been tested as writers** in this repo. The targets in `docs/targets/` were written by a Claude model, so a rubric built on them can favour Claude's style. A fair comparison needs to be designed, not assumed.
+All six models participate as writers, including Opus and Astra; their production roles remain provisional. Sonnet, Opus and Astra have **not been tested as writers** in this repo. The targets in `docs/targets/` were written by a Claude model, so a rubric built on them can favour Claude's style. A fair comparison needs to be designed, not assumed.
 
 **Design**
 
-- **Same inputs.** Every model gets the same brief and the same context bundle (contract, location file, voice cards). No model sees the targets or another model's output.
+- **Same inputs.** Every writer session gets the same brief and the same context bundle (contract, location file, voice cards). Writers never see the targets or another writer's output. Judge sessions are separate and receive only anonymous candidate packets, not writing-session history or author metadata.
 - **Four test categories**, three briefs each, written by the coordinator:
   1. *Roster stub*: a brief like the targets (the cheap, high-volume work).
   2. *Spine scene*: two or three voices from `docs/canon/voices/`, a choice with consequences.
@@ -67,8 +68,9 @@ Sonnet and Opus are proposed as writers in section 3 but have **not been tested 
 - **Samples.** Two per model per brief, so one lucky draw does not decide it. About 6 models x 4 categories x 3 briefs x 2 samples = 144 candidates.
 - **Blind and randomised.** Candidates are labelled with random ids, formatting is normalised, and length is held inside the word bounds so verbosity does not win.
 - **Judges.**
-  - The **owner** rates the voice-heavy categories (2 and 3) blind. This is the primary judgment for voice.
-  - **Two model judges from different families**, neither judging its own family's output, run pairwise comparisons on the rubric.
+  - The **owner** rates all pilot candidates blind to calibrate the judges. For later voice-heavy categories (2 and 3), the owner's blind judgment is primary.
+  - **Opus and Astra both independently judge every anonymous candidate**, with the same rubric and randomised presentation order. Neither skips its own model's or family's candidates. Keep each judge's scores separate to measure disagreement and possible self/family preference rather than hiding it in an average.
+  - A total-score difference greater than 3 points, or conflicting safety/gate findings, is flagged for owner review before acceptance.
   - **Automated gates and metrics**: the gates in `docs/targets/README.md`, plus repetition, sentence-length variety and canon-guard hits.
 - **Traps.** Include at least one brief that invites a violation (it tempts the model to write Marcus's thoughts, or offers a spoiler-sounding detail). Count violations. A model that falls for a trap is penalised regardless of prose quality.
 - **Cost measures**, per accepted scene, not per attempt: rounds to pass, tokens, owner edit burden (how much the owner changes), and reviewer time.
@@ -86,11 +88,11 @@ Sonnet and Opus are proposed as writers in section 3 but have **not been tested 
 **Who does what**
 
 - *Briefs*: written jointly by Claude and Codex, or split half and half, so no family sets the test. Hold-out briefs stay out of every model's context.
-- *Candidates*: Claude generates the Sonnet and Opus candidates in a session by launching one subagent per brief on a stated model, given only the brief bundle (no API key needed on a subscription plan). Codex generates the Sol, Astra, Luna and Qwen candidates.
+- *Candidates*: all six models write candidates. Claude generates Sonnet and Opus candidates in fresh writer sessions on stated models, given only the brief bundle. Codex generates Sol, Astra, Luna and Qwen candidates. Opus and Astra's writing sessions are isolated from their judging sessions.
 - *Anonymising*: the coordinator assigns random ids and keeps the id-to-model key private. Judges and the owner never see it.
 - *Gates*: automated checks run first (issue #63; by hand until it exists).
-- *Judges*: Opus and Astra, each skipping their own family's candidates; Qwen candidates go to both. Each scores candidates on the rubric rather than comparing every pair.
-- *Owner*: rates blind, only voice-heavy categories, only finalists (the top three or four per brief).
+- *Judges*: Opus and Astra each score every anonymous candidate independently on the same rubric in fresh judge sessions; no family-based exclusions. Preserve separate scores and randomised order. Neither receives the identity key or writer history, including for its own model's candidates.
+- *Owner*: rates all 12 pilot candidates blind. In later voice-heavy categories, rates finalists and adjudicates flagged score/safety disagreements; owner ratings remain separate from model scores.
 
 **The blind rating page (build task)**
 
