@@ -8,6 +8,7 @@ const words = text => text.toLowerCase().match(/[\p{L}\p{N}]+(?:['’][\p{L}\p{N
 const validId = value => typeof value === 'string' && /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/.test(value);
 const locationPattern = /^docs\/canon\/locations\/[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
 export function parseScene(ink, encounter) {
+  if (/\/\*|\*\//.test(ink)) throw new Error('Unsupported block comment');
   const metadata = ink.match(/^\/\/ @content (.+)$/m);
   if (!metadata || [...ink.matchAll(/^\/\/ @content /gm)].length !== 1)
     throw new Error('Missing // @content JSON metadata');

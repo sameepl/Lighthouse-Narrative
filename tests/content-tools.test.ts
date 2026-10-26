@@ -95,6 +95,12 @@ describe('Ink parser and metadata association', () => {
     expect(parsed.outcomes[0]!.effects).toEqual([['Credits', 1500]]);
   });
   it.each([
+    (text: string) => text.replace('~ add("Credits", 1500)', '/* hidden\n~ add("Credits", 1500)\nend */'),
+    (text: string) =>
+      text.replace(
+        '~ note("cost", "[STUB] Credits +1,500")',
+        '/* hidden\n~ note("cost", "[STUB] Credits +1,500")\nend */',
+      ),
     (text: string) => text + '\n=== rogue ===\n~ add("Credits", 1500)',
     (text: string) => '~ add("Credits", 1500)\n' + text,
     (text: string) => text.replace('-> scene_end', '~ add("Credits", 1500)\n-> scene_end'),
