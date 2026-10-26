@@ -1,3 +1,6 @@
+import { scheduleKeystones } from '../src/engine/keystones';
+import { auditReachability } from './content-reachability';
+import type { Encounter, Keystone, Season } from '../src/data/schema';
 import { describe, expect, it } from 'vitest';
 import { Story } from 'inkjs';
 import inkJson from '../src/story/main.ink';
@@ -160,5 +163,143 @@ describe('storylet catalogs', () => {
     const config = JSON.parse(readFileSync('.github/zones.json', 'utf8')) as ZoneConfig;
     const files = ['src/data/schema.ts', 'src/data/validate.ts', 'src/data/index.ts', 'src/engine/cycle.ts'];
     for (const zone of ['feature', 'content']) expect(checkZones({ zone, files }, config).violations).toEqual(files);
+  });
+});
+
+// Metadata gates remain useful before content activation; no synthetic fixture is a real ending.
+describe('M0 reachability policy', () => {
+  const season: Extract<Season, { status: 'configured' }> = {
+    status: 'configured',
+    slice: { firstId: 'opening', middleIds: ['middle_a', 'middle_b'], finaleId: 'finale', minCompletedMiddle: 2 },
+    full: {
+      firstId: 'opening',
+      middleIds: ['middle_a', 'middle_b', 'conditional'],
+      conditionalId: 'conditional',
+      finaleId: 'finale',
+      minCompletedMiddle: 2,
+    },
+  };
+  const keys = (): Keystone[] =>
+    ['opening', 'middle_a', 'middle_b', 'conditional', 'finale'].map(id => ({
+      ...keystone,
+      id,
+      elevates: 'standoff',
+      piece: 'none',
+      deadline: id === 'conditional' ? 6 : 4,
+    }));
+  const audit = (ks = keys(), es: Encounter[] = [], config: Season = season) =>
+    auditReachability(
+      es,
+      ks,
+      config,
+      Object.fromEntries([
+        ...ks.map(key => [`./keystones/${key.id}.json`, key]),
+        ...es.map(entry => [`./encounters/${entry.id}.json`, entry]),
+      ]),
+    );
+
+  it('accepts both modes, including a full-only cycle-six conditional', () => {
+    expect(audit()).toEqual([]);
+  });
+
+  it.each(['slice', 'full'] as const)('schedules depleted opening and emergency finale throughout %s', mode => {
+    const roles = season[mode];
+    const clockLength = mode === 'slice' ? 4 : 6;
+    for (let cycle = 1; cycle <= (mode === 'slice' ? 4 : 6); cycle++) {
+      const input = {
+        cycle: { cycle, actionsLeft: 0, pursuit: { value: clockLength, length: clockLength }, edgeEarnedCrewIds: [] },
+        resources: { Credits: 0 },
+        ships: [],
+        crew: [],
+        gear: [],
+        flags: {},
+        leads: [],
+        keystones: keys(),
+        roles,
+      };
+      // Opening precedes even an emergency finale; this is the scheduler's real depleted-state path.
+      expect(scheduleKeystones({ ...input, completed: [] }).offers.map(offer => offer.keystone.id)).toEqual([
+        'opening',
+      ]);
+      expect(scheduleKeystones({ ...input, completed: ['opening'] }).offers.map(offer => offer.keystone.id)).toEqual([
+        'finale',
+      ]);
+    }
+  });
+  it.each(['opening', 'finale'])('keeps %s requirement-free with no Credits, ships, crew, gear or flags', id => {
+    expect(audit()).toEqual([]);
+    for (const requires of [
+      { minCredits: 1 },
+      { shipTag: 'quiet' },
+      { crew: ['priya'] },
+      { gear: ['probe'] },
+      { flags: ['priya_read'] },
+      { cycle: { min: 2 } },
+      { minCredits: 0 },
+    ]) {
+      const ks = keys();
+      ks.find(key => key.id === id)!.requires = requires;
+      expect(audit(ks)).toContain(`./keystones/${id}.json [${id}]: slice opening/finale requires must be empty`);
+    }
+  });
+
+  it.each(['slice', 'full'] as const)('enforces the %s deadline horizon', mode => {
+    const ks = keys();
+    const id = mode === 'slice' ? 'middle_a' : 'conditional';
+    ks.find(key => key.id === id)!.deadline = mode === 'slice' ? 5 : 7;
+    expect(audit(ks)).toContain(
+      `./keystones/${id}.json [${id}]: ${mode} deadline exceeds cycle ${mode === 'slice' ? 4 : 6}`,
+    );
+  });
+
+  it('checks extra catalog deadlines without assigning them a season role', () => {
+    const extra: Keystone = { ...keys()[0]!, id: 'unused', deadline: 6 };
+    expect(audit([...keys(), extra])).toEqual([]);
+    expect(audit([...keys(), { ...extra, deadline: 99 }])).toContain(
+      './keystones/unused.json [unused]: unassigned catalog deadline exceeds cycle 6',
+    );
+  });
+  it('names the season file and missing role ID', () => {
+    expect(audit(keys().filter(key => key.id !== 'middle_a'))).toContain(
+      'src/data/season.json [middle_a]: slice role missing from keystone catalog',
+    );
+  });
+
+  it('checks encounter lead targets and availability keys independently', () => {
+    expect(audit(keys(), [{ ...encounter, lead: 'middle_a' }])).toEqual([]);
+    expect(audit(keys(), [{ ...encounter, lead: 'missing' }])).toContain(
+      './encounters/written_clause.json [written_clause]: lead: unknown key missing',
+    );
+    const ks = keys();
+    ks[1]!.availableWhen = { lead: 'missing', cycle: 1 };
+    expect(audit(ks)).toContain('./keystones/middle_a.json [middle_a]: availableWhen.lead: unknown key missing');
+  });
+
+  it('requires a real encounter producer for lead-only and lead/cycle OR availability', () => {
+    const ks = keys();
+    ks[1]!.availableWhen = { lead: 'middle_b' };
+    expect(audit(ks, [{ ...encounter, lead: 'middle_b' }])).toEqual([]);
+    expect(audit(ks, [{ ...encounter, lead: 'middle_a' }])).toContain(
+      './keystones/middle_a.json [middle_a]: availableWhen.lead: no encounter producer for middle_b',
+    );
+    ks[1]!.availableWhen.cycle = 2;
+    expect(audit(ks, [{ ...encounter, lead: 'middle_b' }])).toEqual([]);
+    expect(audit(ks)).toContain(
+      './keystones/middle_a.json [middle_a]: availableWhen.lead: no encounter producer for middle_b',
+    );
+  });
+
+  it('handles unconfigured state explicitly without inventing roles, while still checking wiring', () => {
+    expect(audit([], [], { status: 'unconfigured' })).toEqual([]);
+    expect(audit([], [{ ...encounter, lead: 'missing' }], { status: 'unconfigured' })).toHaveLength(1);
+  });
+
+  it('audits the real catalog against its loaded season configuration', () => {
+    expect(
+      auditReachability(data.encounters, data.keystones, data.season, {
+        ...encounterFiles,
+        ...keystoneFiles,
+      }),
+    ).toEqual([]);
   });
 });
