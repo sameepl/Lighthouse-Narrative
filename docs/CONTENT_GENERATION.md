@@ -208,3 +208,37 @@ accuracy, canon, agency, specific fail-forward routes or semantic outcome qualit
 Optional coordinator `loud_quiet` metadata maps outcome knot names to `loud` or
 `quiet`, authorizing Pursuit +1 or -1 respectively. Unmarked Pursuit changes fail;
 Pursuit does not replace the required grade-specific gain or cost.
+
+## 11. Assemble coordinator briefs and writer JSON (issue #70)
+
+```sh
+npm run assemble:scene -- --brief path/to/brief.json --passages path/to/passages.json
+# Optional: --root path/to/repository (defaults to the current directory)
+```
+
+The command reads JSON only and creates the scene and encounter together. Both
+output directories must already exist. It refuses existing destinations, reserves
+both exclusively before writing, and removes only files it created if either
+reservation or write fails. Public location paths and output parents must have no
+symlink components. Input validation and the full existing roster lint run before
+reservation; the candidate must also use a location absent from that roster.
+
+Use the brief shape in section 2, with `effects` under each approach as in the
+reference `brief.json` files: each grade maps to arrays of `[resource, delta]`.
+Exactly three distinct labels, each 3–8 words, and two distinct known skills per
+label are required. Writer JSON has exactly `open`, `outcomes`, and `ending`;
+`outcomes` has exactly the brief's label keys, each with `clean`, `cost`, `fail`,
+and each grade has exactly `text` and `note`. Notes receive one deterministic
+`[STUB]` prefix; signed amounts must match the coordinator effects exactly.
+Optional `title`, `state_nouns`, `loud_quiet` (canonical outcome-knot keys), and
+`sensory_details_used` remain coordinator metadata. No new IDs are required.
+
+Assembler IDs must start `stub_` so directory lint covers every generated file.
+The `target_*` reference IDs are deliberately rejected; do not rename references
+or rewrite their labels automatically. The assembler generates only a1–a3 knots,
+fixed scaffold metadata and coordinator effects. It rejects multiline strings,
+control characters, backslashes, HTML angle brackets and Ink controls rather than escaping writer
+prose into executable Ink. Ordinary quotes and curly dialogue are supported.
+All visible generated strings carry `[STUB]`; no location field is added to the
+encounter JSON. Voice, sensory-detail accuracy, mutable-noun selection, meaningful
+outcomes and player agency still need the human review described above.

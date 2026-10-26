@@ -15,7 +15,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "npm run format:check && npm run lint:content && npm run typecheck && npm test && npm run build",
-    "lint:content": "node scripts/content-lint.mjs"
+    "lint:content": "node scripts/content-lint.mjs",
+    "assemble:scene": "node scripts/assemble-scene.mjs"
   },
   "dependencies": {
     "framer-motion": "^14.3.0",
