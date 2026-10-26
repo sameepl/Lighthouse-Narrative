@@ -89,7 +89,11 @@ export function parseScene(ink, encounter) {
     const lines = b.body.split(/\r?\n/).map(l => l.trim());
     const outcome = outcomes.includes(b);
     const destination = b === entry ? meta.id + '__menu' : b === ending ? 'scene_end' : meta.id + '__after';
-    if (lines.filter(l => l.startsWith('->')).join('') !== '-> ' + destination)
+    const executable = lines.filter(line => line && !line.startsWith('//'));
+    if (
+      executable.at(-1) !== '-> ' + destination ||
+      lines.filter(l => l.startsWith('->')).join('') !== '-> ' + destination
+    )
       throw new Error('Unsupported divert in ' + b.name);
     for (const line of lines) {
       if (!line || line.startsWith('//') || line.startsWith('->') || line === '# summary') continue;

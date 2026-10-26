@@ -61,8 +61,9 @@ function fixture() {
 }
 const destinations = (root: string) =>
   ['src/story/scenes/stub_fixture.ink', 'src/data/encounters/stub_fixture.json'].map(p => path.join(root, p));
-it('compiles real Ink, validates metadata and walks all nine effect-exact branches', () => {
+it.each(['Recon', 'Gun Combat'])('compiles real Ink with %s and walks all nine effect-exact branches', skill => {
   const { root, brief, writer } = fixture();
+  brief.approaches[0]!.skills[0] = skill;
   writer.outcomes[brief.approaches[0]!.label]!.clean!.note = '[STUB] “Paid” "Credits +1,500"';
   const result = assembleScene(brief, writer, root);
   expect(EncounterSchema.safeParse(result.encounter).success).toBe(true);
@@ -95,6 +96,7 @@ it('compiles real Ink, validates metadata and walks all nine effect-exact branch
       expect(story.currentChoices.every(c => c.text.startsWith('[STUB]'))).toBe(true);
       story.ChooseChoiceIndex(a);
       advance();
+      expect(story.variablesState.$('chk_skills')).toBe(brief.approaches[a]!.skills.join(','));
       story.variablesState.$('roll_grade', grade);
       story.ChooseChoiceIndex(0);
       advance();
@@ -151,6 +153,9 @@ it('rejects extra writer keys, labels, grades, duplicate approaches, unknown ski
     },
     (b: any) => {
       b.approaches[0].skills[0] = 'Invented';
+    },
+    (b: any) => {
+      b.approaches[0].skills[0] = 'Gun Combat\", -> scene_end';
     },
     (b: any, w: any) => {
       w.outcomes[b.approaches[0].label].clean.note = 'Credits +999';

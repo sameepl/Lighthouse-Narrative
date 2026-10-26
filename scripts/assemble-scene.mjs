@@ -21,7 +21,7 @@ const approach = z.strictObject({
     const n = s.match(/[\p{L}\p{N}]+(?:['’][\p{L}\p{N}]+)*/gu)?.length ?? 0;
     return n >= 3 && n <= 8;
   }, 'Labels need 3–8 words'),
-  skills: z.array(z.string().regex(/^[A-Za-z]+$/)).length(2),
+  skills: z.array(z.string().regex(/^[A-Za-z]+(?: [A-Za-z]+)*$/)).length(2),
   npc_reaction: safe,
   effects,
 });
