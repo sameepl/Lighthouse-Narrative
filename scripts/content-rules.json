@@ -1,0 +1,51 @@
+{
+  "banned": [
+    "the situation",
+    "the process",
+    "the interaction",
+    "next steps",
+    "the next decision",
+    "stable",
+    "smoothly",
+    "efficiently",
+    "precision",
+    "in unison",
+    "eyes narrowing",
+    "remains open",
+    "left open",
+    "without implying",
+    "nothing is decided",
+    "no decision",
+    "accepts the parley",
+    "approach",
+    "coordination succeeds",
+    "staff members",
+    "personnel",
+    "her hands resting",
+    "unyielding"
+  ],
+  "bands": {
+    "clean": {
+      "Credits": [[1000, 3000]],
+      "Renown": [[1, 1]],
+      "Strain": [[-1, -1]]
+    },
+    "cost": {
+      "Credits": [
+        [-1500, -500],
+        [0, 1000]
+      ],
+      "Strain": [[1, 1]]
+    },
+    "fail": {
+      "Credits": [[-1500, -500]],
+      "Strain": [[1, 1]]
+    }
+  },
+  "endingNouns": ["seal", "seals", "fee", "fees", "slot", "slots", "window", "windows", "cargo"],
+  "nominalStops": [
+    "a an the this that these those and or but as at by for from in into of on onto to with without is are was were be been has have had can could will would shall should may might",
+    "must does do did reads read draws draw holds hold takes take gives give says say waits wait opens open closes close moves move turns turn looks look checks check writes write nods nod points point shakes shake offers offer hands hand calls call keeps",
+    "keep goes go comes come gets get remains remain seems seem begins begin ends end then now still not no toward towards beside above below before after over under through across around behind between during until while which who"
+  ]
+}
