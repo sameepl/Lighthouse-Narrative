@@ -208,3 +208,20 @@ it('checks nonstub encounter JSON independently of stub Ink metadata', () => {
   writeFileSync(file, '{');
   expect(lintDirectory(root).join('\n')).toContain('catalog:');
 });
+
+it.each([
+  ['-> stub_fixture__menu', '[STUB] An unreachable opening sentence follows.'],
+  ['-> stub_fixture__after', '~ add("Credits", 1500)'],
+  ['-> stub_fixture__after', '~ note("gain", "[STUB] Credits +1500")'],
+  ['-> stub_fixture__after', '[STUB] Unreachable outcome prose follows.'],
+  ['-> scene_end', '[STUB] An unreachable ending sentence follows.'],
+  ['-> scene_end', '# summary'],
+])('rejects content after terminal divert %s: %s', (divert, extra) => {
+  expect(() => parseScene(ink().replace(divert, divert + '\n' + extra), fixture().encounter)).toThrow(
+    'Unsupported divert',
+  );
+});
+it('allows only blank lines and nonexecuting comments after a terminal divert', () => {
+  const text = ink().replaceAll('-> stub_fixture__after\n', '-> stub_fixture__after\n// Closing comment.\n\n');
+  expect(lintScene(parseScene(text, fixture().encounter))).toEqual([]);
+});
