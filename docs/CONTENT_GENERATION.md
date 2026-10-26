@@ -157,3 +157,54 @@ What failed in the first stubs, for contrast:
 
 - Bad: "The routing coordination succeeds and the dispatch staff confirms the path." It names the menu and "dispatch staff" is nobody.
 - Bad: "The exchange clarifies what a future decision would cover, while the inventory dispute itself remains unresolved." Nothing changes, and it hedges.
+
+## 10. Content lint operations (issue #71)
+
+`npm run lint:content` (also part of `npm run check`) checks every
+`src/story/scenes/stub_*.ink` and its same-id encounter JSON. An optional repository
+root can be passed with `npm run lint:content -- <root>`. A missing or malformed
+association fails; an empty stub roster passes. Existing structural/schema tests
+remain required.
+
+Coordinator-owned Ink metadata records location without adding encounter fields:
+
+```ink
+// @content {"id":"stub_example","location":"docs/canon/locations/the-shoal.md","state_nouns":["citation"]}
+```
+
+The comment ID must match the file and encounter ID, and the encounter `knot` must
+name the entry knot. Locations must be existing direct files in the public location
+directory; paths and symlink escapes are rejected. The shared ending knot is
+`<id>__after`. Exactly three distinct approach prefixes each have `_clean`, `_cost`, `_fail`
+outcome knots, plus an entry, `<id>__menu` and the shared ending. Existing named
+approaches and `a1`/`a2`/`a3` both work. Unsupported controls, extra knots, effects
+outside outcomes, symlink path components and orphan stub encounter files fail. `state_nouns` is optional coordinator metadata; supply the scene's
+additional mutable objects here. The fixed seal/fee/slot/window/cargo words are
+always checked. Without an additional list, the checker cannot infer other mutable
+objects from prose. It never reads the location file or any GM material.
+
+Operational definitions are deterministic: words are Unicode letter/number tokens
+with internal apostrophes; `[STUB]` and Ink tags do not count. Sentences split at
+`.`, `!`, `?`; the opener is the first **two words**, counted across all eleven
+passages. Outcome first-four-word uniqueness applies only to the nine outcomes.
+Banned phrases match whole token sequences, ignoring case and punctuation.
+
+The noun-phrase gate is a bounded heuristic: a determiner/possessive followed by at
+least two words up to a configured verb, preposition, conjunction or other stop
+word. It counts every prefix of three or more words across outcomes. This catches
+`the convoy master` and `the battered copper plate`, while excluding functional
+sequences such as `the chief reads`. It is not full grammatical analysis: unknown
+verbs and ambiguous English still require review. Edit the single
+`scripts/content-rules.json` for banned phrases, placeholder bands and lexical
+stops. Sensory categories are not individual details and are not repetition gates.
+
+Notes must contain exactly the same signed resource numbers as their outcome's
+literal `add()` calls (commas in numbers are accepted); unrelated numbers fail.
+Cost and fail need effects, clean needs a gain, and each outcome permits at most
+two distinct effects inside the placeholder bands. Positive/zero Credits on cost
+requires Strain +1; negative Credits cost is checked numerically, while “something
+gained” remains a reviewer judgment. This lint does not certify voice, sensory
+accuracy, canon, agency, specific fail-forward routes or semantic outcome quality.
+Optional coordinator `loud_quiet` metadata maps outcome knot names to `loud` or
+`quiet`, authorizing Pursuit +1 or -1 respectively. Unmarked Pursuit changes fail;
+Pursuit does not replace the required grade-specific gain or cost.
