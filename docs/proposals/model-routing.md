@@ -79,6 +79,33 @@ Sonnet and Opus are proposed as writers in section 3 but have **not been tested 
 
 **Scope.** Codex coordinates runs and gates, the owner rates, Claude supplies the briefs and the Sonnet and Opus candidates. The benchmark briefs and results live in `docs/targets/` once approved.
 
+## 5c. How to run the bake-off
+
+**Pilot first.** One category (a roster stub), one brief, all six models, two samples each: 12 candidates. Check that the pipeline runs, that the two model judges agree (totals within 3), and what each candidate costs. Fix the rubric, gates and judge prompts before scaling. Then run the categories cheapest first (roster stubs, short-text batch, spine scene, keystone), stopping early on a category if one cheap model clearly wins.
+
+**Who does what**
+
+- *Briefs*: written jointly by Claude and Codex, or split half and half, so no family sets the test. Hold-out briefs stay out of every model's context.
+- *Candidates*: Claude generates the Sonnet and Opus candidates in a session by launching one subagent per brief on a stated model, given only the brief bundle (no API key needed on a subscription plan). Codex generates the Sol, Astra, Luna and Qwen candidates.
+- *Anonymising*: the coordinator assigns random ids and keeps the id-to-model key private. Judges and the owner never see it.
+- *Gates*: automated checks run first (issue #63; by hand until it exists).
+- *Judges*: Opus and Astra, each skipping their own family's candidates; Qwen candidates go to both. Each scores candidates on the rubric rather than comparing every pair.
+- *Owner*: rates blind, only voice-heavy categories, only finalists (the top three or four per brief).
+
+**The blind rating page (build task)**
+
+A small web page the owner uses to rate candidates. Requirements:
+
+1. Input: a JSON file of anonymous candidates (`id`, `brief_id`, `text` blocks). No model names or metadata that identify a model. Formatting is normalised.
+2. Shows two candidates side by side (stacked on a phone) in random order, with the brief above them.
+3. Controls: pick one (or "tie"), a 1 to 5 voice score for each, and an optional note. Keyboard shortcuts on desktop.
+4. Saves each rating immediately and can resume; exports a JSON file of ratings. No server-side data beyond what the owner exports.
+5. Works on mobile and desktop, light and dark, no external requests except fonts and libraries.
+6. Does not ship in the game build: it lives outside `src/` (for example `tools/bakeoff/`) or is a hosted page, and is never imported by the game.
+7. Test with a fixture of four fake candidates.
+
+Either Codex builds it as a `zone:core` task (new tools folder, no change to `src/`), or Claude publishes it as a private hosted page with a shared database. The hosted page is quicker for the owner; the repo version is easier for other agents to reuse. The owner chooses.
+
 ## 6. Risks
 
 - **Voice drift** across hundreds of scenes. Mitigation: the voice bible, voice cards, and a periodic whole-season read by Opus.
