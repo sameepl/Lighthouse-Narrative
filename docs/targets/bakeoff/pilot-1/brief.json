@@ -1,0 +1,113 @@
+{
+  "id": "stub_pilot_market",
+  "title": "The Double Order",
+  "archetype": "standoff",
+  "layer": "crisis",
+  "location": "docs/canon/locations/hearthline-market.md",
+  "who": "stallholder at the Ring Two food stalls",
+  "want": "Rule on a dispute before the market bell: the stallholder says a crew never collected a paid order of forty bowls, and the crew says it was collected and paid for twice.",
+  "at_stake": "If the dispute is not settled before the bell, the crew boycotts the stall and the Exchange clerk logs a complaint against whoever let it stand.",
+  "complication": "Paper against paper: both sides hold a receipt for the same order. (complications.md, standoff 6)",
+  "state_nouns": [
+    "order",
+    "receipt",
+    "bowls",
+    "bell"
+  ],
+  "approaches": [
+    {
+      "label": "Offer to split the cost",
+      "skills": [
+        "Diplomat",
+        "Persuade"
+      ],
+      "npc_reaction": "counts what she stands to lose",
+      "effects": {
+        "clean": [
+          [
+            "Renown",
+            1
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -1000
+          ]
+        ],
+        "fail": [
+          [
+            "Strain",
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Check the stall’s scale and receipts",
+      "skills": [
+        "Electronics",
+        "Mechanic"
+      ],
+      "npc_reaction": "hovers over her own books",
+      "effects": {
+        "clean": [
+          [
+            "Strain",
+            -1
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            500
+          ],
+          [
+            "Strain",
+            1
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Call the Exchange clerk to rule",
+      "skills": [
+        "Leadership",
+        "Tactics"
+      ],
+      "npc_reaction": "does not want the clerk involved",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            1000
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -500
+          ]
+        ],
+        "fail": [
+          [
+            "Strain",
+            1
+          ]
+        ]
+      }
+    }
+  ],
+  "sensory_details_used": {
+    "sound": "market noise",
+    "smell": "onions",
+    "temperature": "warm bowls",
+    "texture": "lids"
+  }
+}
