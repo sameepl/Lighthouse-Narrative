@@ -46,10 +46,38 @@ Not decided by this proposal: prices, rate limits and the exact capability of ea
 |---|---|---|
 | 1 | Run the Qwen and Luna loop on the four stub archetypes using the two targets | Each model reaches target minus 1 on three briefs in a row, or the archetype is escalated |
 | 2 | Opus writes the voice bible and the M1 keystones K1 and K5 | Owner approves the voice and the keystones |
-| 3 | Sonnet writes five spine or roster scenes from briefs; Opus samples two | Owner and reviewers score them at or above the target |
+| 3 | Run the bake-off in section 5b: Sonnet and Opus alongside Luna, Qwen, Sol and Astra | Decision rule in section 5b met per category |
 | 4 | Tune: set the share of words per tier from measured scores and token costs | Written into `AGENT_WORKFLOW.md` |
 
 Measures to record per phase: rubric score, gate failures, rounds, tokens per scene, reviewer time, rewrite rate.
+
+## 5b. Quality bake-off (all six models, including Sonnet and Opus)
+
+Sonnet and Opus are proposed as writers in section 3 but have **not been tested as writers** in this repo. The targets in `docs/targets/` were written by a Claude model, so a rubric built on them can favour Claude's style. A fair comparison needs to be designed, not assumed.
+
+**Design**
+
+- **Same inputs.** Every model gets the same brief and the same context bundle (contract, location file, voice cards). No model sees the targets or another model's output.
+- **Four test categories**, three briefs each, written by the coordinator:
+  1. *Roster stub*: a brief like the targets (the cheap, high-volume work).
+  2. *Spine scene*: two or three voices from `docs/canon/voices/`, a choice with consequences.
+  3. *Emotional keystone*: a placeholder keystone (for example the opening K1) where tone matters. Stays inside canon: no `[GM-ONLY]` material.
+  4. *Short text batch*: twenty barks, ledger notes and board-card lines.
+  Plus one *revision* task per model: given the owner's notes, revise a scene without losing what worked.
+- **Samples.** Two per model per brief, so one lucky draw does not decide it. About 6 models x 4 categories x 3 briefs x 2 samples = 144 candidates.
+- **Blind and randomised.** Candidates are labelled with random ids, formatting is normalised, and length is held inside the word bounds so verbosity does not win.
+- **Judges.**
+  - The **owner** rates the voice-heavy categories (2 and 3) blind. This is the primary judgment for voice.
+  - **Two model judges from different families**, neither judging its own family's output, run pairwise comparisons on the rubric.
+  - **Automated gates and metrics**: the gates in `docs/targets/README.md`, plus repetition, sentence-length variety and canon-guard hits.
+- **Traps.** Include at least one brief that invites a violation (it tempts the model to write Marcus's thoughts, or offers a spoiler-sounding detail). Count violations. A model that falls for a trap is penalised regardless of prose quality.
+- **Cost measures**, per accepted scene, not per attempt: rounds to pass, tokens, owner edit burden (how much the owner changes), and reviewer time.
+
+**Decision rule.** Per category, pick the cheapest model whose blind pairwise win rate against the best model is at least 40 percent with zero trap failures. If no cheap model qualifies, the category goes to the next tier. Re-run when a model is replaced or a new one is considered.
+
+**Known biases to control**: judges prefer their own family and longer text; the targets came from one family; the owner's taste is the final standard but a sample of one. Keep the owner's blind ratings separate from model scores and report both.
+
+**Scope.** Codex coordinates runs and gates, the owner rates, Claude supplies the briefs and the Sonnet and Opus candidates. The benchmark briefs and results live in `docs/targets/` once approved.
 
 ## 6. Risks
 
@@ -75,6 +103,8 @@ Please answer in the PR comments. Short answers are fine.
 2. What should the voice bible contain so a smaller model can use it within a small context?
 3. What should the canon steward produce so the briefs stay player-safe?
 4. Which review checks in `REVIEW_CHECKLIST.md` should become lint rules?
+
+**On the bake-off (section 5b), both:** Is the design fair? Which categories or traps are missing? Who should author the briefs so no family is favoured?
 
 **For both:**
 - What is missing, wrong or too optimistic?
