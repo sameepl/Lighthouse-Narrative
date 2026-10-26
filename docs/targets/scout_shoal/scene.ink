@@ -1,7 +1,7 @@
 // TARGET (reference quality, not shipped): [STUB] The Wrong Lamp. See docs/targets/README.md.
 // Marcus is never written for. All local knots use the scene ID prefix.
 === target_scout_shoal_scene ===
-[STUB] Old voices loop from the wreck beacons, each repeating its last call over the others. Eleven amber lights hang in passive reach, and one of them is lying about what it is. A convoy of short-crewed haulers waits behind you for a safe line through. Going active would tell every watcher in the Shoal exactly where you are. # bg:hall
+[STUB] Old voices loop from the wreck beacons, each repeating its last call over the others. Eleven amber lights hang in passive reach, and one of them is lying about what it is. A convoy of short-crewed haulers waits behind you for a safe line through. Going active would announce the ship. # bg:hall
 -> target_scout_shoal__menu
 
 === target_scout_shoal__menu ===
@@ -9,23 +9,23 @@
     -> roll("Recon,Electronics", 8, "", -> target_scout_shoal__listen_clean, -> target_scout_shoal__listen_cost, -> target_scout_shoal__listen_fail)
 + [\[STUB\] Plot the lane against old hauler logs #hint:\[STUB\] Astrogation / Tactics]
     -> roll("Astrogation,Tactics", 8, "", -> target_scout_shoal__plot_clean, -> target_scout_shoal__plot_cost, -> target_scout_shoal__plot_fail)
-+ [\[STUB\] Ask a passing salvage crew which beacon they avoid #hint:\[STUB\] Persuade / Diplomat]
++ [\[STUB\] Ask a salvage crew what they avoid #hint:\[STUB\] Persuade / Diplomat]
     -> roll("Persuade,Diplomat", 8, "", -> target_scout_shoal__ask_clean, -> target_scout_shoal__ask_cost, -> target_scout_shoal__ask_fail)
 
 === target_scout_shoal__listen_clean ===
-[STUB] The amber lights blink out of step with each other, all but one, which keeps a rhythm too even for a hulk’s dying battery. Passive sensors hold the bearing steady for a full minute. The convoy master takes the line and pays on the spot, relieved that nobody had to power up a single emitter.
+[STUB] The amber lights blink out of step with each other, all but one, which keeps a rhythm too even for a hulk’s dying battery. Passive sensors hold the bearing for a minute. The convoy master takes the line and pays on the spot, relieved that nobody had to power up a single emitter.
 ~ add("Credits", 2000)
 ~ note("gain", "[STUB] Credits +2,000: the false beacon is found and the convoy master pays for the line.")
 -> target_scout_shoal__after
 
 === target_scout_shoal__listen_cost ===
-[STUB] The even beacon is found, but only after a probe drifts into the noise and goes quiet for good. The bearing is good and the probe is gone. Before she commits her haulers the master wants the lane marked, and a replacement probe is a fair price for the line.
+[STUB] The even beacon is found, but only after a probe drifts into the noise and goes quiet for good. The bearing is good. The probe is gone. Before she commits her haulers the master wants the lane marked, and a replacement probe is a fair price for the line.
 ~ add("Credits", -500)
 ~ note("cost", "[STUB] Credits -500: the line is marked, and a probe is lost doing it.")
 -> target_scout_shoal__after
 
 === target_scout_shoal__listen_fail ===
-[STUB] Eleven carriers hiss together into one grey noise, and the sensors cannot pull a single bearing out of it. An hour of listening gives nothing, and the convoy has started to drift. She calls the lane unproven and gives you the hail words of a salvage tender working the middle belt, who may know better.
+[STUB] Eleven carriers hiss together into one grey noise, and the sensors cannot pull a single bearing out of it. An hour of listening gives nothing. The convoy has started to drift. She calls the lane unproven and gives you the hail words of a salvage tender working the middle belt, who may know better.
 ~ add("Credits", -500)
 ~ note("cost", "[STUB] Credits -500: a day is lost. A salvage tender in the middle belt may know the lane.")
 -> target_scout_shoal__after
@@ -44,19 +44,19 @@
 -> target_scout_shoal__after
 
 === target_scout_shoal__plot_fail ===
-[STUB] The logs disagree about where the lane’s second marker was, and the chart drawn from them puts a beacon in open space. Spotting it, the master says nothing kind and sends her haulers back to the third marker. A keeper’s tender working the middle belt keeps newer records, and she gives you its hail words.
+[STUB] The logs disagree about where the lane’s second marker was, and the chart drawn from them puts a beacon in open space. Spotting it, the master says nothing kind. Her haulers go back to the third marker. A keeper’s tender working the middle belt keeps newer records, and she gives you its hail words.
 ~ add("Strain", 1)
 ~ note("cost", "[STUB] Strain +1: the chart is rejected. A keeper’s tender in the middle belt keeps newer records.")
 -> target_scout_shoal__after
 
 === target_scout_shoal__ask_clean ===
-[STUB] A salvage cutter slides alongside, and its skipper passes a flask across the gap, still warm through its wrapping. She names the beacon her crew never tows past, because its light has never once gone dark. She will take no credits, only a promise to run in company next time. The convoy master takes the warning and the line.
+[STUB] A salvage cutter slides alongside, and its skipper passes a flask across the gap, still warm through its wrapping. She names the beacon her crew never tows past, because its light has never once gone dark. She will take no credits, only a promise to run in company next time. The master takes the warning and the line.
 ~ add("Credits", 1000)
 ~ note("gain", "[STUB] Credits +1,000: the false beacon is named and the convoy master pays for the line.")
 -> target_scout_shoal__after
 
 === target_scout_shoal__ask_cost ===
-[STUB] The skipper of a passing cutter names the beacon her crew avoids, but only for a price, and she counts it out loud against the flask in her hand. Distant hab work lights flicker across her cockpit while the price is agreed. The warning is good, and the master is told exactly what it cost.
+[STUB] The skipper of a passing cutter names the beacon her crew avoids. The price is steep, and she counts it out against the flask in her hand. Distant hab work lights flicker across her cockpit while it is agreed. The cost is announced to the master.
 ~ add("Credits", -1000)
 ~ note("cost", "[STUB] Credits -1,000: the false beacon is named, at the skipper’s price.")
 -> target_scout_shoal__after

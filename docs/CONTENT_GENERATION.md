@@ -43,7 +43,7 @@ Every roll has three outcomes. Each outcome must change **something the player c
 |---|---|
 | **Clean** | The player gets what they wanted **and** one visible gain (an effect in section 4). |
 | **Cost** | The player gets what they wanted, but pays a **named price**: a resource, a lasting fact, or a person's attitude. |
-| **Fail** | The player does **not** get it, a **specific alternative route** is shown (a named desk, a day, a person), and there is a smaller cost. Failure moves the story on. |
+| **Fail** | The player does **not** get it, a **specific alternative route** is shown (a named desk, a day, a person), and there is a cost that stays inside the fail band in section 4. Failure moves the story on. |
 
 Rules that apply to all nine outcomes in a scene:
 
@@ -76,7 +76,7 @@ Placeholder bands (not canon; replace when the economy is reconciled, issue #35)
 
 **Shape.** Each passage is 40 to 80 words and 3 to 6 sentences, with at least one sentence over 12 words and one under 9. Start every passage with `[STUB]`. The opening passage sets: where, who, what is wanted, what is at stake, and ends on pressure.
 
-**Place.** The opening and at least four outcomes each use one sensory detail from the location file (sound, smell, light, temperature or texture). Do not reuse a detail within a scene. Two scenes may not share a location.
+**Place.** The opening and at least four outcomes each use one sensory detail from the location file (sound, smell, light, temperature or texture). A category is not a detail: amber beacons and distant hab work lights are two different light details. Do not reuse a detail within a scene. Two scenes may not share a location.
 
 **Show consequences through objects and people.** Good: "The chief draws a line through the fee and initials it." Bad: "The clerk grants a priority berth slot."
 
@@ -119,7 +119,7 @@ You write placeholder game text. Follow the brief exactly. Return only JSON:
   "ending": "..."
 }
 Every text starts with "[STUB] ". 40 to 80 words (ending at most 40). Follow the outcome contract:
-clean = gain, cost = price paid, fail = a named alternative route plus a smaller cost.
+clean = gain, cost = price paid, fail = a named alternative route plus a cost inside the fail band.
 Each note repeats its effect exactly. Never write the player character's words, thoughts or actions.
 Use no banned phrase. Use one sensory detail from the location per passage at most.
 ```
@@ -188,6 +188,8 @@ with internal apostrophes; `[STUB]` and Ink tags do not count. Sentences split a
 `.`, `!`, `?`; the opener is the first **two words**, counted across all eleven
 passages. Outcome first-four-word uniqueness applies only to the nine outcomes.
 Banned phrases match whole token sequences, ignoring case and punctuation.
+
+These operational definitions are authoritative for the opener, noun-phrase and sensory rules in sections 5 and 8 (they were clarified on 2026-10-26 after the stub trial). Fail and cost are compared by band, not by size: a fail only has to stay inside the fail band, and a cost and a fail may lose the same amount.
 
 The noun-phrase gate is a bounded heuristic: a determiner/possessive followed by at
 least two words up to a configured verb, preposition, conjunction or other stop
