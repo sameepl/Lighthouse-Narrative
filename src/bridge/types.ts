@@ -1,4 +1,4 @@
-import type { Encounter, Keystone } from '../data/schema';
+import type { Crew, Encounter, Keystone, Ships } from '../data/schema';
 import type { CrewTrust, CycleState, Dice, Grade, Note, OddsInfo, RollPart, RollSetup } from '../engine/types';
 
 /** Plain ink notes retain their text; bridge notes carry data for the UI formatter. */
@@ -59,6 +59,27 @@ export interface Assignments {
   shipId: string | null;
   crewIds: string[];
 }
+/** Blocking facts only; UI strings own their wording. */
+export type PreparationReason =
+  | { code: 'unknownShip'; shipId: string }
+  | { code: 'duplicateCrew' }
+  | { code: 'unavailableCrew' | 'requiredCrew'; crewId: string }
+  | { code: 'requiredShip'; shipTag: string }
+  | { code: 'unsuitableShip'; shipId: string; shipTag: string }
+  | { code: 'insufficientCredits'; required: number; available: number }
+  | { code: 'noActionsLeft' };
+export interface PreparationView {
+  ready: boolean;
+  reasons: PreparationReason[];
+  shipRequirement: { kind: 'optional' } | { kind: 'required'; tag: string };
+  crew: (Pick<Crew[number], 'name' | 'assist' | 'trait' | 'assignable'> & {
+    crewId: string;
+    trust: number;
+    busy: boolean;
+    assigned: boolean;
+  })[];
+  ships: (Pick<Ships[number], 'name' | 'tags' | 'upkeep'> & { shipId: string; selected: boolean })[];
+}
 export type Offer =
   | { kind: 'encounter'; entry: Encounter; forced: false; weak: false }
   | { kind: 'keystone'; entry: Keystone; forced: boolean; weak: boolean };
@@ -97,6 +118,10 @@ export interface GameView {
   /** Scheduling phase, separate from the scene's internal roll interaction. */
   phase: RunPhase;
   offers: Offer[];
+  active: Offer | null;
+  /** Existing Board affordability locks; selecting a locked offer remains allowed. */
+  offerLocks: { offerId: string; reasons: PreparationReason[] }[];
+  preparation: PreparationView | null;
   /** Pursuit is only here, never in res. */
   cycle: CycleState;
   assignments: Assignments;
