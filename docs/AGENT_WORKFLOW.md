@@ -146,7 +146,7 @@ The reviewer never merges. The owner merges after the verdict (and the Opus revi
 
 - Owner setup: run `claude setup-token` locally (Pro or Max plan), save the output as the repository secret `CLAUDE_CODE_OAUTH_TOKEN` (Settings, Secrets and variables, Actions), and install the Claude GitHub app on the repo. Reviews use the plan's usage limits. To use an API key instead, swap the input to `anthropic_api_key` and the secret to `ANTHROPIC_API_KEY`.
 - The job waits for `check` and `zones` to pass, skips drafts and fork PRs, and reads its instructions from `main` (the `trusted/` checkout), so a PR cannot rewrite its reviewer.
-- Tools are read-only plus `gh pr view/diff` and `gh issue view`; it posts one sticky comment. It cannot push or merge.
+- Tools are read-only plus `gh pr view/diff` and `gh issue view`; it posts one pull request comment with `gh pr comment` (it needs `Write` only to save the comment body to a temporary file). It cannot push or merge. In agent mode the action does not post the model's final message for you, so the prompt tells the reviewer to post it.
 - Opus second opinion: the Action runs Sonnet and may start an Opus subagent (`Task`) on the triggers in `REVIEW_CHECKLIST.md`. If a fixed Opus pass for every core PR is wanted, change `--model` for core PRs in a later task.
 - Residual risk: this workflow runs from the PR's own copy for same-repository PRs, so a PR that edits `.github/workflows/review.yml` could change what runs with the secret. The `zones` check forces such a PR to be `zone:core`, and the owner should read any change to this file before merging.
 
