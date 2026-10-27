@@ -1,5 +1,6 @@
 import type { GameData } from '../data/validate';
 import { availableCrew } from './crew';
+import { assignmentReasons, confirmationReasons, preparationError } from './view';
 import { buildBoard } from '../engine/board';
 import { earnEdge, endCycle, newCycleState } from '../engine/cycle';
 import { scheduleKeystones, type KeystoneRoles } from '../engine/keystones';
@@ -155,10 +156,8 @@ export class RunController {
     this.state.assignments = structuredClone(value);
   }
   private validateAssignments(value: Assignments): void {
-    if (value.shipId !== null && !this.data.ships.some(s => s.id === value.shipId)) throw new Error('Unknown ship');
-    if (new Set(value.crewIds).size !== value.crewIds.length) throw new Error('Duplicate crew assignment');
-    const crew = availableCrew(this.data, this.state.busyCrewIds);
-    for (const id of value.crewIds) if (!crew.some(c => c.id === id)) throw new Error(`Crew unavailable: ${id}`);
+    const reason = assignmentReasons(value, this.state, this.data)[0];
+    if (reason) throw new Error(preparationError(reason));
   }
   cancel(): void {
     this.require('prepare');
@@ -169,15 +168,10 @@ export class RunController {
   confirm(game: GameState): void {
     this.require('prepare');
     const s = this.state,
-      offer = s.active!,
-      req = offer.entry.requires;
-    this.validateAssignments(s.assignments);
-    const ship = this.data.ships.find(ship => ship.id === s.assignments.shipId);
-    if (req.shipTag && (!ship || !ship.tags.includes(req.shipTag))) throw new Error('Assign a suitable ship');
-    if ((req.crew ?? []).some(id => !s.assignments.crewIds.includes(id))) throw new Error('Assign the required crew');
+      offer = s.active!;
+    const reason = confirmationReasons(s, this.data, game.res)[0];
+    if (reason) throw new Error(preparationError(reason));
     const cost = offer.kind === 'encounter' ? offer.entry.cost : 0;
-    if ((game.res.Credits ?? 0) < cost) throw new Error('Insufficient Credits');
-    if (s.cycle.actionsLeft <= 0) throw new Error('No actions left');
     addResource(game.res, this.data.rules, 'Credits', -cost);
     if (offer.kind === 'encounter') s.played.push({ id: offer.entry.id, cycle: s.cycle.cycle });
     s.cycle.actionsLeft--;

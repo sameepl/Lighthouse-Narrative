@@ -1,5 +1,6 @@
 import type { GameData } from '../data/validate';
 import { availableCrew } from './crew';
+import { confirmationReasons, offerLockReasons } from './view';
 import type { Command, RunState, UIChoice } from './types';
 
 /** Scheduling commands for the choice dock. Codes and parameters only: src/ui/strings.ts writes the words. */
@@ -13,7 +14,7 @@ export function runChoices(run: RunState, data: GameData, resources: Record<stri
         offerKind: o.kind,
         title: o.entry.title,
         ...(o.kind === 'encounter' ? { cost: o.entry.cost, risk: o.entry.risk } : {}),
-        locked: o.kind === 'encounter' && o.entry.cost > (resources.Credits ?? 0),
+        locked: offerLockReasons(o, resources).length > 0,
         forced: o.forced,
         ...(o.entry.requires.shipTag ? { shipTag: o.entry.requires.shipTag } : {}),
         crew: o.entry.requires.crew ?? [],
@@ -31,16 +32,8 @@ export function runChoices(run: RunState, data: GameData, resources: Record<stri
     return choices;
   }
   if (run.phase !== 'prepare') return [];
-  const offer = run.active!,
-    req = offer.entry.requires;
-  const ship = data.ships.find(s => s.id === run.assignments.shipId);
   const crew = availableCrew(data, run.busyCrewIds);
-  const ready =
-    new Set(run.assignments.crewIds).size === run.assignments.crewIds.length &&
-    run.assignments.crewIds.every(id => crew.some(member => member.id === id)) &&
-    (!req.shipTag || !!ship?.tags.includes(req.shipTag)) &&
-    (req.crew ?? []).every(id => run.assignments.crewIds.includes(id)) &&
-    (offer.kind !== 'encounter' || (resources.Credits ?? 0) >= offer.entry.cost);
+  const ready = confirmationReasons(run, data, resources).length === 0;
   return [
     ...data.ships.map(ship =>
       choice(`ship:${ship.id}`, {

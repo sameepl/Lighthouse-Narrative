@@ -9,6 +9,7 @@ import { createSeededRng } from '../engine/rng';
 import { RunController, type RunOptions } from './run';
 import { validateSave } from './save';
 import { runChoices } from './run-choices';
+import { preparationProjection } from './view';
 import type { Assignments } from './types';
 import { Story } from 'inkjs';
 import { createStore, type StoreApi } from 'zustand/vanilla';
@@ -389,6 +390,7 @@ export class GameSession {
         ended: this.run.state.phase === 'ended',
         phase: this.run.state.phase,
         offers: this.run.state.offers,
+        ...preparationProjection(this.run.state, this.opts.data, this.game.res),
         cycle: this.run.state.cycle,
         crewTrust: this.run.state.crewTrust,
         assignments: this.run.state.assignments,
