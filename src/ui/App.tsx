@@ -4,6 +4,7 @@ import { useStore } from 'zustand';
 import { Hud } from './components/Hud';
 import { Feed } from './components/Feed';
 import { Dock } from './components/Dock';
+import { Board } from './components/Board';
 import { SheetPanel } from './components/SheetPanel';
 import { hubStatusText } from './strings';
 import type { GameEvent } from '../bridge/types';
@@ -34,12 +35,16 @@ export function App() {
   const events = useMemo<GameEvent[]>(
     () => [
       ...view.events,
-      ...(view.hub ? [{ id: -1, type: 'para' as const, speech: false, html: hubStatusText(view.hub) }] : []),
+      ...(view.hub && view.hub.board !== 'ready'
+        ? [{ id: -1, type: 'para' as const, speech: false, html: hubStatusText(view.hub) }]
+        : []),
     ],
     [view.events, view.hub],
   );
 
   const act = (id: number | string) => session.act(id);
+  const showBoard = view.phase === 'hub' && view.hub !== null;
+  const dockChoices = showBoard ? view.choices.filter(choice => choice.command?.code !== 'offer') : view.choices;
   const restart = () => {
     clearSave();
     session.restart();
@@ -68,7 +73,8 @@ export function App() {
         />
       </div>
       <Feed events={events} />
-      <Dock choices={view.choices} odds={view.odds} ended={view.ended} onAct={act} onRestart={restart} />
+      {showBoard && <Board offers={view.offers} offerLocks={view.offerLocks} cycle={view.cycle} onAct={act} />}
+      <Dock choices={dockChoices} odds={view.odds} ended={view.ended} onAct={act} onRestart={restart} />
       {sheetOpen && <SheetPanel ledger={view.ledger} onClose={() => setSheetOpen(false)} />}
     </div>
   );

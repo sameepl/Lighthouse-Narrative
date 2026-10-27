@@ -265,6 +265,78 @@ main {
 .summary p:last-child {
   margin: 0;
 }
+.board {
+  position: relative;
+  z-index: 1;
+  padding: 8px 16px 12px;
+  font:
+    14px/1.45 system-ui,
+    sans-serif;
+}
+.board-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--dim);
+}
+.board-heading h2 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--fg);
+}
+.board-offers {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.board-card {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 14px;
+  text-align: left;
+  font: inherit;
+  color: var(--fg);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.board-card:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 3px;
+}
+.board-kind,
+.board-title,
+.board-detail,
+.board-lock {
+  display: block;
+}
+.board-kind {
+  color: var(--amber);
+  font-size: 12px;
+}
+.board-title {
+  margin: 4px 0 8px;
+  font:
+    600 19px/1.35 Georgia,
+    serif;
+}
+.board-detail {
+  color: var(--dim);
+}
+.board-card-locked {
+  border-color: var(--warn);
+}
+.board-lock {
+  margin-top: 10px;
+  color: var(--warn);
+}
 .dock {
   position: relative;
   z-index: 1;
