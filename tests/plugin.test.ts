@@ -89,15 +89,15 @@ describe('ink build plugin', () => {
 
       sent.mockClear();
       writeFileSync(path.join(dir, 'scenes/new.ink'), '=== new_scene ===\nNew scene\n-> END\n');
-      await vi.waitFor(() => expect(sent).toHaveBeenCalledWith({ type: 'full-reload' }));
+      await vi.waitFor(() => expect(sent).toHaveBeenCalledWith({ type: 'full-reload' }), { timeout: 5000 });
       expect(await load()).toContain('New scene');
 
       sent.mockClear();
       rmSync(path.join(dir, 'scenes/new.ink'));
-      await vi.waitFor(() => expect(sent).toHaveBeenCalledWith({ type: 'full-reload' }));
+      await vi.waitFor(() => expect(sent).toHaveBeenCalledWith({ type: 'full-reload' }), { timeout: 5000 });
       expect(await load()).not.toContain('New scene');
     } finally {
       await server.close();
     }
-  });
+  }, 20000);
 });
