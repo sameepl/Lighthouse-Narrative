@@ -84,7 +84,7 @@ Hub: brief, news, upkeep -> board of offers -> Prepare (ship, crew) -> Action 1 
 | **Edge** | pool of 3 per run | Re-roll a failure, or upgrade a success-with-a-cost to clean. **One pool for the whole run; no refresh.** Earned back only when a crew member reaches trust 3 (+1 each, never above 3). |
 | **Renown** | 0 to 5 | How far your name carries. Raises the pay and quality of commercial offers. Also makes you easier to find (see Pursuit). |
 | **Strain** | 0 to 5 | Strain with the Compact: how much of Renata's patience you have used. Pays off in keystones. |
-| **Pursuit clock** | 6 segments (4 in the slice) | The narrative clock. Each cycle adds 1, plus 1 if Renown is 3 or more, plus 1 for a loud choice, minus 1 for a quiet choice. These modifiers add independently; Pursuit stays between 0 and the clock length. The story can also advance it directly (for example asking Ariadne for a truth: +2; planned for the bridge task #5). When it fills, the pursuers arrive and the finale is forced. |
+| **Pursuit clock** | 6 segments (4 in the slice) | The narrative clock. Each cycle adds 1, plus 1 if Renown is 3 or more, plus 1 for a loud choice, minus 1 for a quiet choice. These modifiers add independently; Pursuit stays between 0 and the clock length. The story can also advance it directly (for example opening an authenticated channel for Ariadne: +2; asking her a question does not tick the clock, per `canon/owner-decisions.md` section 7). When it fills, the pursuers arrive and the finale is forced. |
 
 Renown is both reward and risk: it makes money easier and trouble faster. That tension is the design.
 
@@ -175,14 +175,14 @@ Each of K2 to K4 yields one **piece** of the picture, delivered as evidence the 
 | **The Six** (`six`) | Who they were: the six children | the six-place table drawn three times; a manifest of six identifiers, one matching no one |
 | **The Claim** (`claim`) | Who is pursuing him, and what they want | the cut mast and the old continuity signal; the Section's argument for custody |
 
-**The price of knowing.** The canon facts are authorised (`canon/owner-decisions.md`): Ariadne tells Marcus things only if asked, and authenticating her on an open channel tells the Section where she is. So asking her for a truth is a choice with a cost: a Pursuit tick of +2.
+**The price of knowing.** The canon facts are authorised (`canon/owner-decisions.md`): Ariadne tells Marcus things only if asked, and authenticating her on an open channel tells the Section where she is. So opening a channel for her is a choice with a cost: a Pursuit tick of +2. Asking her a question does not tick the clock (owner ruling, `canon/owner-decisions.md` section 7).
 
 ### Keystones (working titles)
 
 | # | Keystone | Elevates | Premise | The hard choice | Evidence of the past | Piece |
 |---|---|---|---|---|---|---|
 | **K1** | **The Passenger** | Courier | A routine courier booking: the passenger is being hunted, and recognises Marcus | Shelter them, hand them over, or smuggle them out, with the Compact watching | The passenger knows details no stranger should; a credential that still opens a terminal | opens the pursuit |
-| **K2** | **The Silent Hab** | Distress call | A hab on a dark lane is failing, and nothing answers hails | Whom or what to save with limited time and air: the people or the records | A manifest of six identifiers, one of which matches no one | The Six |
+| **K2** | **The Silent Hab** | Distress call | A hab on a dark lane is failing, and nothing answers hails. A hijack-crew cutter has come to strip it: the slice's ship-versus-ship beat comes first (`SLICE.md`) | Whom or what to save with limited time and air: the people or the records | A manifest of six identifiers, one of which matches no one | The Six |
 | **K3** | **The Dark Lane** | Scout | Chart the lane that went dark, a segment with no chart | Publish what you find (Renown, but it exposes you) or keep it quiet | The sealed folder, opened on screen: its number matches the segment (placeholder "Segment SEG-0417, ship and leg (TBD)"), and Merrow's initials are on the second removal | Removed |
 | **K4** | **The Cargo They Want** | Trade run | Armed crews try to take a sealed case wanted by a buyer with a Section seal | Defend it, sell it, or destroy it; the buyer offers "continuity care" | The seal matches the cut mast's old continuity signal | The Claim |
 | **K5** | **The Asking** | (finale) | The Pursuit clock is nearly full. Ariadne gives her first honest "I am not able to say", then asks Marcus whether his old request (to tell him the truth if she found him) still stands. She holds the removal record | Reaffirm the request (learn everything, pay the Pursuit cost), withdraw it (honour what a younger Marcus chose and what Ariadne would rather not carry), or share the decision with Cass and the others | Everything gathered | resolves the pieces |
