@@ -66,8 +66,8 @@ Work in small PRs (three or four images each, plus the gate), in the content zon
 - Title and ending screens that use `title`, `end_open` and `end_closed` (feature zone, with the slice's ending decision).
 - A test that every `# bg:` tag in `src/story` has an asset.
 
-## Decisions for the owner
+## Decisions (owner, 2026-10-28)
 
-- Is hard-surface vector sci-fi (this style section) the right direction, or do you want painterly raster art (heavier files, harder to keep consistent)?
-- Is this set of thirteen the right size for a slice, or should some share a backdrop?
-- Do you want the two endings drawn differently, or one image with a different tint?
+- Hard-surface vector sci-fi, not painterly raster.
+- The two endings have their own backdrops (`end_open`, `end_closed`).
+- Still open: whether some of the other twelve backdrops should be shared to cut the count.

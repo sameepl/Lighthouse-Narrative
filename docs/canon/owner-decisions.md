@@ -57,3 +57,10 @@ The planner's player-safe export is filed in `docs/canon/` (voices, locations, s
 
 For the M0 stub scenes (issue #10): stubs may carry small **placeholder effects** (`add` calls) so a run can be tuned; clean outcomes carry a visible gain; each stub uses a **different location** from `docs/canon/locations/`. The rules are in `../CONTENT_GENERATION.md`. Effects stay placeholders until the economy is reconciled (issue #35).
 
+## 9. Slice decisions (2026-10-28) `[OWNER]`
+
+- **Art direction:** hard-surface vector sci-fi (`../art/ART_PLAN.md`), not painterly raster.
+- **Endings:** the M1 slice has **two endings**, each with **its own backdrop** (`end_open`, `end_closed`). Three stances are deferred to M2.
+- **Playtest target:** a 20-minute run (`../SLICE.md`), with at least one ship-versus-ship action scene (K2's first beat).
+- Still open: whether the slice includes the foreclosure fail state (#29), and what "several hours" means as a structure.
+

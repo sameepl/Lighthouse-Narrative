@@ -32,7 +32,7 @@ An optional roster action encounter (an armed intercept standoff) can follow in 
 |---|---|---|---|
 | Keystones | 4 | K1, K2, K3, K5 in `game-design.md` section 6 | Premises are proposals until the planner confirms them under the HELD rules (Contact 1, Tally's name and number, Helena's and Adrian's whereabouts stay unresolved). Placeholder facts stay `[STUB]` |
 | Roster encounters | 6 | `CONTENT_GENERATION.md` briefs, one location each | `written_clause` is the tutorial standoff |
-| Endings | 2 | K5's stances (reaffirm, withdraw) with ledger lines | Needs the owner's decision: two endings or three stances |
+| Endings | 2 | K5's stances (reaffirm, withdraw) with ledger lines | Decided 2026-10-28: two endings; three stances are deferred to M2 |
 | Failure ending | 1 | #29 foreclosure | Reached only when upkeep arrears hit the limit |
 | Hub text, crew lines, ledger | about 1,500 words | Hub and crew voice cards | |
 
