@@ -7,11 +7,24 @@ Status: proposal for the owner. Goal: one complete, balanced run in about 20 min
 | Cycle | Hub (about 1 min) | Action 1 and 2 (about 2 min each) |
 |---|---|---|
 | 1 | Short brief, the board, meters explained by use | The tutorial scene `written_clause` (a standoff), then **K1 The Passenger** (courier keystone: a hunted passenger recognises Marcus) |
-| 2 | Upkeep, the first Pursuit tick, new board | One roster encounter, then **K2 The Silent Hab** or **K3 The Dark Lane** (the player's lead and ship decide which) |
+| 2 | Upkeep, the first Pursuit tick, new board | One roster encounter, then **K2 The Silent Hab** (with the ship-versus-ship beat below) or **K3 The Dark Lane** (the player's lead and ship decide which) |
 | 3 | Pursuit pressure shows on the clock | The other of K2 and K3, then one more roster encounter |
 | 4 | The clock is nearly full | **K5 The Asking** (forced), then the ending |
 
-Eight scenes: four keystones and four roster encounters out of six (courier, distress call, scout, trade run, salvage, standoff). The board shows two or three offers per cycle, at least one affordable and one a stretch, as in `game-design.md` section 3.
+Eight scenes, one of them an action scene (see below): four keystones and four roster encounters out of six (courier, distress call, scout, trade run, salvage, standoff). The board shows two or three offers per cycle, at least one affordable and one a stretch, as in `game-design.md` section 3.
+
+## The action scene: ship versus ship
+
+Every run has at least one, guaranteed by making it part of a keystone. **K2 The Silent Hab** gets a first beat on the lane: a hijack-crew cutter has come to strip the failing hab, and the player's ship meets it before it can dock. Then the rescue choice follows (people or records), shaped by how the beat went. Keystones are forced at their deadline, so the beat cannot be skipped.
+
+- **Beat 1, the intercept.** Three approaches, each with three written outcomes like any scene, and each roll shows the ship's part in the Odds panel: *Run the cutter down* (Pilot, Astrogation), *Open fire to drive it off* (Gunnery, Tactics), *Jam its sensors and talk it off* (Electronics, Diplomat). An armed ship (`armed` tag) improves the odds of the second; a fast ship (`fast`) the first. Clean means the cutter breaks off and the player arrives with time in hand. Cost means it breaks off but the ship or the hab pays for it. Fail means the cutter docks first and the rescue starts under pressure. Failure still moves the story on.
+- **Beat 2, the rescue.** The existing K2 choice. The cutter crew's presence, or absence, changes what is left to save.
+- Only an **unnamed hijack-crew cutter** appears (a public, played kind of encounter). No Hunter craft and nothing from the sealed canon.
+- Cost: about 350 more words authored, about 150 read, and about one extra minute per run. The slice still lands at 20 minutes by the timing target below.
+- Art: the `skirmish` image in `art/ART_PLAN.md`, plus the `hab` image for the second beat.
+- Engineering: nothing new in the engine. It uses two rolls in one keystone, ship tags already in `ships.json`, and the odds panel. Check that a keystone can hold two rolls and that the Prepare screen filters or warns when no armed ship is assigned.
+
+An optional roster action encounter (an armed intercept standoff) can follow in M2.
 
 ## Content for the slice
 
@@ -23,7 +36,7 @@ Eight scenes: four keystones and four roster encounters out of six (courier, dis
 | Failure ending | 1 | #29 foreclosure | Reached only when upkeep arrears hit the limit |
 | Hub text, crew lines, ledger | about 1,500 words | Hub and crew voice cards | |
 
-Word budget: about 13,500 authored, about 3,800 read per run (`game-design.md` section 9).
+Word budget: about 13,850 authored, about 3,800 read per run (`game-design.md` section 9).
 
 ## Build list, in dependency order
 
