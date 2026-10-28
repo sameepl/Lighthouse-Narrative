@@ -43,8 +43,8 @@ Small fixes to do before real content is written. Source: [`reviews/2026-10-21-m
 | [x] #23 (PR #49) | Display titles for encounters | core | B | none (before #9) |
 | [x] #24 | Rename keystone piece values to removed, six, claim (PR #32) | core | B | none |
 | [x] #25 (PR #56) | Season config: keystone roles in a validated data file | core | B | #22 (bridge lane) |
-| [ ] #26 | Simulation drives the real RunController and session | feature | B | #20, #21, #22, #25 |
-| [ ] #27 | Content test: first and final keystones always reachable | feature | B | #25 |
+| [x] #26 (PR #65) | Simulation drives the real RunController and session | feature | B | #20, #21, #22, #25 |
+| [x] #27 (PR #72) | Content test: first and final keystones always reachable | feature | B | #25 |
 | [x] #28 (PR #37, completed by PR #47) | Hub status as structured data, not prose in the bridge | core | B | none (first in the bridge lane) |
 | [ ] #29 | Unpaid upkeep: arrears, harder rolls, Renown burn-down, foreclosure ending (owner ruled 2026-10-21) | core | A | bridge lane (#28, #21, #20, #22, #25) |
 

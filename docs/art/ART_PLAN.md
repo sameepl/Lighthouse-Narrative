@@ -24,7 +24,7 @@ Direction (revised 2026-10-28 at the owner's request: more sci-fi than the curre
 ## Technical rules
 
 - SVG only, `viewBox="0 0 600 300"`, `preserveAspectRatio="xMidYMin slice"`, no `<image>`, `<script>`, `<text>`, fonts, filters or external references.
-- At most 14 KB each (`hall.svg` is 9 KB); the whole set at most 180 KB.
+- At most 14 KB each (`hall.svg` is 9 KB); the whole set at most 180 KB, so images average under 13 KB.
 - Unique ids per file (prefix with the image name) so gradients never collide.
 - **Safe area:** the focal element sits inside x 150 to 450 and y 20 to 130. On a narrow phone the sides are cropped, and below about y 165 the mask fades the image out.
 - Reads at 390 px wide and at 1200 px wide, in both themes (in the light theme the art is shown at 40 percent, so the shapes must carry without the glow).
