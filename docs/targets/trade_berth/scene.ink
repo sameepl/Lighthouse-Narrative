@@ -1,7 +1,7 @@
 // TARGET (reference quality, not shipped): [STUB] The Fee Sheet. See docs/targets/README.md.
 // Marcus is never written for. All local knots use the scene ID prefix.
 === target_trade_berth_scene ===
-[STUB] The long bay is cold enough to show your breath. The chief of the berth crew stands over forty crates of water filters with a fee sheet in one hand, and past the gate the buyer’s tug idles, its crew watching the clock. Your filing is held at the berth office for a second countersign. If the crates miss this window, the buyer walks. # bg:hall
+[STUB] The long bay is cold enough to show your breath. The chief of the berth crew stands over forty crates of water filters with a fee sheet in one hand, and past the gate the buyer’s tug idles, its crew watching the clock. Your filing is held at the berth office for a second countersign. Miss this window and the buyer walks. # bg:hall
 -> target_trade_berth__menu
 
 === target_trade_berth__menu ===
@@ -13,20 +13,20 @@
     -> roll("Electronics,Mechanic", 8, "", -> target_trade_berth__seals_clean, -> target_trade_berth__seals_cost, -> target_trade_berth__seals_fail)
 
 === target_trade_berth__haggle_clean ===
-[STUB] The chief reads your offer twice, then strikes a line through the fee and initials it. The tug swings in, and the loose third plate clatters under its tow-bar as the first crate lifts. By the time the countersign comes down from upstairs, the buyer has signed for all forty, and a clerk counts the credits onto the sheet.
+[STUB] The chief reads your offer twice. Then she strikes a line through the fee and initials it. The tug swings in, and the loose third plate clatters under its tow-bar as the first crate lifts. By the time the countersign comes down from upstairs, the buyer has signed for all forty, and a clerk counts the credits onto the sheet.
 ~ add("Credits", 1500)
 ~ note("gain", "[STUB] Credits +1,500: the fee is struck and the buyer pays in full.")
 -> target_trade_berth__after
 
 === target_trade_berth__haggle_cost ===
-[STUB] The chief halves the fee but will not move a crate without the countersign, and sends her runner up the spoke with the sheet. The berth lights hum while the tug waits at the gate. The paper returns an hour late, stamped against your name. Pay comes, minus a tenth for the delay, and the buyer tells the whole queue why.
+[STUB] The fee is halved, but no crate moves without the countersign, and the chief’s runner goes up the spoke with the sheet. The berth lights hum while the tug waits at the gate. The paper returns late, stamped against your name. Pay comes, minus a tenth for the delay, and the buyer tells the whole queue why.
 ~ add("Credits", 1000)
 ~ add("Strain", 1)
 ~ note("cost", "[STUB] Credits +1,000, Strain +1: the delivery is made, and the berth office logs the late filing against you.")
 -> target_trade_berth__after
 
 === target_trade_berth__haggle_fail ===
-[STUB] Back goes the full fee in the chief’s hand, and she shakes her head. The crates stay on the deck, and the tug drifts out of its slot to make room for a hull with its paper in order. You are handed a hold ticket for the next berth window, a day away, and a bill for the hours already used.
+[STUB] Back goes the full fee. She shakes her head. The crates stay on the deck, and the tug drifts out of its slot to make room for a hull with its paper in order. You are handed a hold ticket for the next berth window, a day away, and a bill for the hours already used.
 ~ add("Credits", -500)
 ~ note("cost", "[STUB] Credits -500: no delivery today. The hold ticket is good for the next berth window.")
 -> target_trade_berth__after
@@ -38,14 +38,14 @@
 -> target_trade_berth__after
 
 === target_trade_berth__reorder_cost ===
-[STUB] Up on the board goes the new order, and the loader crews grumble about the extra lift. Two crates swing wide on the first pass and crack a corner against the frame. The chief writes up the damage and waves the rest through. Thirty-eight crates are paid for, not forty, and word of the noise reaches upstairs.
+[STUB] Up on the board goes the new order, and the loader crews grumble about the extra lift. Two crates swing wide on the first pass and crack a corner against the frame. A clerk writes it up. The rest go through. Thirty-eight crates are paid for, not forty, and word of the noise reaches upstairs.
 ~ add("Credits", 500)
 ~ add("Strain", 1)
 ~ note("cost", "[STUB] Credits +500, Strain +1: two crates are lost to damage and the berth office takes note.")
 -> target_trade_berth__after
 
 === target_trade_berth__reorder_fail ===
-[STUB] The chief’s own order and the new one contradict each other, and the loaders stand between them, doing neither. A crate slips its strap and lands hard, spilling filters across the plating. The buyer’s tug leaves without waiting. The chief offers the repair bay, where the filters can be sorted and resold at the next window, for a fee.
+[STUB] Two orders now contradict each other, and the loaders stand between them, doing neither. A crate slips its strap and lands hard, spilling filters across the plating. The buyer’s tug leaves without waiting. The repair bay will sort the filters for resale at the next window, for a fee.
 ~ add("Credits", -1000)
 ~ note("cost", "[STUB] Credits -1,000: the buyer is gone. The repair bay will sort the spilled stock for resale.")
 -> target_trade_berth__after
@@ -63,7 +63,7 @@
 -> target_trade_berth__after
 
 === target_trade_berth__seals_fail ===
-[STUB] Before you do, the chief finds the flaw and writes a safety-lock citation against your registration. The crates stay put while the citation is filed. The inspector will see the repaired crate at the next berth window, and until then your ship’s name sits on a short list upstairs.
+[STUB] Before you do, the chief finds the flaw and writes a safety-lock citation against your registration. The crates stay put for the filing. The inspector will see the repaired crate at the next berth window, and until then your ship’s name sits on a short list upstairs.
 ~ add("Strain", 1)
 ~ note("cost", "[STUB] Strain +1: a citation is filed against your registration. The inspector will see the crate at the next window.")
 -> target_trade_berth__after

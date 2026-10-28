@@ -69,7 +69,7 @@
       }
     },
     {
-      "label": "Ask a passing salvage crew which beacon they avoid",
+      "label": "Ask a salvage crew what they avoid",
       "skills": [
         "Persuade",
         "Diplomat"
