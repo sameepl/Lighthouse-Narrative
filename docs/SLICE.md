@@ -66,6 +66,8 @@ Authored budget: about 13,500 words for the slice proper (`game-design.md` secti
 
 ## Build list, in dependency order
 
+Issues: epic #105. Briefs #88, roster stubs #89, keystone stubs and season #90, armed tag #91, timing log #92, Playwright #93, downtime #94, title #95, ending #96, background registry #97, art gate #98, images #99 to #102, planner confirmation #103, voice bible #104.
+
 1. **Finish the grey-box.**
    - Merge the Board (#83) and build Prepare (#7).
    - Add the leads field to the roster briefs.
