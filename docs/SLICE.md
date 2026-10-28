@@ -40,7 +40,7 @@ Every run has at least one, guaranteed by making it part of a keystone. **K2 The
 
 ## Rules for the slice
 
-- **The clock.** The slice clock has four segments, +1 a cycle. A Renown of 3 or more, one loud choice, or a channel-opening tick (+2) can fill it before K2 or K3 has run, and K5 needs both. Proposed: keep K5 forced in cycle 4 whatever the clock says, give K2 and K3 deadlines at cycle 3 (so neither can be skipped), and make the slice season config require K2 and K3 (not K4). Alternatively give the slice a five-segment clock. The owner chooses; the simulation checks it.
+- **The clock (decided 2026-10-28, Option A).** The finale is on a fixed schedule: K5 always plays in cycle 4, and K2 and K3 are forced by their cycle 3 deadlines. A full Pursuit clock makes K5 harder (weaker options, a harder ending); it does not trigger K5 early. This needs a season-level policy in the engine (issue #113). Renown 3 or more, a loud choice or a channel-opening tick can still fill the clock, but can no longer skip K2 or K3.
 - **K4 is out.** The slice `season.json` lists only K1, K2, K3 and K5, so K4 can never be forced.
 - **The price of knowing** is a **+2 Pursuit tick only when a channel is opened**, per `canon/owner-decisions.md` section 7. Asking Ariadne a question does not tick the clock. (`game-design.md` is corrected to match.)
 - **K5's reaffirm cost** cannot be Pursuit, because the clock is already nearly full when it plays. The cost is a ledger line and the ending it leads to.
@@ -51,7 +51,7 @@ Every run has at least one, guaranteed by making it part of a keystone. **K2 The
 |---|---|---|
 | Keystones | 4 | K1, K2, K3, K5. Premises are proposals until the planner confirms them under the HELD rules (Contact 1, Tally's name and number, Helena's and Adrian's whereabouts stay unresolved). Placeholder facts stay `[STUB]` |
 | Roster encounters | 6 authored, 2 seen per run | `CONTENT_GENERATION.md` briefs, one location each; `written_clause` is the separate tutorial |
-| Endings | 2, each with its own backdrop | Decided 2026-10-28; three stances are deferred to M2 |
+| Endings | 2, each with its own backdrop, plus the foreclosure ending | Decided 2026-10-28; three stances are deferred to M2. Foreclosure reuses `end_closed` with a tint (about 150 words, #29) |
 | Hub, downtime, crew lines, ledger | about 1,700 words | Hub 1,200 plus crew and ship text 500, as in `game-design.md` section 9 |
 
 Authored budget: about 13,500 words for the slice proper (`game-design.md` section 9 adds to 13,600) plus about 350 for the action beat. No complication tables in M1: each archetype is seen once per run, so they only pay off in M2.
@@ -76,7 +76,7 @@ Issues: epic #105. Briefs #88, roster stubs #89, keystone stubs and season #90, 
    - Add a dev-only per-scene timestamp log, so timed testers give data, not only a stopwatch total.
    - Add a Playwright smoke test of a full run (a core-zone card: it adds a dependency). #26 and #27 are done and already cover the simulation and reachability.
 2. **Timed grey-box run.** Time two or three runs in placeholder text before any prose is written. Trim the plan if it lands outside 18 to 24 minutes.
-3. **Rules the slice needs.** The `armed` tag and ship-tag roll modifiers; two rolls in a keystone; #29 (arrears, harder rolls, Renown burn-down) in three PRs; #35 (ship and economy numbers); then a simulation tuning pass.
+3. **Rules the slice needs.** The clock policy (#113); the `armed` tag and ship-tag roll modifiers (#91); two rolls in a keystone; #29 (arrears, harder rolls, Renown burn-down, and the foreclosure ending) in three PRs; #35 (ship and economy numbers); then a simulation tuning pass.
 4. **Screens.** Title and onboarding (Board, Prepare, Odds, Edge); the downtime and ledger screen each cycle; the ending screen with a ledger summary; save and resume checks (autosave, survive a reload, a new run after an ending); accessibility (contrast over art in both themes, tap-target size, focus order, meter states that are not colour-only, reduced motion everywhere); a build stamp and a feedback link on the Pages build.
 5. **Writing.** The voice bible, then K1, K2, K3 and K5 to this script, then the roster encounters rewritten from stub to M1 quality.
 6. **Art.** The background registry, then the images in `art/ART_PLAN.md`.
@@ -88,7 +88,7 @@ Issues: epic #105. Briefs #88, roster stubs #89, keystone stubs and season #90, 
 
 - A first-time player finishes a run in 18 to 24 minutes, on a phone, with no help (three testers, timed).
 - Every keystone order the scheduler allows reaches an ending (#26, #27 and the simulation cover this).
-- Both endings are reachable and show a ledger summary. The foreclosure ending is in the slice only if the owner decides so (#29).
+- Both K5 endings and the foreclosure ending are reachable and show a ledger summary.
 - `npm run check` and the end-to-end smoke test pass in CI, and the Pages deploy serves the run.
 - No `[GM-ONLY]` or HELD material in player-visible text (the canon guard and the owner's read).
 

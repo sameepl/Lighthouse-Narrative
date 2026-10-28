@@ -62,5 +62,7 @@ For the M0 stub scenes (issue #10): stubs may carry small **placeholder effects*
 - **Art direction:** hard-surface vector sci-fi (`../art/ART_PLAN.md`), not painterly raster.
 - **Endings:** the M1 slice has **two endings**, each with **its own backdrop** (`end_open`, `end_closed`). Three stances are deferred to M2.
 - **Playtest target:** a 20-minute run (`../SLICE.md`), with at least one ship-versus-ship action scene (K2's first beat).
-- Still open: whether the slice includes the foreclosure fail state (#29), and what "several hours" means as a structure.
+- **The clock:** Option A. The finale is on a fixed schedule (K5 in cycle 4; K2 and K3 forced by cycle 3); a full clock hardens K5 and does not force it early.
+- **Foreclosure:** the slice includes the foreclosure ending (Option 1), reusing `end_closed` with a tint.
+- Still open: what "several hours" means as a structure.
 
