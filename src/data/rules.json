@@ -32,6 +32,16 @@
   },
   "cycle": {
     "actions": 2,
+    "upkeep": {
+      "placeholder": true,
+      "arrearsLimit": 4,
+      "warningLead": 2,
+      "targetFrom": 1,
+      "targetPenalty": 1,
+      "renownLoss": 1,
+      "strainFrom": 2,
+      "strainGain": 1
+    },
     "pursuit": {
       "length": 6,
       "sliceLength": 4,

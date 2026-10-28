@@ -74,4 +74,28 @@ describe('data files', () => {
       /edgeReward/,
     );
   });
+
+  it('validates explicit placeholder upkeep rules without defaults', () => {
+    expect(parseData(raw).rules.cycle.upkeep).toEqual(rules.cycle.upkeep);
+    const { upkeep: _upkeep, ...cycle } = rules.cycle;
+    expect(() => parseData({ ...raw, rules: { ...rules, cycle } })).toThrow(/upkeep/);
+  });
+
+  it.each([
+    { warningLead: 1 },
+    { warningLead: 4 },
+    { arrearsLimit: 0 },
+    { targetFrom: 0 },
+    { targetFrom: 3, strainFrom: 2 },
+    { strainFrom: 4 },
+    { targetPenalty: 0 },
+    { renownLoss: -1 },
+    { strainGain: 0 },
+    { placeholder: false },
+    { extra: 1 },
+    { warningLead: 2.5 },
+  ])('rejects invalid upkeep thresholds or values (%j)', change => {
+    const cycle = { ...rules.cycle, upkeep: { ...rules.cycle.upkeep, ...change } };
+    expect(() => parseData({ ...raw, rules: { ...rules, cycle } })).toThrow(/upkeep/);
+  });
 });
