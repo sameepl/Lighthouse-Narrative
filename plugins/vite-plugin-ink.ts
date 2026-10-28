@@ -1,7 +1,7 @@
 // Compiles *.ink files to ink runtime JSON at build/dev/test time, so the browser ships only the small
 // inkjs runtime (not the compiler) and ink syntax errors fail the build with file/line messages.
 import path from 'node:path';
-import type { Plugin } from 'vite';
+import { normalizePath, type Plugin, type ViteDevServer } from 'vite';
 import { Compiler, CompilerOptions } from 'inkjs/full';
 import type { IFileHandler } from 'inkjs/compiler/IFileHandler';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -58,16 +58,45 @@ export function compileInk(file: string, loaded: string[] = []): string {
 }
 
 export function inkPlugin(): Plugin {
+  let devServer: ViteDevServer | undefined;
+  const sceneEntries = new Map<string, Set<string>>();
   return {
     name: 'ink',
     enforce: 'pre',
+    configureServer(server) {
+      devServer = server;
+      const scenesChanged = (file: string) => {
+        if (!file.endsWith('.ink')) return;
+        const entries = sceneEntries.get(normalizePath(path.dirname(file)));
+        if (!entries) return;
+        // New files have no import-graph edge yet. Invalidate every entry that expands this directory.
+        for (const environment of Object.values(server.environments)) {
+          for (const entry of entries) {
+            for (const mod of environment.moduleGraph.getModulesByFile(entry) ?? []) {
+              environment.moduleGraph.invalidateModule(mod);
+            }
+          }
+        }
+        server.ws.send({ type: 'full-reload' });
+      };
+      server.watcher.on('add', scenesChanged).on('unlink', scenesChanged);
+    },
     load(id) {
       const file = id.split('?')[0]!;
       if (!file.endsWith('.ink')) return null;
       const loaded: string[] = [];
       const json = compileInk(file, loaded);
-      for (const f of [file, ...loaded]) this.addWatchFile(f); // INCLUDEd files rebuild the story too
-      this.addWatchFile(path.join(path.dirname(file), 'scenes')); // so does adding a scene file
+      for (const f of [file, ...loaded]) this.addWatchFile(normalizePath(f)); // INCLUDEd files rebuild the story too
+      const scenes = normalizePath(path.join(path.dirname(file), 'scenes'));
+      if (devServer) {
+        // In a load hook, Vite treats addWatchFile entries as imports. A directory cannot resolve as one.
+        devServer.watcher.add(scenes);
+        const entries = sceneEntries.get(scenes) ?? new Set<string>();
+        entries.add(normalizePath(file));
+        sceneEntries.set(scenes, entries);
+      } else {
+        this.addWatchFile(scenes); // retain directory watching for build --watch
+      }
       return `export default ${JSON.stringify(json)};`;
     },
     handleHotUpdate({ file, server }) {
