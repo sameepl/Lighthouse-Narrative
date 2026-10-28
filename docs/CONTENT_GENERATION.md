@@ -35,6 +35,31 @@ effects:      the table in section 4, filled with numbers
 
 `label` is the text of the button, written as intent: verb first, 3 to 8 words, specific to the scene. Good: "Haggle the berth fee down". Forbidden: "parley approach", "Coordinate", any archetype word.
 
+### 2a. Brief v2: fields added after the first bake-off pilot (2026-10-27)
+
+The blind judging of pilot 1 (twelve drafts of one brief) found the same few faults across writers. Most trace to the brief, not the models.
+
+| Field | Why | Shape |
+|---|---|---|
+| `effect_reasons` | Many drafts moved Credits between the stallholder and the disputing crew while the note said the **player's** account changed. The brief never said who pays or receives. | Per approach and grade, one line naming the in-fiction reason and the other party: `"clean": "the stallholder refunds your crew the second charge"`. Every resource effect applies to **the player's side** ("your crew" or "your ship"); the reason says who is on the other end. The writer must show that exchange in the prose. |
+| `places` | Drafts invented a "witness bench", a "dispute purse" and a "complaints desk". | A short list of named desks, offices and routes the writer may use, for example `["the Exchange clerk's desk", "the registry desk"]`. Fail routes must come from this list. |
+| `state_nouns` | A deadline was listed as a state noun and a good ending was flagged for it. | Only things an outcome can change (an order, a receipt, bowls). Never a time or a deadline (a bell, a window). |
+| `sensory_details_used` | The writer prompt carried empty strings for it and the assembler rejects them. | Coordinator metadata only. **Do not put it in the writer prompt.** |
+
+Interim until the assembler accepts the new fields (see the follow-up issue): the assembler's brief schema is strict, so fold the same information into `want`, `at_stake` and each approach's `npc_reaction` (for example, "she counts the refund she would owe your crew"), and keep `places` and `effect_reasons` in the writer prompt text only.
+
+Example, abridged (the market standoff):
+
+```
+places: ["the Exchange clerk's desk", "the registry desk by the Exchange"]
+approach "Call the Exchange clerk to rule"
+  effects:  clean Credits +1,000 | cost Credits -500 | fail Strain +1
+  effect_reasons:
+    clean: "the stallholder refunds your crew a double charge on the clerk's ruling"
+    cost:  "the clerk bills your crew a filing fee for the ruling"
+    fail:  "the glare and the complaint land on your crew; the clerk will hear it at second shift"
+```
+
 ## 3. The outcome contract
 
 Every roll has three outcomes. Each outcome must change **something the player can point to**.
@@ -86,6 +111,8 @@ Placeholder bands (not canon; replace when the economy is reconciled, issue #35)
 
 **Shared ending.** The ending passage runs after all nine outcomes, so it must be true after every one. Rules: at most 40 words; no seals, fees, slots, windows, cargo state or anything an outcome can change; it says only where the player is and that the ledger card follows. If an outcome needs a closing line, put it in that outcome.
 
+**Names and words.** Never name the player character in prose. Refer to the player's side as "your crew" or "your ship". Do not use game words in prose: strain, renown, meter, resource, effect, roll, and the grade names used as labels ("a clean result", "the cost outcome"). Ordinary uses of the word cost are fine. Amounts of credits may appear ("five hundred credits"); resource names belong in the note only. Do not invent named institutions, offices or officials beyond the brief's `places` and the location file; an unnamed person in a role ("the clerk") is fine.
+
 **Canon.** Use only the brief and the named location file. Never read `docs/canon-gm/`. Do not mention Ariadne, the pursuers, Marcus's past, powers, or children. A named canon person only if the brief names them, and then follow their voice card.
 
 ## 6. Making a roster feel different
@@ -120,13 +147,16 @@ You write placeholder game text. Follow the brief exactly. Return only JSON:
 }
 Every text starts with "[STUB] ". 40 to 80 words (ending at most 40). Follow the outcome contract:
 clean = gain, cost = price paid, fail = a named alternative route plus a cost inside the fail band.
-Each note repeats its effect exactly. Never write the player character's words, thoughts or actions.
+Each note repeats its effect exactly, and the prose shows the exchange named in the brief's effect_reasons. Use only the named places in the brief. Never name the player character or write his words, thoughts or actions.
 Use no banned phrase. Use one sensory detail from the location per passage at most.
 ```
 
 ## 8. Checks to build (follow-up issue)
 
 A lint in `tests/` (core zone) should fail on: word count outside 40 to 80; a missing `[STUB]`; any banned phrase; a repeated sentence opener or phrase over the limits; a note with a number that does not match its `add()`; an outcome with no effect when the grade requires one; a clean outcome with no gain; two stubs in one location; a shared ending over 40 words or containing a word from the brief's state-noun list; and a scout that is not `commercial`, or a distress call or standoff that is not `crisis`. The assembler (brief JSON plus passage JSON to ink and encounter JSON) belongs in the same issue.
+
+
+**Lint additions requested after pilot 1 (for the follow-up issue):** fail on the player character's name in any passage; on the game words above in prose; on a capitalised multi-word noun phrase that names an office, desk or official and is not in `places` or the location file; on a note whose resource does not appear as an exchange in the prose (warn only, since this needs judgment); and warn when `state_nouns` contains a time word (bell, window, shift, day).
 
 ## 9. Worked example
 
