@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { data } from '../src/data';
 import seasonFile from '../src/data/season.json';
+import type { Keystone } from '../src/data/schema';
 import { parseData, parseSeason } from '../src/data/validate';
 import { RunController } from '../src/bridge/run';
 import { newGameState } from '../src/engine/rules';
@@ -10,6 +11,16 @@ const season = simulationSeason;
 const mode = (name: 'slice' | 'full', change: object) => ({ ...season, [name]: { ...season[name], ...change } });
 const configuredData = { ...data, encounters: [], keystones: simulationKeystones, season };
 const files = Object.fromEntries(simulationKeystones.map(k => [`./keystones/${k.id}.json`, k]));
+const hardenedSeason = { ...season, pursuitFull: 'hardenFinale' as const };
+const hardenedKeys = simulationKeystones.map(k =>
+  k.id === 'middle_why'
+    ? k
+    : {
+        ...k,
+        availableWhen: { cycle: k.id === 'opening' ? 1 : k.id === 'finale' ? 4 : 2 },
+        deadline: k.id === 'opening' ? 1 : k.id === 'finale' ? 4 : 3,
+      },
+);
 
 describe('season configuration', () => {
   it('loads production JSON and handles explicit unconfigured fixtures without inventing a catalog', () => {
@@ -33,6 +44,8 @@ describe('season configuration', () => {
 
   it.each([
     [undefined, 'season.json'],
+    [{ ...season, pursuitFull: 'earlyFinale' }, 'pursuitFull'],
+    [{ ...season, pursuitFull: null }, 'pursuitFull'],
     [{ status: 'unconfigured', slice: season.slice }, 'slice'],
     [{ status: 'configured', slice: season.slice }, 'full'],
     [mode('slice', { minCompletedMiddle: 1 }), 'minCompletedMiddle'],
@@ -65,6 +78,45 @@ describe('season configuration', () => {
       expect(() => parseSeason(mode(name, change), simulationKeystones)).toThrow('season.json');
       expect(() => parseSeason(mode(name, change), simulationKeystones)).toThrow(String(field));
     }
+  });
+
+  it.each(['forceFinale', 'hardenFinale'] as const)('preserves the explicit %s policy in raw JSON', pursuitFull => {
+    const configured = { ...season, pursuitFull };
+    expect(parseSeason(configured, pursuitFull === 'hardenFinale' ? hardenedKeys : simulationKeystones)).toEqual(
+      configured,
+    );
+    expect(parseSeason(season, simulationKeystones)).not.toHaveProperty('pursuitFull');
+  });
+
+  it('validates hardened slice activation without restricting its full-only conditional role', () => {
+    const keystones = Object.fromEntries(hardenedKeys.map(k => [`./keystones/${k.id}.json`, k]));
+    expect(parseData({ ...configuredData, season: hardenedSeason, encounters: {}, keystones }).season).toEqual(
+      hardenedSeason,
+    );
+    expect(hardenedKeys.find(k => k.id === season.full.conditionalId)).toMatchObject({
+      deadline: 6,
+      requires: { flags: ['aid'] },
+    });
+  });
+
+  it.each<[string, Partial<Keystone>, string]>([
+    ['opening', { requires: { minCredits: 0 } }, 'requires'],
+    ['middle_where', { requires: { shipTag: 'quiet' } }, 'requires'],
+    ['middle_who', { requires: { crew: [] } }, 'requires'],
+    ['finale', { requires: { gear: ['probe'] } }, 'requires'],
+    ['opening', { deadline: 2 }, 'deadline'],
+    ['middle_where', { deadline: 4 }, 'deadline'],
+    ['middle_who', { deadline: 4 }, 'deadline'],
+    ['finale', { availableWhen: { cycle: 3 } }, 'availableWhen'],
+    ['finale', { availableWhen: { cycle: 4, lead: 'finale' } }, 'availableWhen'],
+    ['finale', { availableWhen: { lead: 'finale' } }, 'availableWhen'],
+    ['finale', { deadline: 5 }, 'deadline'],
+  ])('rejects hardened slice %s contract violation in %s', (id, change, field) => {
+    const keys = hardenedKeys.map(k => (k.id === id ? { ...k, ...change } : k));
+    expect(() => parseSeason(hardenedSeason, keys)).toThrow(`season.json: slice.${id}.${field}`);
+    expect(parseSeason(season, keys)).toEqual(season);
+    const legacy = { ...season, pursuitFull: 'forceFinale' as const };
+    expect(parseSeason(legacy, keys)).toEqual(legacy);
   });
 
   it('rejects activation without matching keystone files and omission of a slice middle in full mode', () => {

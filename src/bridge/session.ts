@@ -392,6 +392,7 @@ export class GameSession {
         offers: this.run.state.offers,
         ...preparationProjection(this.run.state, this.opts.data, this.game.res),
         cycle: this.run.state.cycle,
+        pursuitFull: this.run.state.cycle.pursuit.value === this.run.state.cycle.pursuit.length,
         crewTrust: this.run.state.crewTrust,
         assignments: this.run.state.assignments,
         busyCrewIds: this.run.state.busyCrewIds,

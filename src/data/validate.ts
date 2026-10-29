@@ -150,5 +150,20 @@ export function parseSeason(raw: unknown, keystones: readonly Keystone[]): Seaso
   if (season.slice.finaleId !== season.full.finaleId) fail('full.finaleId', 'must match slice.finaleId');
   if (season.slice.middleIds.some(id => !season.full.middleIds.includes(id) || id === season.full.conditionalId))
     fail('full.middleIds', 'must contain the slice middles plus a separate conditional middle');
+  if (season.pursuitFull === 'hardenFinale') {
+    const roles = season.slice;
+    for (const id of [roles.firstId, ...roles.middleIds, roles.finaleId]) {
+      const key = keystones.find(entry => entry.id === id)!;
+      const field = `slice.${id}`;
+      if (Object.keys(key.requires).length) fail(`${field}.requires`, 'hardened slice roles need empty requirements');
+      if (id === roles.finaleId) {
+        if (key.availableWhen.cycle !== 4 || key.availableWhen.lead !== undefined)
+          fail(`${field}.availableWhen`, 'hardened slice finale must open only at cycle 4');
+        if (key.deadline !== 4) fail(`${field}.deadline`, 'hardened slice finale must be due at cycle 4');
+      } else if (key.deadline > (id === roles.firstId ? 1 : 3)) {
+        fail(`${field}.deadline`, `hardened slice role must be due by cycle ${id === roles.firstId ? 1 : 3}`);
+      }
+    }
+  }
   return season;
 }

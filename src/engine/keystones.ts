@@ -21,6 +21,8 @@ export interface KeystoneInput {
   completed: readonly string[];
   keystones: readonly Keystone[];
   roles: KeystoneRoles;
+  /** Absent preserves the original full-clock finale trigger. */
+  pursuitFull?: 'forceFinale' | 'hardenFinale';
 }
 
 export interface KeystoneSchedule {
@@ -100,7 +102,14 @@ export function scheduleKeystones(input: KeystoneInput): KeystoneSchedule {
       if (entry.id === roles.conditionalId) result.commercialReplacement = true;
       return;
     }
-    result.offers.push({ keystone: entry, forced: due, weak: due });
+    result.offers.push({
+      keystone: entry,
+      forced: due,
+      weak:
+        entry.id === roles.finaleId && input.pursuitFull === 'hardenFinale'
+          ? cycle.pursuit.value === cycle.pursuit.length
+          : due,
+    });
   };
 
   // Opening always precedes the rest, including a clock already full in a restored state.
@@ -108,8 +117,8 @@ export function scheduleKeystones(input: KeystoneInput): KeystoneSchedule {
     offer(catalog.get(roles.firstId)!);
     return result;
   }
-  // Full Pursuit explicitly bypasses the finale's evidence/availability gates, not hard requirements.
-  if (cycle.pursuit.value === cycle.pursuit.length) {
+  // The legacy policy bypasses finale evidence/availability gates at full Pursuit, not hard requirements.
+  if (cycle.pursuit.value === cycle.pursuit.length && input.pursuitFull !== 'hardenFinale') {
     offer(catalog.get(roles.finaleId)!, true);
     return result;
   }

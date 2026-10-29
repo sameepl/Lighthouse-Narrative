@@ -84,7 +84,7 @@ Hub: brief, news, upkeep -> board of offers -> Prepare (ship, crew) -> Action 1 
 | **Edge** | pool of 3 per run | Re-roll a failure, or upgrade a success-with-a-cost to clean. **One pool for the whole run; no refresh.** Earned back only when a crew member reaches trust 3 (+1 each, never above 3). |
 | **Renown** | 0 to 5 | How far your name carries. Raises the pay and quality of commercial offers. Also makes you easier to find (see Pursuit). |
 | **Strain** | 0 to 5 | Strain with the Compact: how much of Renata's patience you have used. Pays off in keystones. |
-| **Pursuit clock** | 6 segments (4 in the slice) | The narrative clock. Each cycle adds 1, plus 1 if Renown is 3 or more, plus 1 for a loud choice, minus 1 for a quiet choice. These modifiers add independently; Pursuit stays between 0 and the clock length. The story can also advance it directly (for example opening an authenticated channel for Ariadne: +2; asking her a question does not tick the clock, per `canon/owner-decisions.md` section 7). When it fills, the pursuers arrive and the finale is forced. |
+| **Pursuit clock** | 6 segments (4 in the slice) | The narrative clock. Each cycle adds 1, plus 1 if Renown is 3 or more, plus 1 for a loud choice, minus 1 for a quiet choice. These modifiers add independently; Pursuit stays between 0 and the clock length. The story can also advance it directly (for example opening an authenticated channel for Ariadne: +2; asking her a question does not tick the clock, per `canon/owner-decisions.md` section 7). The slice uses `hardenFinale`: a full clock makes K5 harder while its cycle-4 schedule holds. A season with `forceFinale`, or no policy, retains the original immediate finale trigger. |
 
 Renown is both reward and risk: it makes money easier and trouble faster. That tension is the design.
 
@@ -194,7 +194,7 @@ K5 is Ariadne asking, not Marcus finding. The relief is Ariadne answering, not b
 - **K1 first, K5 last.** K2, K3 and K4 can come in any order, set by which lead the player follows and what they can afford.
 - A keystone not pursued forces itself at its deadline with weaker options.
 - K5 needs at least two of K2 to K4. **Which pieces the player holds** changes K5's options and the ending.
-- The Pursuit clock decides how much time there is. If it fills early, K5 triggers with whatever the player has.
+- The slice uses season policy `hardenFinale`: K2 and K3 are forced by their cycle-3 deadlines, and K5 plays in cycle 4. A full clock weakens K5's options and ending without skipping the middles. This setting applies only to the vertical slice. Full runs always retain `forceFinale`, as does a slice with the policy omitted, to trigger K5 early with whatever evidence the player has.
 - In a 20-minute slice: K1, then K2 and K3 in either order, then K5.
 
 ## 7. Branching policy (Medium)

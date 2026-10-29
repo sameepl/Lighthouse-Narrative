@@ -52,6 +52,11 @@ export class RunController {
   get configured(): boolean {
     return this.data.keystones.length > 0 && this.keystoneRoles !== undefined;
   }
+  private get pursuitFullPolicy(): 'forceFinale' | 'hardenFinale' {
+    return this.options.slice === true && this.data.season.status === 'configured'
+      ? (this.data.season.pursuitFull ?? 'forceFinale')
+      : 'forceFinale';
+  }
   require(phase: RunState['phase']): void {
     if (this.state.phase !== phase) throw new Error(`Action requires ${phase} phase`);
   }
@@ -75,6 +80,7 @@ export class RunController {
           completed: s.completed,
           keystones: this.data.keystones,
           roles: this.keystoneRoles!,
+          pursuitFull: this.pursuitFullPolicy,
         })
       : null;
     if (scheduled?.ended) {
@@ -97,7 +103,7 @@ export class RunController {
       s.boardStatus = 'ready';
       return;
     }
-    if (s.cycle.pursuit.value >= s.cycle.pursuit.length) {
+    if (s.cycle.pursuit.value >= s.cycle.pursuit.length && this.pursuitFullPolicy === 'forceFinale') {
       s.offers = keys;
       s.boardStatus = keys.length ? 'ready' : 'pursuit-full';
       return;

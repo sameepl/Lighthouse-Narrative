@@ -162,6 +162,8 @@ export const SeasonSchema = z.discriminatedUnion('status', [
   z.strictObject({ status: z.literal('unconfigured') }),
   z.strictObject({
     status: z.literal('configured'),
+    /** Vertical-slice policy; full runs retain the legacy full-clock finale trigger. */
+    pursuitFull: z.enum(['forceFinale', 'hardenFinale']).optional(),
     slice: z.strictObject({
       ...SeasonRoleFields,
       middleIds: z.array(ContentId).length(2),
