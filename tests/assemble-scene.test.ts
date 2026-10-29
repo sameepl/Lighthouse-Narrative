@@ -251,3 +251,148 @@ it('CLI accepts JSON files and rejects missing, duplicate, unknown arguments or 
   fs.writeFileSync(w, '{bad');
   expect(run(args).status).toBe(1);
 });
+
+function v2(brief: ReturnType<typeof fixture>['brief']) {
+  return {
+    ...brief,
+    places: ["the Exchange clerk's desk"],
+    state_nouns: ['citation'],
+    sensory_details_used: { sound: 'COORDINATOR_ONLY' },
+    effect_reasons: Object.fromEntries(
+      brief.approaches.map(a => [
+        a.label,
+        {
+          clean: 'the stallholder refunds your crew the second charge',
+          cost: 'the clerk bills your crew a filing fee',
+          fail: 'the argument leaves your crew exhausted',
+        },
+      ]),
+    ),
+  };
+}
+it('accepts v2 coordinator metadata without publishing it', () => {
+  const { root, brief, writer } = fixture();
+  const result = assembleScene(v2(brief), writer, root);
+  for (const field of [
+    'places',
+    'effect_reasons',
+    'sensory_details_used',
+    'COORDINATOR_ONLY',
+    "the Exchange clerk's desk",
+    'stallholder refunds',
+  ])
+    expect(result.ink + JSON.stringify(result.encounter)).not.toContain(field);
+});
+it.each([
+  (b: any) => {
+    b.places = [42];
+  },
+  (b: any) => {
+    b.effect_reasons = {};
+  },
+  (b: any) => {
+    b.approaches[1].label = b.approaches[0].label;
+  },
+  (b: any) => {
+    b.effect_reasons[b.approaches[0].label].clean = '';
+  },
+  (b: any) => {
+    b.effect_reasons.unknown = b.effect_reasons[b.approaches[0].label];
+  },
+  (b: any) => {
+    delete b.effect_reasons[b.approaches[0].label].fail;
+  },
+])('rejects invalid v2 metadata before creating outputs', change => {
+  const { root, brief, writer } = fixture(),
+    b = v2(brief);
+  change(b);
+  expect(() => assembleScene(b, writer, root)).toThrow();
+  expect(destinations(root).some(fs.existsSync)).toBe(false);
+});
+it('rejects duplicate labels in the prompt CLI without assembler fallback', () => {
+  const { root, brief } = fixture(),
+    b = v2(brief);
+  b.approaches[1]!.label = b.approaches[0]!.label;
+  const file = path.join(root, 'brief.json');
+  fs.writeFileSync(file, JSON.stringify(b));
+  const failed = spawnSync(
+    process.execPath,
+    [path.resolve('scripts/build-prompt.mjs'), '--brief', file, '--root', root],
+    { encoding: 'utf8' },
+  );
+  expect(failed.status).toBe(1);
+  expect(failed.stderr).toContain('distinct approach labels');
+});
+
+it('builds a deterministic writer prompt containing only the brief, named location and contract sections 3/4/5/7', () => {
+  const { root, brief } = fixture(),
+    b = path.join(root, 'brief.json');
+  fs.writeFileSync(b, JSON.stringify(v2(brief)));
+  fs.writeFileSync(
+    path.join(root, 'docs/CONTENT_GENERATION.md'),
+    Array.from(
+      { length: 9 },
+      (_, i) =>
+        `## ${i + 1}. Section\nContract text ${i + 1}.${i === 6 ? '\n## Coordinator notes\nPRIVATE_METADATA' : ''}`,
+    ).join('\n'),
+  );
+  fs.writeFileSync(path.join(root, 'docs/canon/locations/unrelated.md'), 'UNRELATED_CANON');
+  const run = (args = ['--brief', b, '--root', root]) =>
+    spawnSync(process.execPath, [path.resolve('scripts/build-prompt.mjs'), ...args], { encoding: 'utf8' });
+  const first = run();
+  expect(first.status).toBe(0);
+  expect(run().stdout).toBe(first.stdout);
+  for (const text of ['Public fixture.', "the Exchange clerk's desk", 'clean: the stallholder refunds your crew'])
+    expect(first.stdout).toContain(text);
+  for (const text of [
+    'state_nouns',
+    'sensory_details_used',
+    'citation',
+    'COORDINATOR_ONLY',
+    'UNRELATED_CANON',
+    'PRIVATE_METADATA',
+  ])
+    expect(first.stdout).not.toContain(text);
+  expect(first.stdout.match(/^## \d+\./gm)).toEqual(['## 3.', '## 4.', '## 5.', '## 7.']);
+  for (const args of [[], ['--brief'], ['--unknown', b], ['--brief', b, '--brief', b]])
+    expect(run(args).status).toBe(1);
+  const contractFile = path.join(root, 'docs/CONTENT_GENERATION.md'),
+    contract = fs.readFileSync(contractFile, 'utf8');
+  for (const invalid of [
+    contract.replace('## 5. Section', '## Missing Section'),
+    contract + '\n## 3. Duplicate\nText',
+    contract.replace('## 3. Section', '## 3 Section'),
+  ]) {
+    fs.writeFileSync(contractFile, invalid);
+    const failed = run();
+    expect(failed.status).toBe(1);
+    expect(failed.stderr).toMatch(/content contract section [35]/);
+  }
+  fs.writeFileSync(contractFile, contract);
+  fs.writeFileSync(b, JSON.stringify({ ...brief, location: 'docs/canon-gm/private.md' }));
+  expect(run().status).toBe(1);
+});
+it('rejects a prompt location whose parent is a symlink', context => {
+  const { root, brief } = fixture(),
+    b = path.join(root, 'brief.json');
+  fs.writeFileSync(b, JSON.stringify(brief));
+  fs.writeFileSync(
+    path.join(root, 'docs/CONTENT_GENERATION.md'),
+    [3, 4, 5, 7].map(n => `## ${n}. Section\nText`).join('\n'),
+  );
+  const original = path.join(root, 'docs/canon/locations'),
+    moved = original + '-real';
+  try {
+    fs.renameSync(original, moved);
+    fs.symlinkSync(moved, original, 'junction');
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'EPERM')
+      return context.skip('Host denies junction creation; CI exercises this check');
+    throw error;
+  }
+  const run = spawnSync(process.execPath, [path.resolve('scripts/build-prompt.mjs'), '--brief', b, '--root', root], {
+    encoding: 'utf8',
+  });
+  expect(run.status).toBe(1);
+  expect(run.stderr).toContain('Symlink');
+});

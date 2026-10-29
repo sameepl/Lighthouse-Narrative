@@ -25,21 +25,34 @@ const approach = z.strictObject({
   npc_reaction: safe,
   effects,
 });
-const briefSchema = z.strictObject({
-  id: z.string().regex(/^stub_[a-z0-9]+(?:_[a-z0-9]+)*$/, 'Assembler IDs must start stub_'),
-  archetype: z.enum(['trade_run', 'courier', 'salvage', 'scout', 'distress_call', 'standoff']),
-  layer: z.enum(['commercial', 'crisis']),
-  location: z.string().regex(/^docs\/canon\/locations\/[a-z0-9]+(?:-[a-z0-9]+)*\.md$/),
-  who: safe,
-  want: safe,
-  at_stake: safe,
-  complication: safe,
-  approaches: z.array(approach).length(3),
-  title: safe.optional(),
-  state_nouns: z.array(safe).optional(),
-  loud_quiet: z.record(z.string(), z.enum(['loud', 'quiet'])).optional(),
-  sensory_details_used: z.record(z.string(), safe).optional(),
-});
+export const briefSchema = z
+  .strictObject({
+    id: z.string().regex(/^stub_[a-z0-9]+(?:_[a-z0-9]+)*$/, 'Assembler IDs must start stub_'),
+    archetype: z.enum(['trade_run', 'courier', 'salvage', 'scout', 'distress_call', 'standoff']),
+    layer: z.enum(['commercial', 'crisis']),
+    location: z.string().regex(/^docs\/canon\/locations\/[a-z0-9]+(?:-[a-z0-9]+)*\.md$/),
+    who: safe,
+    want: safe,
+    at_stake: safe,
+    complication: safe,
+    approaches: z.array(approach).length(3),
+    title: safe.optional(),
+    state_nouns: z.array(safe).optional(),
+    loud_quiet: z.record(z.string(), z.enum(['loud', 'quiet'])).optional(),
+    sensory_details_used: z.record(z.string(), safe).optional(),
+    places: z.array(safe).optional(),
+    effect_reasons: z.record(z.string(), z.strictObject(Object.fromEntries(grades.map(g => [g, safe])))).optional(),
+  })
+  .superRefine((brief, ctx) => {
+    if (new Set(brief.approaches.map(a => a.label)).size !== 3)
+      ctx.addIssue({ code: 'custom', message: 'Expected three distinct approach labels' });
+    if (
+      brief.effect_reasons &&
+      (Object.keys(brief.effect_reasons).length !== 3 ||
+        brief.approaches.some(a => !Object.hasOwn(brief.effect_reasons, a.label)))
+    )
+      ctx.addIssue({ code: 'custom', message: 'effect_reasons must match the three approach labels' });
+  });
 // Only the literal leading marker is exempt from the bracket restriction.
 const passage = z
   .string()
@@ -54,7 +67,7 @@ const outputSchema = z.strictObject({
   ending: passage,
 });
 
-function safePath(root, relative, directory = false) {
+export function safePath(root, relative, directory = false) {
   let current = root;
   for (const part of relative.split('/')) {
     current = path.join(current, part);
