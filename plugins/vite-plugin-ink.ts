@@ -4,7 +4,7 @@ import path from 'node:path';
 import { normalizePath, type Plugin, type ViteDevServer } from 'vite';
 import { Compiler, CompilerOptions } from 'inkjs/full';
 import type { IFileHandler } from 'inkjs/compiler/IFileHandler';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, realpathSync } from 'node:fs';
 
 /** Marker line in main.ink that expands to an INCLUDE for every file in scenes/ (sorted), so adding a scene never edits main.ink. */
 export const SCENES_MARKER = '// @include-scenes';
@@ -60,26 +60,15 @@ export function compileInk(file: string, loaded: string[] = []): string {
 export function inkPlugin(): Plugin {
   let devServer: ViteDevServer | undefined;
   const sceneEntries = new Map<string, Set<string>>();
+  const directoryKey = (dir: string) => {
+    const resolved = normalizePath(existsSync(dir) ? realpathSync.native(dir) : path.resolve(dir));
+    return process.platform === 'win32' ? resolved.toLowerCase() : resolved;
+  };
   return {
     name: 'ink',
     enforce: 'pre',
     configureServer(server) {
       devServer = server;
-      const scenesChanged = (file: string) => {
-        if (!file.endsWith('.ink')) return;
-        const entries = sceneEntries.get(normalizePath(path.dirname(file)));
-        if (!entries) return;
-        // New files have no import-graph edge yet. Invalidate every entry that expands this directory.
-        for (const environment of Object.values(server.environments)) {
-          for (const entry of entries) {
-            for (const mod of environment.moduleGraph.getModulesByFile(entry) ?? []) {
-              environment.moduleGraph.invalidateModule(mod);
-            }
-          }
-        }
-        server.ws.send({ type: 'full-reload' });
-      };
-      server.watcher.on('add', scenesChanged).on('unlink', scenesChanged);
     },
     load(id) {
       const file = id.split('?')[0]!;
@@ -90,18 +79,31 @@ export function inkPlugin(): Plugin {
       const scenes = normalizePath(path.join(path.dirname(file), 'scenes'));
       if (devServer) {
         // In a load hook, Vite treats addWatchFile entries as imports. A directory cannot resolve as one.
-        devServer.watcher.add(scenes);
-        const entries = sceneEntries.get(scenes) ?? new Set<string>();
+        const key = directoryKey(scenes);
+        const entries = sceneEntries.get(key) ?? new Set<string>();
+        const relative = path.relative(devServer.config.root, scenes);
+        // The root is already watched. Re-adding starts an ignoreInitial scan that can swallow new files.
+        if (
+          !sceneEntries.has(key) &&
+          (relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative))
+        ) {
+          devServer.watcher.add(scenes);
+        }
         entries.add(normalizePath(file));
-        sceneEntries.set(scenes, entries);
+        sceneEntries.set(key, entries);
       } else {
         this.addWatchFile(scenes); // retain directory watching for build --watch
       }
       return `export default ${JSON.stringify(json)};`;
     },
-    handleHotUpdate({ file, server }) {
+    hotUpdate({ file, timestamp }) {
       if (file.endsWith('.ink')) {
-        server.ws.send({ type: 'full-reload' });
+        // Unlike handleHotUpdate, this hook also runs for create/delete, before sending the reload.
+        const graph = this.environment.moduleGraph;
+        for (const entry of sceneEntries.get(directoryKey(path.dirname(file))) ?? []) {
+          for (const mod of graph.getModulesByFile(entry) ?? []) graph.invalidateModule(mod, new Set(), timestamp);
+        }
+        this.environment.hot.send({ type: 'full-reload' });
         return [];
       }
     },
