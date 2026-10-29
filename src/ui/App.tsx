@@ -5,6 +5,7 @@ import { Hud } from './components/Hud';
 import { Feed } from './components/Feed';
 import { Dock } from './components/Dock';
 import { Board } from './components/Board';
+import { Prepare } from './components/Prepare';
 import { SheetPanel } from './components/SheetPanel';
 import { hubStatusText } from './strings';
 import type { GameEvent } from '../bridge/types';
@@ -44,7 +45,12 @@ export function App() {
 
   const act = (id: number | string) => session.act(id);
   const showBoard = view.phase === 'hub' && view.hub !== null;
-  const dockChoices = showBoard ? view.choices.filter(choice => choice.command?.code !== 'offer') : view.choices;
+  const showPrepare = view.phase === 'prepare' && view.preparation !== null && view.active !== null;
+  const dockChoices = view.choices.filter(
+    choice =>
+      !(showBoard && choice.command?.code === 'offer') &&
+      !(showPrepare && (choice.command?.code === 'ship' || choice.command?.code === 'crew')),
+  );
   const restart = () => {
     clearSave();
     session.restart();
@@ -74,6 +80,9 @@ export function App() {
       </div>
       <Feed events={events} />
       {showBoard && <Board offers={view.offers} offerLocks={view.offerLocks} cycle={view.cycle} onAct={act} />}
+      {showPrepare && (
+        <Prepare active={view.active} preparation={view.preparation} choices={view.choices} onAct={act} />
+      )}
       <Dock choices={dockChoices} odds={view.odds} ended={view.ended} onAct={act} onRestart={restart} />
       {sheetOpen && <SheetPanel ledger={view.ledger} onClose={() => setSheetOpen(false)} />}
     </div>
