@@ -396,3 +396,94 @@ it('rejects a prompt location whose parent is a symlink', context => {
   expect(run.status).toBe(1);
   expect(run.stderr).toContain('Symlink');
 });
+
+it.each([
+  ['The Complaints desk waits.', false],
+  ['The Exchange clerk waits.', true],
+  ["The Exchange clerk's desk waits.", true],
+  ['The Exchange clerk’s desk waits.', true],
+  ['The clerk waits.', true],
+  ['At the desk, she counts.', true],
+  ['Behind the desk, she waits.', true],
+  ['Somewhere a clerk coughs.', true],
+  ['Nobody at the desk looks up.', true],
+  ['She reaches the desk.', true],
+  ['Then the clerk nods.', true],
+  ['Beneath the desk, she waits.', true],
+  ['"Ask the clerk," she says.', true],
+  ['Complaints desk waits.', 'warn'],
+  ['Ask the Complaints desk.', false],
+  ['Customs intake desk waits.', 'warn'],
+  ["Harbour master's office waits.", 'warn'],
+  ['Bored clerks shuffle forms.', 'warn'],
+  ["Mira's desk is bare.", 'warn'],
+  ['Two clerks wait.', true],
+  ['Both desks are empty.', true],
+  ["Nobody's desk is clear.", true],
+  ['Then Customs desk waits.', false],
+  ['Behind Customs desk, she waits.', false],
+  ["She sets the slip on Mira's desk.", 'warn'],
+  ['Then Mira bribes officials.', 'warn'],
+  ['She says, "Bored clerks never hurry."', 'warn'],
+  ['Ask Exchange clerk.', true],
+  ['The Exchange clerks wait.', true],
+  ['Weary Exchange clerk nods.', 'warn'],
+  ['Visit Exchange office.', 'warn'],
+  ['She says, "Old Customs desk is shut."', 'warn'],
+  ["She sets the slip on Captain Mira's desk.", 'warn'],
+  ["She waits by the Harbour Master's office.", 'warn'],
+  ['She says "Customs desk is shut."', 'warn'],
+  ['One rule: Customs desk closes early.', 'warn'],
+  ['This desk is bare.', true],
+  ['Every clerk looks up.', true],
+  ['Our office is closed.', true],
+  ['She says, "Ask the clerk."', true],
+  ['Someone knows what I owe the clerk.', true],
+  ['She hands Mira the desk key.', true],
+  ['The Complaints desks wait.', false],
+  ['Amber watches machinery.', true],
+  ['The cost is small.', true],
+])('checks named desks/officials against brief places without rejecting ordinary prose: %s', (line, allowed) => {
+  const { root, brief, writer } = fixture();
+  const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  writer.open = writer.open.replace('Amber ships drift.', line);
+  if (allowed) expect(() => assembleScene(v2(brief), writer, root)).not.toThrow();
+  else expect(() => assembleScene(v2(brief), writer, root)).toThrow('unbriefed-place');
+  if (allowed === 'warn') {
+    const placeWarnings = warning.mock.calls.flat().filter(s => String(s).includes('unbriefed-place'));
+    expect(placeWarnings).toHaveLength(1);
+    expect(placeWarnings[0]).toContain('ambiguous place phrase');
+  }
+  if (allowed === false) expect(warning.mock.calls.flat().join('\n')).not.toContain('unbriefed-place');
+  if (allowed === true) expect(warning.mock.calls.flat().join('\n')).not.toContain('unbriefed-place');
+});
+it('preserves v1 brief assembly with an ordinary sentence-initial desk reference', () => {
+  const { root, brief, writer } = fixture();
+  writer.open = writer.open.replace('Amber ships drift.', 'At the desk, she counts.');
+  expect(() => assembleScene(brief, writer, root)).not.toThrow();
+});
+it('allows an office from only the named public location', () => {
+  const { root, brief, writer } = fixture();
+  fs.appendFileSync(path.join(root, brief.location), '\nThe Compact traffic desk.');
+  writer.open = writer.open.replace('Amber ships drift.', 'The Compact traffic desk waits.');
+  expect(() => assembleScene(brief, writer, root)).not.toThrow();
+});
+it('does not let a generic allowed suffix hide a new name', () => {
+  const { root, brief, writer } = fixture();
+  fs.appendFileSync(path.join(root, brief.location), '\nThe intake desk.');
+  writer.open = writer.open.replace('Amber ships drift.', 'Then Customs intake desk waits.');
+  const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  assembleScene(v2(brief), writer, root);
+  expect(warning.mock.calls.flat().join('\n')).toContain('unbriefed-place: Customs intake desk');
+});
+
+it('warns for time nouns and semantic resource exchanges', () => {
+  const { root, brief, writer } = fixture();
+  const pilot = JSON.parse(fs.readFileSync('docs/targets/bakeoff/pilot-1/brief.json', 'utf8'));
+  expect(pilot.state_nouns).toContain('bell');
+  writer.ending = '[STUB] At the Shoal a bell sounds. The ledger card follows.';
+  const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  assembleScene({ ...v2(brief), state_nouns: pilot.state_nouns }, writer, root);
+  expect(warning.mock.calls.flat().join('\n')).toContain('state_nouns: time words');
+  expect(warning.mock.calls.flat().join('\n')).toContain('resource-exchange: semantic review required');
+});

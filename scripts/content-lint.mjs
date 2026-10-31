@@ -2,7 +2,7 @@
 import { readFileSync, readdirSync, lstatSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { lintScene } from './content-gates.mjs';
+import { lintScene, rules } from './content-gates.mjs';
 const grades = ['clean', 'cost', 'fail'];
 const words = text => text.toLowerCase().match(/[\p{L}\p{N}]+(?:['’][\p{L}\p{N}]+)*/gu) ?? [];
 const validId = value => typeof value === 'string' && /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/.test(value);
@@ -122,12 +122,79 @@ export function parseScene(ink, encounter) {
   return { ...meta, encounter, open: passage(entry), ending: passage(ending), outcomes: outcomes.map(passage) };
 }
 
-export function lintRoster(scenes) {
+export function lintRoster(scenes, warn = () => {}) {
   const locations = new Set();
   return scenes.flatMap(scene => {
     const duplicate = locations.has(scene.location) ? [`${scene.id}: location: duplicate ${scene.location}`] : [];
     locations.add(scene.location);
-    return [...duplicate, ...lintScene(scene)];
+    const errors = [];
+    const timeNouns = (scene.state_nouns ?? []).filter(n => rules.timeWords.includes(words(n).at(-1)));
+    if (timeNouns.length) warn(`${scene.id}: state_nouns: time words are not mutable objects: ${timeNouns.join(', ')}`);
+    for (const p of [scene.open, ...scene.outcomes, scene.ending]) {
+      const tokens = words(p.text).map(w => w.replace(/['’]s$/, ''));
+      const namedTokens = [...tokens, ...(p.notes ?? []).flatMap(words).map(w => w.replace(/['’]s$/, ''))];
+      for (const name of rules.playerNames)
+        if (namedTokens.includes(name)) errors.push(`${scene.id}/${p.name}: prose-name: ${name}`);
+      for (const word of rules.gameWords)
+        if (tokens.includes(word)) errors.push(`${scene.id}/${p.name}: prose-game: ${word}`);
+      if (
+        /\b(?:clean|cost|fail)\s+(?:result|outcome|grade)|\b(?:result|outcome|grade)\s+is\s+(?:clean|cost|fail)\b/i.test(
+          p.text,
+        )
+      )
+        errors.push(`${scene.id}/${p.name}: prose-game: grade label`);
+      // Only the assembler has the explicit brief allowlist. Do not guess it from generated Ink.
+      if (Array.isArray(scene.places)) {
+        const normalized = s =>
+          ` ${words(s)
+            .map(w =>
+              w
+                .replace(/['’]s$/, '')
+                .replace(/^(offices|desks|clerks|officials|registrars|commissioners)$/, w => w.slice(0, -1)),
+            )
+            .join(' ')} `;
+        const allowed = [...scene.places, ...(scene.locationText ?? '').split(/[.!?\n]/)].map(normalized);
+        const stops = new Set([
+          ...rules.nominalStops.flatMap(group => group.split(/\s+/)),
+          ...'i you he she it we they nobody someone everyone anyone both all many several most few other such one two three four five six seven eight nine ten eleven twelve each every any some another either neither his her its our their my your whose ask'.split(
+            ' ',
+          ),
+        ]);
+        const names = [p.text, ...(p.notes ?? [])].flatMap(text =>
+          [
+            ...text.matchAll(
+              /(?<![\p{L}\p{N}])(?:\p{Lu}[\p{L}'’-]*\s+){1,4}(?:[\p{Ll}'’-]+\s+){0,2}(?:[Oo]ffices?|[Dd]esks?|[Cc]lerks?|[Oo]fficials?|[Rr]egistrars?|[Cc]ommissioners?)\b/gu,
+            ),
+          ].map(match => ({ text, match })),
+        );
+        for (const { text, match } of names) {
+          const matches = [...match[0].matchAll(/[\p{L}\p{N}]+(?:['’][\p{L}\p{N}]+)*/gu)];
+          const tokens = matches.map(m => m[0]);
+          let start = 0;
+          for (let i = 0; i < tokens.length - 1; i++)
+            if (stops.has(tokens[i].toLowerCase().replace(/['’]s$/, ''))) start = i + 1;
+          const chunk = tokens.slice(start),
+            name = chunk.join(' ');
+          if (chunk.length < 2 || !/^\p{Lu}/u.test(name)) continue;
+          if (allowed.some(s => s.includes(normalized(name)))) continue;
+          const prefix = text.slice(0, match.index + matches[start].index).replace(/^\[STUB\]\s*/, '');
+          const initial = /(?:^|[.!?:;—–…(]["'”’]?)\s*["'“‘]?$|["“‘]\s*$/.test(prefix);
+          const diagnostic = `${scene.id}/${p.name}: unbriefed-place: ${name}`;
+          const ambiguous = chunk.slice(0, -1).some(w => /['’]s$/i.test(w) || /^\p{Ll}/u.test(w)) || initial;
+          if (ambiguous) warn(diagnostic + ' (ambiguous place phrase; review against brief)');
+          else errors.push(diagnostic);
+        }
+      }
+    }
+    if (scene.outcomes.some(p => p.effects.length))
+      warn(
+        `${scene.id}: resource-exchange: semantic review required: verify each note against prose, the player's side, counterparty and effect_reasons`,
+      );
+    return [
+      ...duplicate,
+      ...lintScene({ ...scene, state_nouns: scene.state_nouns?.filter(n => !timeNouns.includes(n)) }),
+      ...errors,
+    ];
   });
 }
 
@@ -141,7 +208,7 @@ function safePath(root, relative, directory = false) {
   if (directory ? !info.isDirectory() : !info.isFile()) throw new Error('Wrong path type: ' + relative);
   return current;
 }
-export function lintDirectory(root = '.') {
+export function lintDirectory(root = '.', warn = () => {}) {
   const sceneDir = safePath(root, 'src/story/scenes', true);
   const encounterDir = safePath(root, 'src/data/encounters', true);
   const scenes = [],
@@ -183,13 +250,14 @@ export function lintDirectory(root = '.') {
       errors.push(file + ': catalog: ' + error.message);
     }
   }
-  return [...errors, ...lintRoster(scenes)];
+  warn('places: directory lint cannot certify brief-specific places; review with the assembler and original brief');
+  return [...errors, ...lintRoster(scenes, warn)];
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     if (process.argv.length > 3) throw new Error('Usage: node scripts/content-lint.mjs [repository-root]');
-    const errors = lintDirectory(process.argv[2]);
+    const errors = lintDirectory(process.argv[2], message => console.warn('Warning: ' + message));
     if (errors.length) throw new Error(errors.join('\n'));
     console.log('Content lint passed.');
   } catch (error) {

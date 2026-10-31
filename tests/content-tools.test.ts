@@ -1,4 +1,4 @@
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, renameSync, symlinkSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync, renameSync, symlinkSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
@@ -230,4 +230,51 @@ it.each([
 it('allows only blank lines and nonexecuting comments after a terminal divert', () => {
   const text = ink().replaceAll('-> stub_fixture__after\n', '-> stub_fixture__after\n// Closing comment.\n\n');
   expect(lintScene(parseScene(text, fixture().encounter))).toEqual([]);
+});
+
+it.each([
+  'Marcus waits.',
+  'Torin waits.',
+  "Marcus's receipt waits.",
+  'A strain remains.',
+  'A roll follows.',
+  'A clean result follows.',
+  'The cost outcome follows.',
+])('rejects player names and game language in passages: %s', line => {
+  const s = fixture();
+  s.open.text = s.open.text.replace('Amber ships drift.', line);
+  expect(lintRoster([s]).join('\n')).toMatch(/prose-(name|game)/);
+});
+it.each([
+  // Unchanged excerpts from pilot candidates c0cbaa6 and cbf6f4c: ordinary cost and clean are prose.
+  'The scale reads true and her book reads clean, which settles neither receipt.',
+  "Calling for an outsider has cost the stallholder's patience.",
+  'Amounts of five hundred credits pass to your crew.',
+  'That outcome cost her the berth.',
+])('accepts ordinary grade words and credit amounts: %s', line => {
+  const s = fixture();
+  s.open.text = s.open.text.replace('Amber ships drift.', line);
+  expect(lintRoster([s]).join('\n')).not.toMatch(/prose-game/);
+});
+it.each([
+  ['Marcus', 'prose-name'],
+  ['Renown', 'prose-game'],
+  ['The Complaints desk', 'unbriefed-place'],
+])('catches %s mutations of the archived pilot opening', (insert, code) => {
+  const pilot = JSON.parse(readFileSync('docs/targets/bakeoff/pilot-1/candidates/c0cbaa6.json', 'utf8'));
+  const s = Object.assign(fixture(), { places: [], locationText: '' });
+  s.open.text = pilot.open.replace('[STUB] ', `[STUB] ${insert}. `);
+  expect(lintRoster([s]).join('\n')).toContain(code);
+});
+it('retains mutable compound nouns whose modifiers happen to be time words', () => {
+  const s = Object.assign(fixture(), { state_nouns: ['day ledger'] });
+  s.ending.text = '[STUB] The day ledger rests here.';
+  expect(lintRoster([s]).join('\n')).toContain('ending-state');
+});
+it('checks player names in writer notes while permitting their resource words', () => {
+  const s = fixture();
+  s.outcomes[0]!.notes = ['[STUB] Credits +1,500. Marcus'];
+  expect(lintRoster([s]).join('\n')).toContain('prose-name');
+  s.outcomes[0]!.notes = ['[STUB] Strain +1'];
+  expect(lintRoster([s]).join('\n')).not.toContain('prose-game');
 });
