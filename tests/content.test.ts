@@ -200,6 +200,7 @@ describe('M0 reachability policy', () => {
 
   it('accepts both modes, including a full-only cycle-six conditional', () => {
     expect(audit()).toEqual([]);
+    expect(audit(keys(), [], { ...season, pursuitFull: 'hardenFinale' })).toEqual([]);
   });
 
   it.each(['slice', 'full'] as const)('schedules depleted opening and emergency finale throughout %s', mode => {

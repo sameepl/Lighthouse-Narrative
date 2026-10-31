@@ -124,6 +124,8 @@ export interface GameView {
   preparation: PreparationView | null;
   /** Pursuit is only here, never in res. */
   cycle: CycleState;
+  /** Derived from the clock, including during scenes; never stored as a narrative flag. */
+  pursuitFull: boolean;
   assignments: Assignments;
   busyCrewIds: string[];
   boardStatus: BoardStatus;
