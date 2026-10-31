@@ -24,6 +24,9 @@
     "her hands resting",
     "unyielding"
   ],
+  "playerNames": ["marcus", "torin"],
+  "gameWords": ["strain", "renown", "meter", "meters", "resource", "resources", "effect", "effects", "roll", "rolls"],
+  "timeWords": ["bell", "bells", "window", "windows", "shift", "shifts", "day", "days"],
   "bands": {
     "clean": {
       "Credits": [[1000, 3000]],

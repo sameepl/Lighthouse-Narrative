@@ -93,7 +93,7 @@ export function assembleScene(briefInput, writerInput, repositoryRoot = '.') {
   const root = fs.realpathSync(repositoryRoot);
   const sceneDir = safePath(root, 'src/story/scenes', true),
     encounterDir = safePath(root, 'src/data/encounters', true);
-  safePath(root, brief.location);
+  const locationText = fs.readFileSync(safePath(root, brief.location), 'utf8');
   const skillChar = JSON.parse(fs.readFileSync(safePath(root, 'src/data/rules.json'), 'utf8')).skillChar;
   if (brief.approaches.some(a => new Set(a.skills).size !== 2 || a.skills.some(s => !Object.hasOwn(skillChar, s))))
     throw new Error('Unknown or duplicate skills');
@@ -135,8 +135,9 @@ export function assembleScene(briefInput, writerInput, repositoryRoot = '.') {
     )
     .join('\n');
   const ink = `// @content ${JSON.stringify(metadata)}\n=== ${knot} ===\n${writer.open}\n-> ${id}__menu\n\n=== ${id}__menu ===\n${menu}\n\n${branches}\n=== ${id}__after ===\n${writer.ending} # summary\n-> scene_end\n`;
-  const candidate = parseScene(ink, encounter);
-  const errors = lintDirectory(root);
+  const candidate = Object.assign(parseScene(ink, encounter), { places: brief.places ?? [], locationText });
+  const warn = message => console.warn('Warning: ' + message);
+  const errors = lintDirectory(root, warn);
   const existing = fs
     .readdirSync(sceneDir)
     .filter(f => /^stub_.*\.ink$/.test(f))
@@ -147,7 +148,7 @@ export function assembleScene(briefInput, writerInput, repositoryRoot = '.') {
         JSON.parse(fs.readFileSync(safePath(root, 'src/data/encounters/' + f.replace(/\.ink$/, '.json')), 'utf8')),
       );
     });
-  errors.push(...lintRoster([...existing, candidate]));
+  errors.push(...lintRoster([...existing, candidate], warn));
   if (errors.length) throw new Error(errors.join('\n'));
   const files = [
     [path.join(sceneDir, id + '.ink'), ink],
