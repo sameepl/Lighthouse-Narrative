@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
 import { useStore } from 'zustand';
 import { Hud } from './components/Hud';
 import { Feed } from './components/Feed';
 import { Dock } from './components/Dock';
 import { Board } from './components/Board';
+import { Background } from './components/Background';
 import { Prepare } from './components/Prepare';
 import { SheetPanel } from './components/SheetPanel';
 import { hubStatusText } from './strings';
@@ -66,18 +66,7 @@ export function App() {
         onTheme={toggleTheme}
         onRestart={restart}
       />
-      <div className="scenes">
-        <motion.div
-          className="scene"
-          initial={false}
-          animate={{ opacity: view.bg === 'hall' ? 'var(--art)' : 0, x: ['-1.5%', '1.5%'] }}
-          transition={{
-            opacity: { duration: 1.4 },
-            x: { duration: 60, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' },
-          }}
-          style={{ animation: 'none', transition: 'none' }}
-        />
-      </div>
+      <Background name={view.bg} />
       <Feed events={events} />
       {showBoard && <Board offers={view.offers} offerLocks={view.offerLocks} cycle={view.cycle} onAct={act} />}
       {showPrepare && (

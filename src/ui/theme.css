@@ -76,13 +76,9 @@ body {
 .scene {
   position: absolute;
   inset: 0 -4%;
-  background: url(./assets/hall.svg) center top/cover no-repeat;
+  background: center top/cover no-repeat;
   opacity: 0;
-  transition: opacity 1.4s ease;
   animation: drift 60s ease-in-out infinite alternate;
-}
-.scene.on {
-  opacity: var(--art);
 }
 @keyframes drift {
   from {
