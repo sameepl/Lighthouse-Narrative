@@ -1,0 +1,132 @@
+{
+  "id": "stub_trade_convoy",
+  "title": "Past the Third Marker",
+  "archetype": "trade_run",
+  "layer": "commercial",
+  "location": "docs/canon/locations/the-shoal.md",
+  "who": "pilot of the lead hauler in a four-hauler string",
+  "want": "Keep a four-hauler string moving past the third marker with its cargo of air seals for a hab that has paid in advance.",
+  "at_stake": "The string turns back, the hab's order lapses and your crew is left holding the seals.",
+  "complication": "The waiting convoy asks whether to turn back; fear climbs on a visible clock. (complications.md, trade run 3)",
+  "state_nouns": [
+    "seals",
+    "order",
+    "string"
+  ],
+  "places": [
+    "the third marker",
+    "the hab traffic desk",
+    "the Compact traffic desk"
+  ],
+  "approaches": [
+    {
+      "label": "Fly at the string's tail",
+      "skills": [
+        "Pilot",
+        "Tactics"
+      ],
+      "npc_reaction": "counts the hulls behind him",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            2000
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -1000
+          ]
+        ],
+        "fail": [
+          [
+            "Strain",
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Read the hab's paid order aloud",
+      "skills": [
+        "Persuade",
+        "Diplomat"
+      ],
+      "npc_reaction": "wants it said slowly",
+      "effects": {
+        "clean": [
+          [
+            "Renown",
+            1
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            500
+          ],
+          [
+            "Strain",
+            1
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Check the string's challenge words",
+      "skills": [
+        "Electronics",
+        "Recon"
+      ],
+      "npc_reaction": "does not trust an open channel",
+      "effects": {
+        "clean": [
+          [
+            "Strain",
+            -1
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -500
+          ]
+        ],
+        "fail": [
+          [
+            "Strain",
+            1
+          ]
+        ]
+      }
+    }
+  ],
+  "effect_reasons": {
+    "Fly at the string's tail": {
+      "clean": "the hab pays your crew a bonus because the string arrives intact",
+      "cost": "a hauler clips a mooring line and your crew pays for the repair",
+      "fail": "the string scatters and the delay is reported to the Compact traffic desk, which logs it against your crew"
+    },
+    "Read the hab's paid order aloud": {
+      "clean": "the pilots in the string talk about your crew at every hab after this",
+      "cost": "the hab pays your crew its fee but the string's complaint about the late arrival reaches the Compact traffic desk",
+      "fail": "your crew pays the string's fuel to turn back to the third marker"
+    },
+    "Check the string's challenge words": {
+      "clean": "the string calms and an officer at the Compact traffic desk notes your crew kept it together",
+      "cost": "your crew pays a hauler to re-key its challenge words",
+      "fail": "the pilots blame your crew and their complaint reaches the Compact traffic desk"
+    }
+  },
+  "sensory_details_used": {
+    "sound": "overlapping old voices looping from wreck beacons",
+    "light": "amber beacons each on their own rhythm"
+  }
+}
