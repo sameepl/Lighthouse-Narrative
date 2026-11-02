@@ -42,7 +42,7 @@ The game uses the campaign as source material and a theme guide, not as a litera
 
 Answers to `mining-request.md` were received on 2026-10-21 and are filed in these places (one file per person, place or ship, so an agent can read only what a task names):
 
-- `voices/<name>.md`, `locations/<name>.md`, `ships/<name>.md`
+- `voices/<name>.md`, `locations/<name>.md`, `ships/<name>.md`, `keystones/<k>.md` (the planner's answers per slice keystone, issue #103)
 - `economy.md`, `scene-seeds.md`, `documents.md`, `complications.md`, `glossary.md`, `factions.md`, `tone.md`
 
 Each file starts with a `STATUS`/`SOURCE` header and keeps the planner's status tags. Numbers then flow into `src/data/` (ships, rules, encounter costs) through a normal task, never by hand-editing data from a canon file.
