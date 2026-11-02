@@ -16,7 +16,7 @@ Steps:
 2. Read the PR, its linked issue (including comments and amendments) and the diff. Read the whole changed files when the diff alone is unclear.
 3. Check that `check` and `zones` are green on the latest commit. If either is red or pending, say so and stop.
 4. Work through docs/REVIEW_CHECKLIST.md, sections 1 to 5. Be specific: file:line and a concrete fix.
-5. If any "consult Opus" trigger applies (section "When to consult Opus"), start an Opus subagent with the diff and the one question, and include its answer.
+5. If any second-opinion trigger applies (section "When to consult Astra or Opus"), obtain an independent Astra or Opus review with the diff and the one question, and include its answer, actual model and reviewed commit or tree. Either model suffices; both are not required. Use a separate reviewer session, not the author's own assessment. If this host cannot invoke the model, cite an existing independent review of the same commit or tree or report the blocker; never claim an unavailable review occurred. The Claude GitHub Action can use Opus and is not assumed to support native Astra delegation.
 6. Post one PR comment in the verdict format from section 6. Be direct. Do not praise padding. Do not request changes that are not in the issue or the checklist; put taste points under "nits".
 
 If you are unsure whether something leaks canon or writes for Marcus, say what you saw and mark the verdict "needs owner".
