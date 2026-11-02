@@ -2,7 +2,7 @@
 
 One reviewer reads every PR, whoever wrote it (Codex, a local model, Claude Code or a person). CI already runs format, types, tests, the branch walk, `zones` and the canon guard, so the reviewer spends its effort on judgment. The reviewer **comments and never pushes to the PR branch**. The owner merges.
 
-Model: Sonnet by default; consult Opus on the triggers below. See `REVIEWER_PROMPT.md` for the brief.
+Model: Sonnet by default; consult Astra or Opus on the triggers below. See `REVIEWER_PROMPT.md` for the brief.
 
 ## 1. Before reading code
 
@@ -53,14 +53,14 @@ Verdict: approve | approve with nits | changes requested | needs owner
 Acceptance: <each box: met / not met, with file:line>
 Problems: <numbered, most serious first, each with file:line and a concrete fix>
 Canon/tone: <anything borderline; quote the line>
-Escalated to Opus: <yes/no, and why>
+Second opinion: <Astra / Opus / not required / unavailable; why, and verdict>
 ```
 
 Use "needs owner" for a design question the issue does not answer.
 
-## When to consult Opus
+## When to consult Astra or Opus
 
-Ask an Opus subagent for a second opinion, giving it the diff and the one question, when any of these is true:
+Ask an independent Astra or Opus reviewer for a second opinion, giving it the diff and the one question, when any of these is true:
 
 - The PR touches core files: engine rules, bridge, save format, schema, `.github`, `package.json`, `vite.config.ts`.
 - A content PR changes how a scene ends, adds a keystone, or shows anything about Ariadne, the Section, the Lanterns or the past.
@@ -68,8 +68,10 @@ Ask an Opus subagent for a second opinion, giving it the diff and the one questi
 - The PR is over about 250 changed lines or crosses more than one subsystem.
 - The reviewer cannot tell whether an acceptance box is met, or finds something it is not confident is real.
 
-**Every core-zone PR gets an Opus review before the owner merges**, whatever the first reviewer thinks. If the two reviews disagree, post both and mark the verdict "needs owner".
+**Every core-zone PR gets an independent Astra or Opus review before the owner merges**, whatever the first reviewer thinks. Either model satisfies the requirement; both are not required. The second opinion must come from a separate reviewer session, not the author scoring its own work. Record the actual model and reviewed commit or tree. If the two reviews disagree, post both and mark the verdict "needs owner".
+
+Use a host that can invoke the selected model. If neither is available, report the blocker and leave the review incomplete. The Claude GitHub Action may use Opus; this policy does not give it native Astra delegation. It can cite a completed independent Astra review of the same commit or tree from another host.
 
 ## Tuning
 
-The owner reads the first five reviews. If the reviewer misses real problems, widen the Opus triggers (all of core, then anything over 150 lines).
+The owner reads the first five reviews. If the reviewer misses real problems, widen the second-opinion triggers (all of core, then anything over 150 lines).
