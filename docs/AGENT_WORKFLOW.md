@@ -151,3 +151,17 @@ The reviewer never merges. The owner merges after the verdict (and the Opus revi
 - Residual risk: this workflow runs from the PR's own copy for same-repository PRs, so a PR that edits `.github/workflows/review.yml` could change what runs with the secret. The `zones` check forces such a PR to be `zone:core`, and the owner should read any change to this file before merging.
 
 `claude.yml` (added by the Claude GitHub app installer) lets collaborators ask `@claude` a question in an issue or PR comment. `claude-code-review.yml` from the same installer was removed: it duplicated `review.yml` (two reviews per PR, double usage) and read its instructions from the PR itself rather than from `main`.
+
+### `@claude` assistant: allowed commands
+
+The `@claude` workflow needs to run the project's own checks, or it cannot validate its work (#88 stopped for this reason). Pass this in `claude_args` of the `Run Claude Code` step in `claude.yml`:
+
+```yaml
+claude_args: >-
+  --allowedTools "Bash(npm ci),Bash(npm test),Bash(npm run check),Bash(npm run build:prompt:*),Bash(npm run assemble:scene:*),Bash(npm run lint:content),Bash(node scripts/*.mjs:*),Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git branch:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*)"
+```
+
+- The list adds to the action's defaults (file tools, branch commit and push helpers). It has no `git push`, `git merge`, `gh pr merge`, `gh api` or `gh secret`, and no `curl`, so the assistant cannot merge, push to `main` or read secrets.
+- `claude.yml` keeps `contents: read`. Branch pushes through the action's own helper depend on the app's token, not on this list. Letting the assistant push branches (`contents: write`) is an owner decision; if made, say so in the PR that changes it.
+- Anything not on the list still needs approval, so the session stops rather than guessing.
+- **Owner test:** comment `@claude run npm run build:prompt on <brief path> and paste the output` on an issue. It should print the prompt without asking for approval.
