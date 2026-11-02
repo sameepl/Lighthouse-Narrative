@@ -5,6 +5,9 @@ import type { GameView, Offer } from '../src/bridge/types';
 import { Board } from '../src/ui/components/Board';
 
 const cycle: GameView['cycle'] = {
+  arrears: 0,
+  upkeepShortfall: 0,
+  failed: false,
   cycle: 7,
   actionsLeft: 1,
   pursuit: { value: 2, length: 6 },

@@ -1,14 +1,14 @@
 import type { GameData } from '../data/validate';
 import { createSeededRng } from '../engine/rng';
-import type { SaveData } from './types';
+import type { LegacySaveData, SaveData } from './types';
 
 /** Reject broken persisted state before applying any part of it; caller can start fresh. */
-export function validateSave(save: SaveData, data: GameData): void {
+export function validateSave(save: SaveData | LegacySaveData, data: GameData): void {
   const fail = () => {
-    throw new Error('Invalid version 3 save');
+    throw new Error(`Invalid version ${save.v} save`);
   };
   if (
-    save.v !== 3 ||
+    (save.v !== 3 && save.v !== 4) ||
     typeof save.ink !== 'string' ||
     typeof save.bg !== 'string' ||
     !save.res ||
@@ -44,6 +44,23 @@ export function validateSave(save: SaveData, data: GameData): void {
     !Array.isArray(s.assignments.crewIds)
   )
     fail();
+  if (save.v === 4) {
+    const { arrears, upkeepShortfall, failed } = save.run.cycle;
+    const limit = data.rules.cycle.upkeep.arrearsLimit;
+    if (
+      !Number.isSafeInteger(arrears) ||
+      arrears < 0 ||
+      arrears > limit ||
+      !Number.isSafeInteger(upkeepShortfall) ||
+      upkeepShortfall < 0 ||
+      typeof failed !== 'boolean' ||
+      failed !== (arrears === limit) ||
+      ![null, 'foreclosure'].includes(save.run.ending) ||
+      (save.run.ending === 'foreclosure') !== failed ||
+      (failed && save.run.phase !== 'ended')
+    )
+      fail();
+  }
   const trust = s.crewTrust;
   if (
     !trust ||
@@ -84,4 +101,16 @@ export function validateSave(save: SaveData, data: GameData): void {
       play.cycle > c.cycle
     )
       fail();
+}
+
+/** Validate the entire legacy payload before adding defaults to a detached copy. */
+export function migrateSave(save: SaveData | LegacySaveData, data: GameData): SaveData {
+  validateSave(save, data);
+  const copy = structuredClone(save);
+  if (copy.v === 4) return copy;
+  return {
+    ...copy,
+    v: 4,
+    run: { ...copy.run, ending: null, cycle: { ...copy.run.cycle, arrears: 0, upkeepShortfall: 0, failed: false } },
+  };
 }

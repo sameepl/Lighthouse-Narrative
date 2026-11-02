@@ -7,7 +7,7 @@ import { changeTrust } from '../engine/cycle';
 import { assistedSetup } from './roll';
 import { createSeededRng } from '../engine/rng';
 import { RunController, type RunOptions } from './run';
-import { validateSave } from './save';
+import { migrateSave } from './save';
 import { runChoices } from './run-choices';
 import { preparationProjection } from './view';
 import type { Assignments } from './types';
@@ -16,7 +16,7 @@ import { createStore, type StoreApi } from 'zustand/vanilla';
 import type { GameData } from '../data/validate';
 import { addResource, makeRoll, newGameState, oddsOf, spendEdge } from '../engine/rules';
 import type { CheckRequest, GameState, Grade, NoteKind, Rng, RollResult } from '../engine/types';
-import type { AssistedRollSetup, GameEvent, GameView, LedgerNote, SaveData, UIChoice } from './types';
+import type { AssistedRollSetup, GameEvent, GameView, LedgerNote, LegacySaveData, SaveData, UIChoice } from './types';
 
 const CHECK_CHOICE = '__check__';
 const GRADE_VALUE: Record<Grade, number> = { clean: 2, cost: 1, fail: 0 };
@@ -30,7 +30,7 @@ export interface SessionOptions extends RunOptions {
   inkJson: string;
   data: GameData;
   rng?: Rng;
-  saved?: SaveData | null;
+  saved?: SaveData | LegacySaveData | null;
 }
 
 export class GameSession {
@@ -61,7 +61,7 @@ export class GameSession {
     this.init(null);
   }
 
-  private init(saved: SaveData | null): void {
+  private init(saved: SaveData | LegacySaveData | null): void {
     const { data, inkJson } = this.opts;
     this.errors = [];
     this.run = new RunController(data, this.opts);
@@ -75,7 +75,7 @@ export class GameSession {
     this.showOdds = false;
     this.request = this.setup = this.pending = this.snapshot = null;
     this.bg = 'hall';
-    if (saved?.v === 3) {
+    if (saved) {
       this.restore(saved);
     } else {
       this.rewards();
@@ -90,7 +90,7 @@ export class GameSession {
       this.snapshot && (this.phase === 'staged' || this.phase === 'rolled')
         ? this.snapshot
         : {
-            v: 3,
+            v: 4,
             ink: this.story.state.toJson(),
             res: this.game.res,
             ledger: this.game.ledger,
@@ -101,9 +101,8 @@ export class GameSession {
     );
   }
 
-  private restore(saved: SaveData): void {
-    validateSave(saved, this.opts.data);
-    const s = structuredClone(saved);
+  private restore(saved: SaveData | LegacySaveData): void {
+    const s = migrateSave(saved, this.opts.data);
     this.story.state.LoadJson(s.ink);
     this.game = { res: s.res, ledger: s.ledger };
     delete this.game.res.Pursuit;

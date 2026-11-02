@@ -87,6 +87,7 @@ export type RunPhase = 'hub' | 'prepare' | 'scene' | 'ended';
 export type BoardStatus = 'ready' | 'no-eligible-offers' | 'actions-spent' | 'pursuit-full' | 'ended';
 /** Plain engine-owned run state; saving offers prevents a reload from redrawing the board. */
 export interface RunState {
+  ending: 'foreclosure' | null;
   phase: RunPhase;
   cycle: CycleState;
   crewTrust: CrewTrust;
@@ -137,7 +138,7 @@ export interface GameView {
   commercialReplacement: boolean;
 }
 export interface SaveData {
-  v: 3;
+  v: 4;
   ink: string;
   res: Record<string, number>;
   ledger: LedgerNote[];
@@ -145,3 +146,8 @@ export interface SaveData {
   bg: string;
   run: RunState;
 }
+
+export type LegacySaveData = Omit<SaveData, 'v' | 'run'> & {
+  v: 3;
+  run: Omit<RunState, 'ending' | 'cycle'> & { cycle: Omit<CycleState, 'arrears' | 'upkeepShortfall' | 'failed'> };
+};

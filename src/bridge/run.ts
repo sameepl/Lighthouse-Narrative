@@ -25,6 +25,7 @@ export class RunController {
     private options: RunOptions,
   ) {
     this.state = {
+      ending: null,
       phase: 'hub',
       cycle: newCycleState(data.rules, options.slice),
       crewTrust: Object.fromEntries(data.crew.map(member => [member.id, member.trust])),

@@ -17,6 +17,9 @@ export interface GameState {
 
 /** Run-long cycle and reward state. Pursuit is a clock, not a resource. */
 export interface CycleState {
+  arrears: number;
+  upkeepShortfall: number;
+  failed: boolean;
   cycle: number;
   actionsLeft: number;
   pursuit: { value: number; length: number };
