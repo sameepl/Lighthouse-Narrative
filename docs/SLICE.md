@@ -29,11 +29,11 @@ Keystone read length is therefore capped near 350 words each, not 450. Reading b
 
 ## The action scene: ship versus ship
 
-Every run has at least one, guaranteed by making it part of a keystone. **K2 The Silent Hab** gets a first beat on the lane: a hijack-crew cutter has come to strip the failing hab, and the player's ship meets it before it can dock. Then the rescue choice follows (people or records), shaped by how the beat went. Keystones are forced at their deadline, so the beat cannot be skipped.
+Every run has at least one, guaranteed by making it part of a keystone. **K2 The Silent Hab** gets a first beat on the lane: an unmarked cutter has come to strip the failing hab, and the player's ship meets it before it can dock. Then the rescue choice follows (people or records), shaped by how the beat went. Keystones are forced at their deadline, so the beat cannot be skipped.
 
 - **Beat 1, the intercept.** Three approaches, each with three written outcomes: *Run the cutter down* (Pilot, Astrogation), *Open fire to drive it off* (Gunnery, Tactics), *Jam its sensors and talk it off* (Electronics, Diplomat). The ship's part shows in the Odds panel. Clean means the cutter breaks off and the player arrives with time in hand. Cost means it breaks off but the ship or the hab pays. Fail means the cutter docks first and the rescue starts under pressure. Failure still moves the story on.
 - **Beat 2, the rescue.** The existing K2 choice: the people or the records. Keep the people off screen and adult, and leave the number of dead unstated.
-- Only an **unnamed hijack-crew cutter** appears (a public, played kind of encounter). No Hunter craft and nothing from the sealed canon.
+- Only an **unnamed, unmarked cutter** appears (the planner approved it unnamed). No Hunter craft and nothing from the sealed canon.
 - Cost: about 350 more authored words and about one extra minute, already in the time budget above.
 - Art: `skirmish` and `hab` in `art/ART_PLAN.md`.
 - **Engineering (core zone, not free):** `ships.json` has only `fast`, `armoured`, `quiet`, `hub`, `workshop` and `sickbay`; there is no `armed` tag, and ship tags decide only which offers appear, never a roll. The beat needs (1) an `armed` tag on `errant_pawn` (it has a turret), (2) ship-tag modifiers on rolls, defined in `rules.json`, applied by the bridge and shown in the Odds panel (`armed` helps the second approach, `fast` the first), (3) a keystone that holds two rolls, which ink supports and the branch-walk should check, and (4) the Prepare screen warning when no armed ship is assigned.
