@@ -1,0 +1,128 @@
+{
+  "id": "stub_salvage_lamp",
+  "title": "The Loose Lamp",
+  "archetype": "salvage",
+  "layer": "commercial",
+  "location": "docs/canon/locations/psalter-lamp-field.md",
+  "who": "young keeper on the tender's arm",
+  "want": "Bring a loose kept lamp in to the keepers' tender without a hand on it while it is lit.",
+  "at_stake": "The lamp's loop is lost, and the keepers hold the loss against your hull at the next tender round.",
+  "complication": "A lamp dressed as a wreck beacon whose loop breathes. (complications.md, salvage 4)",
+  "state_nouns": [
+    "lamp",
+    "line",
+    "housing"
+  ],
+  "places": [
+    "the keepers' tender",
+    "the third marker"
+  ],
+  "approaches": [
+    {
+      "label": "Net the lamp with the tender's line",
+      "skills": [
+        "Pilot",
+        "Mechanic"
+      ],
+      "npc_reaction": "watches the line, not the lamp",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            1500
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -500
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Wait out the loop and cut its carrier",
+      "skills": [
+        "Electronics",
+        "Recon"
+      ],
+      "npc_reaction": "holds her breath with the lamp",
+      "effects": {
+        "clean": [
+          [
+            "Renown",
+            1
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -500
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -1000
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Ask the keeper to cut it free",
+      "skills": [
+        "Persuade",
+        "Diplomat"
+      ],
+      "npc_reaction": "will not let a stranger touch it",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            1000
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -1000
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    }
+  ],
+  "effect_reasons": {
+    "Net the lamp with the tender's line": {
+      "clean": "the keepers pay your crew a salvage fee for the lamp brought in whole",
+      "cost": "the housing cracks in the net and your crew pays for the repair",
+      "fail": "the line fouls and the keepers count the lost loop against your hull, a fee your crew pays"
+    },
+    "Wait out the loop and cut its carrier": {
+      "clean": "the keepers speak of your crew's patience at the next marker",
+      "cost": "the keepers take a fee for the lit lamp your crew worked too close to",
+      "fail": "your crew pays the tender for a ruined carrier"
+    },
+    "Ask the keeper to cut it free": {
+      "clean": "the keeper's steady hand settles the tender and it pays your crew for the quiet recovery",
+      "cost": "your crew pays the tender for the keeper's time and the lost hour",
+      "fail": "your crew pays a fee because the keeper's hand was late"
+    }
+  },
+  "sensory_details_used": {
+    "sound": "a captain's last words looping",
+    "light": "lamps hanging like a slow constellation",
+    "temperature": "a flask warm through its wrapping"
+  }
+}
