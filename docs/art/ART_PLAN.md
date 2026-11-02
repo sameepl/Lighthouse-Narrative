@@ -19,7 +19,7 @@ Direction (revised 2026-10-28 at the owner's request: more sci-fi than the curre
 - **Motion (optional):** a CSS animation inside the SVG for one element, such as a slow engine pulse, a beacon blink or a range ring, under 2 seconds and switched off for `prefers-reduced-motion`. No scripts.
 - **Avoid:** chrome and lens flares, glowing clutter, purple-to-blue gradient skies, anything that reads as a stock "space" wallpaper, and anything that fights the text over it.
 
-**Never draw:** letters, numbers, faces, Marcus, children, any named character, powers or lights that read as abilities, Ariadne as a figure (at most a small steady amber light on a console), or anything from `docs/canon-gm/`. Hostile ships are hijack-crew cutters only: no Hunter craft, no Section hulls.
+**Never draw:** letters, numbers, faces, Marcus, children, any named character, powers or lights that read as abilities, Ariadne as a figure (at most a small steady amber light on a console), or anything from `docs/canon-gm/`. Hostile ships are unmarked cutters only: no Hunter craft, no Section hulls.
 
 ## Technical rules
 
@@ -41,7 +41,7 @@ Direction (revised 2026-10-28 at the owner's request: more sci-fi than the curre
 | `gap` | scout | `fenrir-gap` | a corridor of survey buoys on a thin baseline, instrument spikes and a faint range ring | one cyan buoy |
 | `lamps` | distress call | `psalter-lamp-field` | kept lamps hanging like a slow constellation, a small tender threading them | amber lamps, a faint cyan trace |
 | `hab` | K2 The Silent Hab | `traffic-hab` | a hab ring with most windows dark, a few lit, a short docking arm, a small cutter silhouette approaching from the edge | two or three amber windows |
-| `skirmish` | K2 (ship-versus-ship beat); any armed intercept | none | the player's ship and a hijack-crew cutter on a lane at long range: a thin cyan sensor lock arc between them, one hazard-orange tracer, engine plumes pointing away from a planet limb | cyan lock, one orange tracer |
+| `skirmish` | K2 (ship-versus-ship beat); any armed intercept | none | the player's ship and an unmarked cutter on a lane at long range: a thin cyan sensor lock arc between them, one hazard-orange tracer, engine plumes pointing away from a planet limb | cyan lock, one orange tracer |
 | `dark_lane` | K3 The Dark Lane | `the-shoal`, `fenrir-gap` | a sparse starfield with an unlit gridded segment and no chart marks, a few sensor tick marks fading out | one distant cyan light |
 | `pawn` | K5 The Asking | `ships/errant-pawn` | the inside of a small ship: a console, a viewport, the turret folded into the spine, sensor overlays on the glass | one small steady amber light on the console |
 | `title` | title screen | none | the ring station seen from outside, small, with a long shadow and a ship leaving its berth | a few amber windows, cyan engine |
