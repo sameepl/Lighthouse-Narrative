@@ -1,0 +1,132 @@
+{
+  "id": "stub_distress_hab",
+  "title": "The Same Words",
+  "archetype": "distress_call",
+  "layer": "crisis",
+  "location": "docs/canon/locations/traffic-hab.md",
+  "who": "watch hand at the hab's traffic counter",
+  "want": "Confirm or clear a distress call that repeats the same words in the same pitch, heard near the hab's inner lane.",
+  "at_stake": "Your crew answers a call that is not what it claims, or ignores one that is, and the watch hand logs which.",
+  "complication": "The voice repeats the same words in the same pitch when shouted at. (complications.md, distress call 1)",
+  "state_nouns": [
+    "call",
+    "log",
+    "lane"
+  ],
+  "places": [
+    "the hab traffic counter",
+    "the watch post"
+  ],
+  "approaches": [
+    {
+      "label": "Shout a challenge down the channel",
+      "skills": [
+        "Tactics",
+        "Recon"
+      ],
+      "npc_reaction": "leans away from the speaker",
+      "effects": {
+        "clean": [
+          [
+            "Renown",
+            1
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            500
+          ],
+          [
+            "Strain",
+            1
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Send a probe up the lane",
+      "skills": [
+        "Pilot",
+        "Recon"
+      ],
+      "npc_reaction": "checks the probe's cost twice",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            1500
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -1000
+          ]
+        ],
+        "fail": [
+          [
+            "Strain",
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Ask what the hab logged last cycle",
+      "skills": [
+        "Persuade",
+        "Diplomat"
+      ],
+      "npc_reaction": "opens a ledger older than himself",
+      "effects": {
+        "clean": [
+          [
+            "Strain",
+            -1
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -500
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    }
+  ],
+  "effect_reasons": {
+    "Shout a challenge down the channel": {
+      "clean": "the hab's hands remember your crew testing the call before acting",
+      "cost": "the watch hand pays your crew a small fee but logs the shouting against you",
+      "fail": "your crew pays for the lane time wasted on the repeat"
+    },
+    "Send a probe up the lane": {
+      "clean": "the hab pays your crew for clearing the lane",
+      "cost": "a probe is lost in the lane and your crew pays for it",
+      "fail": "the probe finds nothing and the watch hand holds your crew to the call"
+    },
+    "Ask what the hab logged last cycle": {
+      "clean": "the watch hand pays your crew's goodwill back with a quiet word at the counter",
+      "cost": "your crew pays the clerk for the older pages",
+      "fail": "your crew pays the clerk for a log with a gap"
+    }
+  },
+  "sensory_details_used": {
+    "sound": "an old pump's tired sound",
+    "smell": "warm dust and old solder",
+    "texture": "new tape over an indicator"
+  }
+}

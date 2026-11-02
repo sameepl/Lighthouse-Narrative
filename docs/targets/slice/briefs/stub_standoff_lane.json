@@ -1,0 +1,132 @@
+{
+  "id": "stub_standoff_lane",
+  "title": "The Blocked Lane",
+  "archetype": "standoff",
+  "layer": "crisis",
+  "location": "docs/canon/locations/hearthline-market.md",
+  "who": "loader foreman at the Ring Two food stalls",
+  "want": "Settle who moves a pallet of crates that is blocking the Ring Two walking lane before the crowds come off shift.",
+  "at_stake": "The lane stays blocked, the stalls lose the evening trade and the Exchange sentry logs a closure notice against whoever let it stand.",
+  "complication": "A hire steps across the walking lane: receiving is closed to visitors. (complications.md, standoff 5)",
+  "state_nouns": [
+    "pallet",
+    "tag",
+    "lane"
+  ],
+  "places": [
+    "the Exchange sentry post",
+    "the lane notice board"
+  ],
+  "approaches": [
+    {
+      "label": "Offer your crew to shift the pallet",
+      "skills": [
+        "Leadership",
+        "Tactics"
+      ],
+      "npc_reaction": "folds his arms",
+      "effects": {
+        "clean": [
+          [
+            "Renown",
+            1
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -500
+          ]
+        ],
+        "fail": [
+          [
+            "Strain",
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Read the lane markings to both sides",
+      "skills": [
+        "Persuade",
+        "Diplomat"
+      ],
+      "npc_reaction": "points at his own paperwork",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            1000
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            500
+          ],
+          [
+            "Strain",
+            1
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Check the pallet tag and the notice",
+      "skills": [
+        "Electronics",
+        "Mechanic"
+      ],
+      "npc_reaction": "watches your hands",
+      "effects": {
+        "clean": [
+          [
+            "Strain",
+            -1
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -1000
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    }
+  ],
+  "effect_reasons": {
+    "Offer your crew to shift the pallet": {
+      "clean": "the loaders and the stallholders both speak well of your crew afterwards",
+      "cost": "your crew pays two hired hands to shift the pallet quickly",
+      "fail": "the Exchange sentry notes your crew standing in a closed lane"
+    },
+    "Read the lane markings to both sides": {
+      "clean": "the stallholders pay your crew a settling fee once the lane is clear",
+      "cost": "the foreman pays your crew its fee but the sentry logs the noise against you",
+      "fail": "your crew pays the lane fine the sentry writes up"
+    },
+    "Check the pallet tag and the notice": {
+      "clean": "the sentry stamps your crew as having kept the peace",
+      "cost": "your crew pays to have the pallet re-tagged",
+      "fail": "your crew pays the sentry's re-inspection fee"
+    }
+  },
+  "sensory_details_used": {
+    "sound": "a loader arguing with a scanner",
+    "smell": "onions frying somewhere above",
+    "texture": "bowls with lids"
+  }
+}
