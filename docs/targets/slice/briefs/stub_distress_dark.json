@@ -1,0 +1,128 @@
+{
+  "id": "stub_distress_dark",
+  "title": "Say Again",
+  "archetype": "distress_call",
+  "layer": "crisis",
+  "location": "docs/canon/locations/dark-stretch.md",
+  "who": "captain of the keepers' tender",
+  "want": "Decide whether to close on a dimmed lamp's distress call that answers every challenge with the same stock reply.",
+  "at_stake": "Closing on a false call costs your crew time and exposure, and leaving a true one costs the lamp.",
+  "complication": "A challenge phrase on the open channel gets: Say again your request. Hold station. (complications.md, distress call 6)",
+  "state_nouns": [
+    "call",
+    "emitter",
+    "lamp"
+  ],
+  "places": [
+    "the keepers' tender",
+    "the second emitter"
+  ],
+  "approaches": [
+    {
+      "label": "Send the challenge phrase again, slowly",
+      "skills": [
+        "Tactics",
+        "Recon"
+      ],
+      "npc_reaction": "holds the tender at one speed",
+      "effects": {
+        "clean": [
+          [
+            "Renown",
+            1
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -500
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -1000
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Cut the emitter quietly before closing",
+      "skills": [
+        "Electronics",
+        "Mechanic"
+      ],
+      "npc_reaction": "watches for the second burst",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            1500
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -1000
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Ask the captain to hold the tender back",
+      "skills": [
+        "Leadership",
+        "Persuade"
+      ],
+      "npc_reaction": "will not go faster",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            1000
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -500
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -1500
+          ]
+        ]
+      }
+    }
+  ],
+  "effect_reasons": {
+    "Send the challenge phrase again, slowly": {
+      "clean": "the keepers tell other tenders your crew tested the call before it moved",
+      "cost": "the tender's captain charges your crew for the tender's lamp time spent waiting on the reply",
+      "fail": "the stock reply never changes and your crew pays the captain for the time lost"
+    },
+    "Cut the emitter quietly before closing": {
+      "clean": "the keepers pay your crew for clearing a false emitter without a shot fired",
+      "cost": "the emitter's burst damages your crew's antenna and your crew pays for it",
+      "fail": "the second emitter wakes and your crew pays the tender for the lamp it starved"
+    },
+    "Ask the captain to hold the tender back": {
+      "clean": "the captain pays your crew for the safe approach it asked for",
+      "cost": "your crew pays the captain's fee for holding the tender off",
+      "fail": "the lamp dims further while the tender waits and your crew pays for the delay"
+    }
+  },
+  "sensory_details_used": {
+    "sound": "an emitter's sub-second burst",
+    "light": "dimmed lamps",
+    "pace": "a tender moving at one speed"
+  }
+}
