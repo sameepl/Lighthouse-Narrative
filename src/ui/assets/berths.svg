@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" preserveAspectRatio="xMidYMin slice">
+  <defs>
+    <linearGradient id="berths-sky" x2="0" y2="1"><stop stop-color="#14224a"/><stop offset="1" stop-color="#070d1f"/></linearGradient>
+    <linearGradient id="berths-wall" x2="0" y2="1"><stop stop-color="#364669"/><stop offset="1" stop-color="#111c34"/></linearGradient>
+  </defs>
+  <path fill="url(#berths-sky)" d="M0 0h600v300H0z"/>
+  <!-- Receding bay ribs and the far pressure door. -->
+  <path fill="url(#berths-wall)" d="M0 0h600v35L395 76H205L0 29z"/>
+  <path fill="#1c2c4f" stroke="#5f74a8" stroke-width="1.2" d="M202 36h196v116H202z"/>
+  <path fill="#0b152c" stroke="#53678f" d="M221 52h158v99H221z"/>
+  <path fill="none" stroke="#8a9ccb" stroke-opacity=".45" d="M0 30l202 47M600 33L398 48M72 0l130 37M535 0L398 37M300 53v92"/>
+  <path fill="#f0b24a" d="M234 60h26v5h-26zM286 60h26v5h-26zM338 60h26v5h-26z"/>
+  <path fill="#8a9ccb" d="M219 75h5v24h-5zM376 75h5v24h-5z"/>
+  <!-- Clamp jaws remain mechanical, with room around the lit central opening. -->
+  <path fill="#070d1f" stroke="#5f74a8" stroke-width="2" d="M80 44h52v44l54 18v19l-72-16V66H80zM520 44h-52v44l-54 18v19l72-16V66h34z"/>
+  <path fill="#42577e" d="M163 99h25v32h-12v-19h-13zM412 99h25v13h-13v19h-12z"/>
+  <path fill="#111b30" d="M0 155l202-18h196l202 22v141H0z"/>
+  <path fill="none" stroke="#344663" d="M0 235l220-91M600 235l-220-91M133 300l118-156M467 300L349 144M0 194h600M0 260h600"/>
+  <path fill="#4fd8f0" opacity=".65" d="M251 139h98l20 3H231z"/>
+  <path fill="#080f20" stroke="#344663" d="M276 147h48l57 70H219z"/>
+  <path fill="none" stroke="#53678f" d="M272 148l-54 63M328 148l54 63M248 178h104"/>
+  <!-- One clamped work lamp on the foreground crate. -->
+  <path fill="#0b1426" stroke="#344663" d="M67 162h76v58H67zM82 162v-25h15v25M84 137l21-15h19"/>
+  <path fill="#f0b24a" d="M111 120h18v6h-18z"/>
+  <path fill="none" stroke="#4fd8f0" stroke-opacity=".22" d="M175 31h-14v14M425 31h14v14M175 132h-14v-14M425 132h14v-14"/>
+</svg>

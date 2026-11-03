@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" preserveAspectRatio="xMidYMin slice">
+  <defs>
+    <linearGradient id="basin-sky" x2="0" y2="1"><stop stop-color="#14224a"/><stop offset="1" stop-color="#070d1f"/></linearGradient>
+    <linearGradient id="basin-world" x2="0" y2="1"><stop stop-color="#314d60"/><stop offset="1" stop-color="#111c32"/></linearGradient>
+    <linearGradient id="basin-hull" x2="0" y2="1"><stop stop-color="#8a9ccb"/><stop offset="1" stop-color="#344663"/></linearGradient>
+  </defs>
+  <path fill="url(#basin-sky)" d="M0 0h600v300H0z"/>
+  <!-- A low garden-world limb; muted ocean and cultivated-green land masses. -->
+  <path fill="url(#basin-world)" stroke="#536e87" d="M-80 229Q300 61 680 229v100H-80z"/>
+  <path fill="#334d51" opacity=".55" d="M63 185l55-17 48 3 25-12 37 4-23 17-46 8-21-6-38 12zM407 166l39 5 23 18 56 6 30 18-64-9-34-14-32-1z"/>
+  <path fill="none" stroke="#8a9ccb" stroke-opacity=".18" d="M87 177q47-14 88-19M414 159l40 12"/>
+  <!-- Trussed gantry frames a single unmarked yard hull. -->
+  <path fill="#172640" stroke="#5f74a8" d="M124 34h352v16H124zM137 50h15v119h-15zM448 50h15v119h-15z"/>
+  <path fill="none" stroke="#5f74a8" stroke-width="1.2" d="M152 50l-15 27 15 25-15 26 15 26M448 50l15 27-15 25 15 26-15 26M163 34l21 16 21-16 21 16 21-16 21 16 21-16 21 16 21-16 21 16 21-16 21 16 21-16 21 16"/>
+  <path fill="#4fd8f0" d="M289 28h22v5h-22z"/>
+  <path fill="none" stroke="#5f74a8" d="M222 50v28M378 50v28"/>
+  <path fill="url(#basin-hull)" stroke="#8a9ccb" d="M189 94l35-19h118l44 11 35 22-41 18H220l-31-13z"/>
+  <path fill="#263957" d="M201 96h30v18h-30zM233 87h51l-12 8h-45zM343 81l38 9 13 11-51-8zM283 106h110l-18 14h-92z"/>
+  <path fill="none" stroke="#344663" d="M294 78v45M326 78v45M220 101h63M337 96l25 7"/>
+  <path fill="#0b1528" stroke="#5f74a8" d="M185 121h28l16 20h142l16-20h28l-28 38H213z"/>
+  <path fill="#f0b24a" d="M225 134h18v4h-18zM357 134h18v4h-18z"/>
+  <path fill="#101b30" d="M0 187l105-16h390l105 16v113H0z"/>
+  <path fill="#172640" stroke="#344663" d="M73 169h39v41H73zM487 169h39v41h-39zM207 160h186v12H207z"/>
+  <path fill="none" stroke="#263957" d="M0 238h600M135 300l95-125M465 300l-95-125M300 175v125"/>
+  <path fill="none" stroke="#4fd8f0" stroke-opacity=".2" d="M176 72h-13v13M424 72h13v13M176 132h-13v-13M424 132h13v-13"/>
+</svg>
