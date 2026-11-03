@@ -1,4 +1,4 @@
-STATUS: [PLAYED] unless tagged. **HELD for the slice** until the owner confirms the slice sits after S4E6 (the planner: "If your slice predates S4E6, treat this as HELD"). Do not use in any scene, brief or voice file until then.
+STATUS: [PLAYED] unless tagged. **HELD for the slice**: the owner decided on 2026-11-03 that the slice does not sit after S4E6 (`../owner-decisions.md` section 10) (the planner: "If your slice predates S4E6, treat this as HELD"). Do not use in any scene, brief or voice file until then.
 SOURCE: S4E6 transcript (Days 660-666); Mobile_Game_Zawadi_Addendum_Player_Safe.md (received from the planner 2026-11-03)
 
 Name: Zawadi. Sails as "Winifred Ngata, Win", a relay hand off a bankrupt rim hauler. The paper is pending. [PLAYED]

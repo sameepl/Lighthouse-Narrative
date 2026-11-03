@@ -66,3 +66,7 @@ For the M0 stub scenes (issue #10): stubs may carry small **placeholder effects*
 - **Foreclosure:** the slice includes the foreclosure ending (Option 1), reusing `end_closed` with a tint.
 - Still open: what "several hours" means as a structure.
 
+## 10. Slice timeline (2026-11-03) `[OWNER]`
+
+The M1 slice does **not** sit after S4E6. The planner's S4E6 addendum (`characters/zawadi.md`, `locations/listening-house.md`) stays filed and **held**: do not use it in any scene, brief or voice file for the slice. It can be revisited for a later milestone.
+

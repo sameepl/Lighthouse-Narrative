@@ -1,4 +1,4 @@
-STATUS: [PLAYED] unless tagged. **HELD for the slice** until the owner confirms the slice sits after S4E6. It also has no written sensory details, so it cannot be used for a roster scene under `CONTENT_GENERATION.md` (fewer than three details).
+STATUS: [PLAYED] unless tagged. **HELD for the slice**: the owner decided on 2026-11-03 that the slice does not sit after S4E6 (`../owner-decisions.md` section 10). It also has no written sensory details, so it cannot be used for a roster scene under `CONTENT_GENERATION.md` (fewer than three details).
 SOURCE: S4E6 transcript (Day 660); Mobile_Game_Zawadi_Addendum_Player_Safe.md (received from the planner 2026-11-03)
 
 What it is: a House under a dome at a frontier rock on the far rim; keeps a count of people and takes testimony. [PLAYED]
