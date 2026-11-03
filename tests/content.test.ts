@@ -208,7 +208,15 @@ describe('M0 reachability policy', () => {
     const clockLength = mode === 'slice' ? 4 : 6;
     for (let cycle = 1; cycle <= (mode === 'slice' ? 4 : 6); cycle++) {
       const input = {
-        cycle: { cycle, actionsLeft: 0, pursuit: { value: clockLength, length: clockLength }, edgeEarnedCrewIds: [] },
+        cycle: {
+          arrears: 0,
+          upkeepShortfall: 0,
+          failed: false,
+          cycle,
+          actionsLeft: 0,
+          pursuit: { value: clockLength, length: clockLength },
+          edgeEarnedCrewIds: [],
+        },
         resources: { Credits: 0 },
         ships: [],
         crew: [],

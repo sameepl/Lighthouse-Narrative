@@ -219,15 +219,12 @@ describe('Hub and scene bridge', () => {
       ...['__proto__', 'constructor', 'toString'].map(id => ({ ...trust, [id]: 0 })),
     ]) {
       expect(() => make({ saved: { ...valid, run: { ...valid.run, crewTrust: bad } } as SaveData })).toThrow(
-        'Invalid version 3 save',
+        'Invalid version 4 save',
       );
     }
     choose(s, 'Trust');
     for (const v of [1, 2]) {
-      const fresh = make({ saved: { ...s.save(), v } as unknown as SaveData }).save();
-      expect(fresh.run).toEqual(make().save().run);
-      expect(fresh.events).toEqual([]);
-      expect(fresh.v).toBe(3);
+      expect(() => make({ saved: { ...s.save(), v } as unknown as SaveData })).toThrow(`Invalid version ${v} save`);
     }
   });
 
@@ -485,12 +482,11 @@ describe('Hub and scene bridge', () => {
     expect(s.save()).toEqual(scene);
   });
 
-  it('discards v1 even through direct construction and exposes honest single-encounter exhaustion', () => {
-    const s = new GameSession({
-      inkJson: realInk,
-      data: storyData,
-      saved: { v: 1 } as unknown as SaveData,
-    });
+  it('rejects v1 through direct construction and exposes honest single-encounter exhaustion', () => {
+    expect(
+      () => new GameSession({ inkJson: realInk, data: storyData, saved: { v: 1 } as unknown as SaveData }),
+    ).toThrow('Invalid version 1 save');
+    const s = new GameSession({ inkJson: realInk, data: storyData });
     expect(view(s).phase).toBe('hub');
     expect(view(s).schedulerStatus).toBe('unconfigured');
     enter(s);

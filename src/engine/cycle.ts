@@ -19,6 +19,9 @@ export interface EdgeReport {
 /** Start a full run, or a four-segment vertical slice. */
 export function newCycleState(rules: Rules, slice = false): CycleState {
   return {
+    arrears: 0,
+    upkeepShortfall: 0,
+    failed: false,
     cycle: 1,
     actionsLeft: rules.cycle.actions,
     pursuit: { value: 0, length: slice ? rules.cycle.pursuit.sliceLength : rules.cycle.pursuit.length },

@@ -20,6 +20,78 @@ vi.mock('../src/data', async importOriginal => {
 
 afterEach(() => vi.unstubAllGlobals());
 describe('versioned browser persistence', () => {
+  it('migrates a detached complete v3 only after validation and retains it on write failure', () => {
+    const original = new GameSession({ inkJson, data }).save();
+    const legacy = JSON.parse(JSON.stringify(original));
+    legacy.v = 3;
+    delete legacy.run.ending;
+    for (const key of ['arrears', 'upkeepShortfall', 'failed']) delete legacy.run.cycle[key];
+    const raw = JSON.stringify(legacy);
+    const values = new Map([['lighthouse-narrative-save-v3', raw]]);
+    const setItem = vi.fn((key: string, value: string) => {
+      values.set(key, value);
+    });
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem,
+      removeItem: (key: string) => values.delete(key),
+    });
+    setItem.mockImplementationOnce(() => {
+      throw new Error('quota');
+    });
+    expect(startGame().save()).toEqual(original);
+    expect(values.get('lighthouse-narrative-save-v3')).toBe(raw);
+    expect(startGame().save()).toEqual(original);
+    expect(values.has('lighthouse-narrative-save-v3')).toBe(false);
+    expect(JSON.parse(values.get('lighthouse-narrative-save-v4')!)).toEqual(original);
+    expect(legacy.run.ending).toBeUndefined();
+    values.set('lighthouse-narrative-save-v4', '{"v":4}');
+    values.set('lighthouse-narrative-save-v3', raw);
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const migrated = startGame();
+    const control = new GameSession({ inkJson, data, saved: original });
+    migrated.endCycle();
+    control.endCycle();
+    expect(migrated.save()).toEqual(control.save());
+    warning.mockRestore();
+    values.set('lighthouse-narrative-save-v4', JSON.stringify(original));
+
+    // A valid current save wins even when a different valid legacy save exists.
+    legacy.res.Credits = 0;
+    values.set('lighthouse-narrative-save-v3', JSON.stringify(legacy));
+    expect(startGame().save()).toEqual(original);
+    for (const mutate of [
+      (s: typeof legacy) => {
+        s.run.crewTrust = {};
+      },
+      (s: typeof legacy) => {
+        s.run.rngState = -1;
+      },
+      (s: typeof legacy) => {
+        s.run.encounterBoard = undefined;
+      },
+      (s: typeof legacy) => {
+        s.run.cycle.actionsLeft = -1;
+      },
+    ]) {
+      const invalid = JSON.parse(raw);
+      mutate(invalid);
+      expect(() => new GameSession({ inkJson, data, saved: invalid })).toThrow();
+    }
+  });
+
+  it.each([-1, 0.5, Infinity, NaN, Number.MAX_SAFE_INTEGER + 1, '1', null, undefined])(
+    'rejects invalid v4 counters %s',
+    value => {
+      const valid = new GameSession({ inkJson, data }).save();
+      for (const field of ['arrears', 'upkeepShortfall']) {
+        const broken = structuredClone(valid);
+        Object.assign(broken.run.cycle, { [field]: value });
+        expect(() => new GameSession({ inkJson, data, saved: broken })).toThrow('Invalid version 4 save');
+      }
+    },
+  );
+
   it.each(['offers', 'active', 'encounterBoard'] as const)('discards invalid cached %s titles', path => {
     const values = new Map<string, string>();
     vi.stubGlobal('localStorage', {
@@ -47,19 +119,19 @@ describe('versioned browser persistence', () => {
       else Object.assign(entries[path], { title });
       for (const other of ['offers', 'active', 'encounterBoard'] as const)
         if (other !== path) expect(entries[other].title).toBe(selected.title);
-      expect(() => new GameSession({ inkJson, data, saved: broken })).toThrow('Invalid version 3 save');
-      values.set('lighthouse-narrative-save-v3', JSON.stringify(broken));
+      expect(() => new GameSession({ inkJson, data, saved: broken })).toThrow('Invalid version 4 save');
+      values.set('lighthouse-narrative-save-v4', JSON.stringify(broken));
       const restarted = startGame().save();
       expect(restarted).toEqual({ ...fresh, ink: expect.any(String) });
       // Ink gives each fresh story a random seed; its remaining state must be fresh too.
       expect(JSON.parse(restarted.ink)).toEqual({ ...JSON.parse(fresh.ink), storySeed: expect.any(Number) });
-      expect(values.has('lighthouse-narrative-save-v3')).toBe(false);
+      expect(values.has('lighthouse-narrative-save-v4')).toBe(false);
     }
     expect(warning).toHaveBeenCalledTimes(3);
     warning.mockRestore();
   });
 
-  it('discards legacy and malformed saves, then stores and restores version 3', () => {
+  it('discards legacy and malformed saves, then stores and restores version 4', () => {
     const values = new Map<string, string>([
       ['lighthouse-narrative-save-v1', '{"v":1}'],
       ['lighthouse-narrative-save-v2', '{"v":2}'],
@@ -78,19 +150,19 @@ describe('versioned browser persistence', () => {
     const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const valid = session.save();
     for (const broken of [
-      { v: 3 },
+      { v: 4 },
       { ...valid, run: { ...valid.run, crewTrust: {} } },
       { ...valid, run: { ...valid.run, crewTrust: { ...valid.run.crewTrust, priya: 4 } } },
       { ...valid, run: { ...valid.run, phase: 'invalid' } },
       { ...valid, run: { ...valid.run, rngState: -1 } },
       { ...valid, run: { ...valid.run, cycle: { ...valid.run.cycle, pursuit: { value: 99, length: 6 } } } },
     ]) {
-      values.set('lighthouse-narrative-save-v3', JSON.stringify(broken));
+      values.set('lighthouse-narrative-save-v4', JSON.stringify(broken));
       const fresh = startGame().save();
       expect(fresh.run).toEqual(valid.run);
       expect(fresh.res).toEqual(valid.res);
       expect(fresh.events).toEqual([]);
-      expect(values.has('lighthouse-narrative-save-v3')).toBe(false);
+      expect(values.has('lighthouse-narrative-save-v4')).toBe(false);
     }
     warning.mockRestore();
     clearSave();

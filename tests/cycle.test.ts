@@ -8,6 +8,9 @@ const { rules, ships, crew } = data;
 describe('cycle state and Pursuit', () => {
   it('starts with two actions and the run or slice clock length', () => {
     expect(newCycleState(rules)).toEqual({
+      arrears: 0,
+      upkeepShortfall: 0,
+      failed: false,
       cycle: 1,
       actionsLeft: 2,
       pursuit: { value: 0, length: 6 },
