@@ -1,10 +1,26 @@
 import type { Crew, Encounter, Keystone, Ships } from '../data/schema';
 import type { CrewTrust, CycleState, Dice, Grade, Note, OddsInfo, RollPart, RollSetup } from '../engine/types';
 
+/** Detached settlement projection from engine results; no extra saved run state. */
+export interface UpkeepProjection {
+  upkeepDue: number;
+  upkeepPaid: number;
+  upkeepShortfall: number;
+  arrearsBefore: number;
+  arrearsAfter: number;
+  renownLost: number;
+  strainAdded: number;
+  pursuitDelta: number;
+  warning: boolean;
+  failed: boolean;
+}
+
 /** Plain ink notes retain their text; bridge notes carry data for the UI formatter. */
 export type LedgerNote = Note & {
   command?:
-    { code: 'cycleUpkeep'; amount: number } | { code: 'trustReward'; crewId: string; name: string; edgeAdded: number };
+    | { code: 'cycleUpkeep'; amount: number }
+    | { code: 'upkeepSettlement'; settlement: UpkeepProjection }
+    | { code: 'trustReward'; crewId: string; name: string; edgeAdded: number };
 };
 export type AssistedRollPart = RollPart & { assist?: { crewId: string; name: string } };
 export type AssistedRollSetup = Omit<RollSetup, 'parts'> & { parts: AssistedRollPart[] };
@@ -33,7 +49,7 @@ export type Command =
       shipTag?: string;
       crew: string[];
     }
-  | { code: 'endCycle'; actionsLeft: number; noEligibleOffers: boolean }
+  | { code: 'endCycle'; actionsLeft: number; noEligibleOffers: boolean; upkeep?: UpkeepProjection }
   | { code: 'restart' }
   | { code: 'ship'; shipId: string; name: string; tags: string[]; selected: boolean }
   | { code: 'crew'; crewId: string; name: string; skill: string; assigned: boolean }

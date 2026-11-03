@@ -232,7 +232,13 @@ describe('Hub and scene bridge', () => {
     const s = make();
     s.endCycle();
     const before = s.save();
-    expect(before.ledger).toEqual([{ kind: 'cost', t: '', command: { code: 'cycleUpkeep', amount: 4000 } }]);
+    expect(before.ledger).toMatchObject([
+      {
+        kind: 'cost',
+        t: '',
+        command: { code: 'upkeepSettlement', settlement: { upkeepDue: 4000, upkeepPaid: 4000, upkeepShortfall: 0 } },
+      },
+    ]);
     expect(before.events.at(-1)).toMatchObject(before.ledger[0]!);
     Object.assign(view(s).ledger[0]!.command!, { amount: 999 });
     const event = view(s).events.at(-1)!;

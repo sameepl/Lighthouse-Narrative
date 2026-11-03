@@ -156,12 +156,12 @@ export class GameSession {
     }
   }
   endCycle(): void {
-    const credits = this.game.res.Credits ?? 0;
-    this.game = this.run.end(this.game, this.flags());
+    const result = this.run.end(this.game, this.flags());
+    this.game = result.game;
     const note: LedgerNote = {
       kind: 'cost',
       t: '',
-      command: { code: 'cycleUpkeep', amount: credits - (this.game.res.Credits ?? 0) },
+      command: { code: 'upkeepSettlement', settlement: result.projection },
     };
     this.game.ledger.push(note);
     this.push({ type: 'note', ...note });
@@ -349,7 +349,12 @@ export class GameSession {
   // ---- view --------------------------------------------------------------------------
 
   private choices(): UIChoice[] {
-    if (this.run.state.phase !== 'scene') return runChoices(this.run.state, this.opts.data, this.game.res);
+    if (this.run.state.phase !== 'scene') {
+      const choices = runChoices(this.run.state, this.opts.data, this.game.res);
+      for (const choice of choices)
+        if (choice.command?.code === 'endCycle') choice.command.upkeep = this.run.preview(this.game);
+      return choices;
+    }
     if (this.phase === 'ended') return [];
     if (this.phase === 'staged') {
       return [
