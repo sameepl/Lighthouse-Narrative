@@ -6,6 +6,7 @@ import type {
   LedgerNote,
   UIChoice,
   UpkeepProjection,
+  TargetAdjustment,
 } from '../bridge/types';
 import { signed } from '../engine/rules';
 
@@ -86,6 +87,10 @@ export function noteText(note: LedgerNote): string {
       ? `${command.name} trusts you: Edge +${command.edgeAdded}.`
       : `${command.name} trusts you: Edge reward consumed; pool full.`;
   return note.t;
+}
+
+export function targetAdjustmentText(adjustment: TargetAdjustment): string {
+  return `Upkeep arrears ${adjustment.arrears}: target ${signed(adjustment.n)} for this required-ship check.`;
 }
 
 export function rollPartText(part: AssistedRollPart): string {

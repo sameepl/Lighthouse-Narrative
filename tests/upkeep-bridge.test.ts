@@ -1,3 +1,8 @@
+import { Compiler } from 'inkjs/full';
+import { readFileSync } from 'node:fs';
+import { assistedSetup } from '../src/bridge/roll';
+import type { SaveData } from '../src/bridge/types';
+import type { GameData } from '../src/data';
 import { describe, expect, it } from 'vitest';
 import { RunController } from '../src/bridge/run';
 import { GameSession } from '../src/bridge/session';
@@ -84,5 +89,146 @@ describe('upkeep bridge projection', () => {
     const loaded = new GameSession({ data: storyData, inkJson: ink, saved: JSON.parse(JSON.stringify(saved)) });
     expect(loaded.save()).toEqual(saved);
     expect(loaded.store.getState().ledger).toEqual(session.store.getState().ledger);
+  });
+});
+
+const rollInk = new Compiler(
+  readFileSync('src/story/lib/world.ink', 'utf8') +
+    '\n' +
+    readFileSync('src/story/lib/roll.ink', 'utf8') +
+    `
+-> END
+=== upkeep_test ===
++ [Check]
+    -> roll("Diplomat", 8, "", -> done, -> done, -> done)
+=== done ===
+-> scene_end
+`,
+)
+  .Compile()
+  .ToJson()!;
+const rollData = (required: boolean): GameData => ({
+  ...storyData,
+  encounters: [
+    { ...storyData.encounters[0]!, knot: 'upkeep_test', cost: 10, requires: required ? { shipTag: 'fast' } : {} },
+  ],
+});
+const sessionFor = (required = true, knot = 'upkeep_test') => {
+  const data = rollData(required);
+  data.encounters[0]!.knot = knot;
+  const initial = new GameSession({ data, inkJson: rollInk, seed: 17 }).save();
+  initial.run.cycle.arrears = 2;
+  initial.res.Credits = 100;
+  return { data, session: new GameSession({ data, inkJson: rollInk, saved: initial }) };
+};
+const stage = (s: GameSession) => {
+  s.act(0);
+  s.act('odds');
+  return s.store.getState().odds!;
+};
+
+describe('required-ship arrears target', () => {
+  it.each([0, 1, 2, 3])('adds a flat target increase at arrears %s only for the matching required ship', arrears => {
+    const run = new RunController(rollData(true), {});
+    run.state.active = { kind: 'encounter', entry: rollData(true).encounters[0]!, forced: false, weak: false };
+    run.state.cycle.arrears = arrears;
+    const request = { skills: ['Diplomat'], target: 8, bonuses: [] };
+    const setup = () => assistedSetup(rollData(true), request, () => false, [], run.state.crewTrust, run.state);
+    for (const shipId of [null, 'ardent_venture', 'errant_pawn']) {
+      run.state.assignments.shipId = shipId;
+      const result = setup();
+      const n = arrears >= 1 && shipId === 'errant_pawn' ? 1 : 0;
+      expect(result.target).toBe(8 + n);
+      expect(result.mod).toBe(3);
+      expect(result.targetAdjustment).toEqual(n ? { code: 'upkeepArrears', n: 1, arrears } : undefined);
+    }
+    run.state.active.entry.requires = {};
+    expect(setup().target).toBe(8);
+  });
+
+  it.each([true, false])('keeps Back, staged saves, reload, charges and RNG exact (required=%s)', required => {
+    const { data, session: s } = sessionFor(required);
+    s.pickOffer('written_clause');
+    s.assign({ shipId: 'errant_pawn', crewIds: [] });
+    const preparation = s.save();
+    s.confirm();
+    const before = s.save();
+    expect(before.res.Credits).toBe(90);
+    expect(before.run.cycle.actionsLeft).toBe(preparation.run.cycle.actionsLeft - 1);
+    const odds = stage(s);
+    expect(odds.target).toBe(required ? 9 : 8);
+    expect(odds.mod).toBe(3);
+    expect(odds.targetAdjustment?.n).toBe(required ? 1 : undefined);
+    expect(s.save()).toEqual(before);
+    s.act('back');
+    expect(s.save()).toEqual(before);
+    expect(stage(s)).toEqual(odds);
+    const loaded = new GameSession({ data, inkJson: rollInk, saved: s.save() });
+    expect(stage(loaded)).toEqual(odds);
+    s.act('try');
+    loaded.act('try');
+    expect(loaded.store.getState().events).toEqual(s.store.getState().events);
+    expect(loaded.save()).toEqual(s.save());
+    expect(s.store.getState().cycle.arrears).toBe(2);
+    expect(s.store.getState().res.Credits).toBe(90);
+  });
+
+  it.each([true, false])('grades a boundary total with the displayed target (required=%s)', required => {
+    const { data, session } = sessionFor(required);
+    const s = new GameSession({ data, inkJson: rollInk, saved: session.save(), rng: () => [2, 3] });
+    s.pickOffer('written_clause');
+    s.assign({ shipId: 'errant_pawn', crewIds: [] });
+    s.confirm();
+    expect(stage(s).target).toBe(required ? 9 : 8);
+    s.act('try');
+    expect(
+      s.store
+        .getState()
+        .events.filter(e => e.type === 'roll')
+        .at(-1),
+    ).toMatchObject({
+      total: 8,
+      mod: 3,
+      grade: required ? 'fail' : 'cost',
+    });
+  });
+
+  it('rolls back a failed confirmation without charges, counter or RNG changes', () => {
+    const { session: s } = sessionFor(true, 'missing_knot');
+    s.pickOffer('written_clause');
+    s.assign({ shipId: 'errant_pawn', crewIds: [] });
+    const before = s.save();
+    expect(() => s.confirm()).toThrow();
+    expect(s.save()).toEqual(before);
+  });
+
+  it('Edge rerolls against the same increased target, leaving counters and charges alone', () => {
+    const { data, session: initial } = sessionFor();
+    const saved: SaveData = initial.save();
+    let calls = 0;
+    const s = new GameSession({ data, inkJson: rollInk, saved, rng: () => (++calls === 1 ? [1, 1] : [3, 4]) });
+    s.pickOffer('written_clause');
+    s.assign({ shipId: 'errant_pawn', crewIds: [] });
+    s.confirm();
+    const before = s.save();
+    expect(stage(s).target).toBe(9);
+    s.act('try');
+    expect(
+      s.store
+        .getState()
+        .events.filter(e => e.type === 'roll')
+        .at(-1),
+    ).toMatchObject({ grade: 'fail' });
+    expect(s.save()).toEqual(before);
+    s.act('edge');
+    expect(calls).toBe(2);
+    expect(
+      s.store
+        .getState()
+        .events.filter(e => e.type === 'roll')
+        .at(-1),
+    ).toMatchObject({ total: 10, mod: 3, grade: 'cost' });
+    expect(s.store.getState().cycle.arrears).toBe(2);
+    expect(s.store.getState().res).toMatchObject({ Credits: 90, Edge: 2 });
   });
 });
