@@ -36,9 +36,10 @@ Direction (revised 2026-10-28 at the owner's request: more sci-fi than the curre
 | `hall` | Hub | `hearthline-hall` | exists; redo in the new style last, so the set matches | amber windows |
 | `berths` | trade run; K1 The Passenger | `hearthline-berths` | a long cold docking bay seen at an angle: clamp arms, berth lamps in a row, a gangway, one clamped work-light | amber lamps, a cyan guide strip |
 | `market` | standoff | `hearthline-market` | Ring Two: stacked stall modules, lidded-bowl racks, a loader and a scanner as silhouettes, a smoke haze above | amber stall lamps, one cyan scanner line |
-| `basin` | courier | `faraday-basin` | a yard cradle with a jump-capable hull under a gantry, the curve of a garden world low on the horizon | cyan gantry beacon, amber work lights |
+| `lampnet` | courier | `corda-reach-lamp-net` | a holding point east of a lamp net: five grey lanes hanging in the dark, a hull's steady running lights a hull-length off the player's ship | cyan running lights, a faint amber lamp |
 | `shoal` | salvage | `the-shoal` | a belt of old hulks with hull plating exposed, wreck beacons, a drifting hauler turning slowly | amber beacons on their own rhythms |
-| `gap` | scout | `fenrir-gap` | a corridor of survey buoys on a thin baseline, instrument spikes and a faint range ring | one cyan buoy |
+| `relay` | scout | `shoal-east-relay` | the last relay marker at a lane's dead end: a small marker no bigger than a boat with a dish pointing back the way you came, the chart blank beyond it | one cyan status light |
+| `dark_stretch` | distress call | `dark-stretch` | a dark lane with a few dimmed keeper lamps, a tender moving slowly, a dormant slab (an emitter) at the edge | dimmed amber lamps, one brief cyan burst |
 | `lamps` | distress call | `psalter-lamp-field` | kept lamps hanging like a slow constellation, a small tender threading them | amber lamps, a faint cyan trace |
 | `hab` | K2 The Silent Hab | `traffic-hab` | a hab ring with most windows dark, a few lit, a short docking arm, a small cutter silhouette approaching from the edge | two or three amber windows |
 | `skirmish` | K2 (ship-versus-ship beat); any armed intercept | none | the player's ship and an unmarked cutter on a lane at long range: a thin cyan sensor lock arc between them, one hazard-orange tracer, engine plumes pointing away from a planet limb | cyan lock, one orange tracer |
@@ -48,7 +49,7 @@ Direction (revised 2026-10-28 at the owner's request: more sci-fi than the curre
 | `end_open` | ending (reaffirm) | none | a corridor wall with a doorway of light | the doorway, amber |
 | `end_closed` | ending (withdraw) | none | the same corridor, the door shut, one lamp left | one amber lamp |
 
-Thirteen new images. Ship silhouettes for Prepare and crew badges are stretch items, not slice items.
+Fourteen new images (`basin` and `gap` were dropped when the roster locations changed; `gap` is still the K3 location, drawn as `dark_lane`). Ship silhouettes for Prepare and crew badges are stretch items, not slice items.
 
 ## How Codex iterates (loop)
 
