@@ -1,5 +1,6 @@
 import type { Crew, Rules, Ships } from '../data/schema';
 import { addResource } from './rules';
+import { settleUpkeep } from './upkeep';
 import type { CrewTrust, CycleState, GameState } from './types';
 
 export interface CycleReport {
@@ -41,27 +42,26 @@ export function endCycle(
   if (new Set(ids).size !== ids.length) throw new Error('Duplicate in-service ship id');
 
   const upkeepDue = inServiceShips.reduce((sum, ship) => sum + ship.upkeep, 0);
-  const res = { ...game.res };
-  const creditsBefore = res.Credits ?? rules.resources.Credits!.start;
-  const creditsAfter = addResource(res, rules, 'Credits', -upkeepDue);
-  const upkeep = creditsBefore - creditsAfter;
+  const settlement = settleUpkeep(game, cycle, upkeepDue, rules);
+  const upkeep = settlement.report.upkeepPaid;
 
   const pursuitRule = rules.cycle.pursuit;
   const requestedDelta =
     pursuitRule.base +
-    ((res.Renown ?? rules.resources.Renown!.start) >= pursuitRule.renownThreshold ? pursuitRule.renownDelta : 0) +
+    ((game.res.Renown ?? rules.resources.Renown!.start) >= pursuitRule.renownThreshold ? pursuitRule.renownDelta : 0) +
     (choice.loud ? pursuitRule.loudDelta : 0) +
     (choice.quiet ? pursuitRule.quietDelta : 0);
   const pursuitValue = Math.max(0, Math.min(cycle.pursuit.length, cycle.pursuit.value + requestedDelta));
   const nextCycle: CycleState = {
     ...cycle,
+    ...settlement.state,
     cycle: cycle.cycle + 1,
     actionsLeft: rules.cycle.actions,
     pursuit: { ...cycle.pursuit, value: pursuitValue },
   };
   return {
     cycle: nextCycle,
-    game: { ...game, res },
+    game: settlement.game,
     report: {
       upkeep,
       upkeepDue,

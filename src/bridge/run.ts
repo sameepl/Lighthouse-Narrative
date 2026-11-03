@@ -203,6 +203,10 @@ export class RunController {
       throw new Error('Resolve Pursuit or the forced keystone first');
     const result = endCycle(this.state.cycle, game, this.data.ships, {}, this.data.rules);
     this.state.cycle = result.cycle;
+    if (result.cycle.failed) {
+      this.state.ending = 'foreclosure';
+      this.state.phase = 'ended';
+    }
     this.state.busyCrewIds = [];
     this.state.assignments = emptyAssignments();
     this.state.encounterBoard = null;
