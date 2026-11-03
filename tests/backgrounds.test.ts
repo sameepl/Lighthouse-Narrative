@@ -114,7 +114,7 @@ describe('story backdrop registry', () => {
     expect(names.length).toBeGreaterThan(0);
     for (const name of new Set(names)) {
       expect(Object.hasOwn(backgrounds, name), `unregistered bg:${name}`).toBe(true);
-      expect((await backgrounds[name]!()).default).toMatch(/\.svg(?:\?|$)/);
+      expect((await backgrounds[name]!()).default).toMatch(/(?:\.svg(?:\?|$)|^data:image\/svg\+xml[,;])/);
       expect(readFileSync(`src/ui/assets/${name}.svg`, 'utf8')).toContain('<svg');
     }
   });
