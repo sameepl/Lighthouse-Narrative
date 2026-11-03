@@ -1,4 +1,4 @@
-# Art gate
+# Art gate and contact sheet
 
 Run `npm ci` first, then `npm run lint:art`. Set `ART_BROWSER` to an installed Chromium/Chrome/Edge executable if standard Windows Chrome/Edge discovery does not find it. No browser is installed by this task. Default full Chrome/Edge discovery is best effort; full Chrome stdout capture timed out on this host, while an existing Chromium headless shell worked via ART_BROWSER. Missing or failed rendering fails the gate. Byte limits use KiB (1024 bytes).
 
@@ -7,5 +7,7 @@ The dependency-free lexical structural gate reports every detected rule failure.
 Palette families are numeric RGB ranges: near-neutral (channel spread <=18), blue (B>=G>=R), amber (R>=120, .5R<=G<=.85R, B<=.7G), cyan (G>=100, B>=G, R<=.65G), and skirmish-only orange (R>=180, 60<=G<=.5R, B<=.8G). This admits shades rather than only the reference swatches; it does not judge art direction.
 
 Focal approximation: render at 600x300, calculate encoded RGB luminance (.2126R+.7152G+.0722B)/255, subtract .45 and clamp at zero, multiply by alpha, then calculate the weighted centroid. Fail if there is no bright mass or the centroid lies outside inclusive x150..450/y20..130. This is a simple rendered luminance heuristic, not a semantic focal-object detector, linear-light photometry or readability guarantee. Two bright edge objects can balance into the safe area. Manual contact-sheet review remains necessary.
+
+Run `npm run art:sheet`, then open `node_modules/art-contact-sheet.html`. It is a generated local review artifact, not committed. All SVGs appear at 390 and 1200 viewport widths in explicit light/dark themes. Each isolated iframe embeds the current unmodified theme.css, actual .scenes/.scene mask, drift, art opacity and body typography. The real layout has a header followed by body text, rather than text over the header as the plan suggests. A separately labeled overlay stress sample tests the requested overlap without claiming that it is the current UI. Viewport height is fixed at 720px; #app retains its real 560px maximum width. The current CSS uses local system fonts and CSS-defined art opacity; future web fonts or JS opacity changes need a fidelity review. These are live browser previews rather than captured screenshots; inspect motion extremes and reduced motion separately.
 
 Existing hall.svg predates the direction and is intentionally unchanged: its gradient id `g` lacks the `hall-` prefix. The gate is standalone rather than added to `check`, so existing art debt does not silently break the established check command. Run it explicitly for every art review.
