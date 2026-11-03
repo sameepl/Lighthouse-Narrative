@@ -7,7 +7,7 @@ import { scheduleKeystones, type KeystoneRoles } from '../engine/keystones';
 import { createSeededRng } from '../engine/rng';
 import { addResource } from '../engine/rules';
 import type { GameState } from '../engine/types';
-import type { Assignments, LedgerNote, RunState } from './types';
+import type { Assignments, LedgerNote, RunState, UpkeepProjection } from './types';
 
 export interface RunOptions {
   seed?: number;
@@ -197,11 +197,34 @@ export class RunController {
     s.phase = 'hub';
     this.refresh(game, flags);
   }
-  end(game: GameState, flags: Record<string, boolean>): GameState {
+  /** Pure preview and committed settlement share exactly one engine calculation. */
+  private settlement(game: GameState) {
+    const result = endCycle(this.state.cycle, game, this.data.ships, {}, this.data.rules);
+    const before = (name: string) => game.res[name] ?? this.data.rules.resources[name]!.start;
+    const projection: UpkeepProjection = {
+      upkeepDue: result.report.upkeepDue,
+      upkeepPaid: result.report.upkeep,
+      upkeepShortfall: result.cycle.upkeepShortfall,
+      arrearsBefore: this.state.cycle.arrears,
+      arrearsAfter: result.cycle.arrears,
+      renownLost: before('Renown') - (result.game.res.Renown ?? before('Renown')),
+      strainAdded: (result.game.res.Strain ?? before('Strain')) - before('Strain'),
+      pursuitDelta: result.report.pursuitDelta,
+      warning:
+        !result.cycle.failed &&
+        result.cycle.arrears >= this.data.rules.cycle.upkeep.arrearsLimit - this.data.rules.cycle.upkeep.warningLead,
+      failed: result.cycle.failed,
+    };
+    return { ...result, projection };
+  }
+  preview(game: GameState): UpkeepProjection {
+    return this.settlement(game).projection;
+  }
+  end(game: GameState, flags: Record<string, boolean>): { game: GameState; projection: UpkeepProjection } {
     this.require('hub');
     if (this.state.boardStatus === 'pursuit-full' || this.state.offers.some(o => o.forced))
       throw new Error('Resolve Pursuit or the forced keystone first');
-    const result = endCycle(this.state.cycle, game, this.data.ships, {}, this.data.rules);
+    const result = this.settlement(game);
     this.state.cycle = result.cycle;
     if (result.cycle.failed) {
       this.state.ending = 'foreclosure';
@@ -211,7 +234,7 @@ export class RunController {
     this.state.assignments = emptyAssignments();
     this.state.encounterBoard = null;
     this.refresh(result.game, flags);
-    return result.game;
+    return { game: result.game, projection: result.projection };
   }
   rewards(game: GameState): { game: GameState; notes: LedgerNote[] } {
     const notes: LedgerNote[] = [];
