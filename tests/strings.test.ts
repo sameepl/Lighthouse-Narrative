@@ -1,5 +1,13 @@
+import { Dock } from '../src/ui/components/Dock';
 import { describe, expect, it } from 'vitest';
-import { choiceText, commandText, hubStatusText, noteText, rollPartText } from '../src/ui/strings';
+import {
+  choiceText,
+  commandText,
+  hubStatusText,
+  noteText,
+  rollPartText,
+  targetAdjustmentText,
+} from '../src/ui/strings';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Feed } from '../src/ui/components/Feed';
@@ -136,4 +144,22 @@ describe('the bridge sends data, not sentences', () => {
     expect(prepare.hub).toBeNull();
     for (const c of prepare.choices) expect(c.text).toBe('');
   });
+});
+
+it('renders the typed arrears target adjustment in the Odds panel', () => {
+  const adjustment = { code: 'upkeepArrears' as const, n: 1, arrears: 2 };
+  const words = 'Upkeep arrears 2: target +1 for this required-ship check.';
+  expect(targetAdjustmentText(adjustment)).toBe(words);
+  const html = renderToStaticMarkup(
+    createElement(Dock, {
+      choices: [],
+      ended: false,
+      onAct: () => {},
+      onRestart: () => {},
+      odds: { target: 9, mod: 3, parts: [], success: 72, clean: 42, targetAdjustment: adjustment },
+    }),
+  );
+  expect(html).toContain(words);
+  expect(html).toContain('<b>9+</b>');
+  expect(html).toContain('<b>+3</b>');
 });

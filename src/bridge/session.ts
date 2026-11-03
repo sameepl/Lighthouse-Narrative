@@ -334,6 +334,7 @@ export class GameSession {
         flag => v[flag] === true,
         this.run.state.assignments.crewIds,
         this.run.state.crewTrust,
+        this.run.state,
       );
       this.phase = 'staged';
     } else {
@@ -388,7 +389,11 @@ export class GameSession {
         choices: this.choices(),
         odds:
           this.phase === 'staged' && this.showOdds && this.setup
-            ? { ...oddsOf(this.setup, this.opts.data.rules), parts: this.setup.parts }
+            ? {
+                ...oddsOf(this.setup, this.opts.data.rules),
+                parts: this.setup.parts,
+                ...(this.setup.targetAdjustment ? { targetAdjustment: this.setup.targetAdjustment } : {}),
+              }
             : null,
         bg: this.bg,
         ended: this.run.state.phase === 'ended',

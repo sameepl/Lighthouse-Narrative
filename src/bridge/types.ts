@@ -23,8 +23,16 @@ export type LedgerNote = Note & {
     | { code: 'trustReward'; crewId: string; name: string; edgeAdded: number };
 };
 export type AssistedRollPart = RollPart & { assist?: { crewId: string; name: string } };
-export type AssistedRollSetup = Omit<RollSetup, 'parts'> & { parts: AssistedRollPart[] };
-export type ViewOdds = Omit<OddsInfo, 'parts'> & { parts: AssistedRollPart[] };
+export interface TargetAdjustment {
+  code: 'upkeepArrears';
+  n: number;
+  arrears: number;
+}
+export type AssistedRollSetup = Omit<RollSetup, 'parts'> & {
+  parts: AssistedRollPart[];
+  targetAdjustment?: TargetAdjustment;
+};
+export type ViewOdds = Omit<OddsInfo, 'parts'> & { parts: AssistedRollPart[]; targetAdjustment?: TargetAdjustment };
 
 export type GameEvent = { id: number } & (
   | { type: 'para'; html: string; speech: boolean }
