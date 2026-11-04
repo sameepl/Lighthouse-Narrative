@@ -30,6 +30,12 @@ jobs:
         with:
           fetch-depth: 1
 
+      # Node 22 so the assistant can run the repository's own validators (npm run check, build:prompt, assemble:scene).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
       - name: Run Claude Code
         id: claude
         uses: anthropics/claude-code-action@v1
@@ -46,4 +52,7 @@ jobs:
           # Optional: Add claude_args to customize behavior and configuration
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
-          # claude_args: '--allowed-tools Bash(gh pr *)'
+          # The assistant may run npm and node scripts so it can validate its work, plus read-only git and gh.
+          # It still cannot push to main or merge: the workflow grants contents: read.
+          claude_args: |
+            --allowedTools "Bash(npm ci),Bash(npm test),Bash(npm run check),Bash(npm run format:check),Bash(npm run lint:content),Bash(npm run build:prompt:*),Bash(npm run assemble:scene:*),Bash(npm run typecheck),Bash(npm run build),Bash(node scripts/*),Bash(git status),Bash(git diff:*),Bash(git log:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh issue view:*)"
