@@ -1,0 +1,128 @@
+{
+  "id": "stub_courier_lampnet",
+  "title": "Past the Lamp Net",
+  "archetype": "courier",
+  "layer": "commercial",
+  "location": "docs/canon/locations/corda-reach-lamp-net.md",
+  "who": "captain of the crew on station at the lamp net",
+  "want": "Carry a sealed case of lamp parts through the net to the keepers' tender while a hull holds a hull-length off.",
+  "at_stake": "The parts miss the tender's schedule, the lamps starve, and your crew carries the blame for the delay.",
+  "complication": "An unknown vessel holds observation geometry on the ship through the whole job. (complications.md, courier 2)",
+  "state_nouns": [
+    "case",
+    "lane",
+    "parts"
+  ],
+  "places": [
+    "the lamp net marker",
+    "the keepers' tender"
+  ],
+  "approaches": [
+    {
+      "label": "Fly the case in on a slow arc",
+      "skills": [
+        "Pilot",
+        "Astrogation"
+      ],
+      "npc_reaction": "watches the steady lights",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            1500
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -500
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -1000
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Hail the watching hull and ask its business",
+      "skills": [
+        "Persuade",
+        "Diplomat"
+      ],
+      "npc_reaction": "keeps the channel short",
+      "effects": {
+        "clean": [
+          [
+            "Renown",
+            1
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -1000
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Pass the case by a relay buoy",
+      "skills": [
+        "Electronics",
+        "Mechanic"
+      ],
+      "npc_reaction": "does not like a lane logged twice",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            1000
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -1500
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    }
+  ],
+  "effect_reasons": {
+    "Fly the case in on a slow arc": {
+      "clean": "the keepers' tender pays your crew for parts delivered on schedule",
+      "cost": "the slow arc burns fuel your crew pays for",
+      "fail": "the watching hull cuts across the arc and your crew pays the tender for the missed schedule"
+    },
+    "Hail the watching hull and ask its business": {
+      "clean": "the captain tells other crews yours kept its nerve under a watching hull",
+      "cost": "the hull answers but charges your crew a fee for the answer",
+      "fail": "the hull answers before your crew finishes asking and your crew pays the captain for a ruined approach"
+    },
+    "Pass the case by a relay buoy": {
+      "clean": "the tender pays your crew for a delivery the watching hull never saw",
+      "cost": "the buoy hand-off costs your crew a replacement buoy",
+      "fail": "the buoy fails and your crew pays for the case's recovery"
+    }
+  },
+  "sensory_details_used": {
+    "light": "a hull's steady running lights a hull-length off",
+    "sight": "a grey chart that does not tell you where anything is",
+    "sound": "a comm voice answering before it is asked"
+  }
+}
