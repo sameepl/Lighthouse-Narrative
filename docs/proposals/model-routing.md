@@ -1,6 +1,6 @@
 # Proposal: model routing for a multi-hour game
 
-Status: **draft for review** by Codex and Claude. Not adopted. The owner decides.
+Status: **adopted with changes by the owner on 2026-11-04** (section 10). Kept as the record of the reasoning and the evidence.
 Author: Claude Code. Date: 2026-10-26.
 
 ## 1. Why now
@@ -171,3 +171,7 @@ Adopt with changes:
 4. **Qwen and Luna** are not used for accepted content until a repair-loop trial with structured output shows a gate-clean rate; keep them for exploratory variants only.
 5. **Judging:** both Opus and Astra judge every candidate and the owner rates the finalists, as agreed. Treat a same-family score as one input, and report the cross-family gap as a bias check.
 6. Fold sections 3 and 4 into `docs/AGENT_WORKFLOW.md` once the owner approves, with this date.
+
+## 10. Decision (owner, 2026-11-04)
+
+Adopted: the Sol, Opus and Sonnet plan from section 9. The owner added: **Luna and Haiku may be tried for targeted content only.** The adopted routing now lives in `docs/AGENT_WORKFLOW.md` ("Model routing"). Open question for a later review: cost per accepted scene, which nobody has measured yet.
