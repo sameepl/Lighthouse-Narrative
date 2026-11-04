@@ -1,0 +1,16 @@
+{
+  "id": "stub_courier_lampnet",
+  "knot": "stub_courier_lampnet_scene",
+  "title": "[STUB] Past the Lamp Net",
+  "layer": "commercial",
+  "archetype": "courier",
+  "tags": [],
+  "requires": {},
+  "repeat": {
+    "kind": "once"
+  },
+  "weight": 1,
+  "cost": 0,
+  "risk": "[STUB] The parts miss the tender's schedule, the lamps starve, and your crew carries the blame for the delay.",
+  "placeholder": true
+}
