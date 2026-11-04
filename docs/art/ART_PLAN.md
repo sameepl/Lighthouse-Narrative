@@ -46,8 +46,8 @@ Direction (revised 2026-10-28 at the owner's request: more sci-fi than the curre
 | `dark_lane` | K3 The Dark Lane | `the-shoal`, `fenrir-gap` | a sparse starfield with an unlit gridded segment and no chart marks, a few sensor tick marks fading out | one distant cyan light |
 | `pawn` | K5 The Asking | `ships/errant-pawn` | the inside of a small ship: a console, a viewport, the turret folded into the spine, sensor overlays on the glass | one small steady amber light on the console |
 | `title` | title screen | none | the ring station seen from outside, small, with a long shadow and a ship leaving its berth | a few amber windows, cyan engine |
-| `end_open` | ending (reaffirm) | none | a corridor wall with a doorway of light | the doorway, amber |
-| `end_closed` | ending (withdraw) | none | the same corridor, the door shut, one lamp left | one amber lamp |
+| `end_open` | ending (withdraw) | none | a corridor wall with a doorway of light | the doorway, amber |
+| `end_closed` | ending (reaffirm) | none | the same corridor, the door shut, one lamp left | one amber lamp |
 
 Fourteen new images (`basin` and `gap` were dropped when the roster locations changed; `gap` is still the K3 location, drawn as `dark_lane`). Ship silhouettes for Prepare and crew badges are stretch items, not slice items.
 
