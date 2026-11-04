@@ -101,7 +101,7 @@ Placeholder bands (not canon; replace when the economy is reconciled, issue #35)
 
 **Shape.** Each passage is 40 to 80 words and 3 to 6 sentences, with at least one sentence over 12 words and one under 9. Start every passage with `[STUB]`. The opening passage sets: where, who, what is wanted, what is at stake, and ends on pressure.
 
-**Place.** The opening and at least four outcomes each use one sensory detail from the location file (sound, smell, light, temperature or texture). A category is not a detail: amber beacons and distant hab work lights are two different light details. Do not reuse a detail within a scene. Two scenes may not share a location.
+**Place.** The opening and as many outcomes as the location file has distinct details (up to four, and at least two outcomes) each use one sensory detail from the file (sound, smell, light, temperature, texture, or another detail the file names). A location with fewer than three written details cannot be used for a roster scene until the planner supplies more. Details tagged `[NEW]` in a location file are proposals and need the owner's approval before use. A category is not a detail: amber beacons and distant hab work lights are two different light details. Do not reuse a detail within a scene. Two scenes may not share a location.
 
 **Show consequences through objects and people.** Good: "The chief draws a line through the fee and initials it." Bad: "The clerk grants a priority berth slot."
 
