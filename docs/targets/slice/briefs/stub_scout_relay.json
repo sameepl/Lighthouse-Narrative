@@ -1,0 +1,128 @@
+{
+  "id": "stub_scout_relay",
+  "title": "The Last Relay",
+  "archetype": "scout",
+  "layer": "commercial",
+  "location": "docs/canon/locations/shoal-east-relay.md",
+  "who": "master of a hauler waiting at the relay",
+  "want": "Learn which lane a missing cargo hull took from the relay's last messages before the next long jump.",
+  "at_stake": "A wrong guess sends your crew down the wrong lane and the hauler master takes his charter elsewhere.",
+  "complication": "A manifest line's destination is redacted and its window closes before you arrive. (complications.md, scout 5)",
+  "state_nouns": [
+    "queue",
+    "header",
+    "lane"
+  ],
+  "places": [
+    "the relay dish",
+    "the message queue"
+  ],
+  "approaches": [
+    {
+      "label": "Read the relay's whole message queue",
+      "skills": [
+        "Electronics",
+        "Recon"
+      ],
+      "npc_reaction": "checks the power gauge twice",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            2000
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -500
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Ask the waiting master what he saw",
+      "skills": [
+        "Persuade",
+        "Diplomat"
+      ],
+      "npc_reaction": "will not repeat a rumour",
+      "effects": {
+        "clean": [
+          [
+            "Renown",
+            1
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -1000
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -500
+          ]
+        ]
+      }
+    },
+    {
+      "label": "Plot the hull's likely lane from its burn",
+      "skills": [
+        "Astrogation",
+        "Pilot"
+      ],
+      "npc_reaction": "has a burn chart of his own",
+      "effects": {
+        "clean": [
+          [
+            "Credits",
+            1000
+          ]
+        ],
+        "cost": [
+          [
+            "Credits",
+            -1500
+          ]
+        ],
+        "fail": [
+          [
+            "Credits",
+            -1000
+          ]
+        ]
+      }
+    }
+  ],
+  "effect_reasons": {
+    "Read the relay's whole message queue": {
+      "clean": "the hauler master pays your crew for the lane read from the stamped headers",
+      "cost": "the relay's weak battery dies mid-read and your crew pays for a replacement cell",
+      "fail": "the queue is too thin to read and your crew pays the master for the lost hours"
+    },
+    "Ask the waiting master what he saw": {
+      "clean": "the master tells other masters your crew listens before it guesses",
+      "cost": "the master gives your crew a lane but charges a fee for the favour",
+      "fail": "the master will not guess and your crew pays him for the wasted wait"
+    },
+    "Plot the hull's likely lane from its burn": {
+      "clean": "the master pays your crew for a plot that matches his own chart",
+      "cost": "the plot costs your crew a jump of fuel to check",
+      "fail": "the plot is wrong and your crew pays for the fuel spent on the wrong lane"
+    }
+  },
+  "sensory_details_used": {
+    "sight": "a dish pointing back the way you came",
+    "sound": "messages arriving in thin careful bursts",
+    "size": "no bigger than a small boat"
+  }
+}

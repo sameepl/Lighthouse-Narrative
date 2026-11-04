@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" preserveAspectRatio="xMidYMin slice">
+  <defs>
+    <linearGradient id="end_closed-wall" x2="0" y2="1"><stop stop-color="#263957"/><stop offset="1" stop-color="#070d1f"/></linearGradient>
+    <linearGradient id="end_closed-door" x2="0" y2="1"><stop stop-color="#263957"/><stop offset="1" stop-color="#14213b"/></linearGradient>
+  </defs>
+  <path fill="#0b152b" d="M0 0h600v300H0z"/>
+  <!-- Identical corridor geometry in both endings; only the door and its light change. -->
+  <path fill="url(#end_closed-wall)" d="M0 0h600v31L365 59H235L0 31z"/>
+  <path fill="#172640" stroke="#344663" d="M0 31l235 28v96L0 230zM600 31L365 59v96l235 75z"/>
+  <path fill="none" stroke="#42577e" stroke-opacity=".6" d="M0 78l235 29M600 78l-235 29M95 43v157M505 43v157M169 51v125M431 51v125"/>
+  <path fill="#243858" stroke="#6b80b3" stroke-width="2" d="M239 36h122v124H239z"/>
+  <path fill="#080f20" stroke="#8a9ccb" stroke-opacity=".6" d="M253 46h94v106H253z"/>
+  <path fill="url(#end_closed-door)" d="M262 52h76v94h-76z"/>
+  <path fill="none" stroke="#42577e" d="M300 54v90M266 132h68"/><path fill="#0c172b" stroke="#53678f" d="M290 28h20v13h-20z"/><path fill="#f0b24a" d="M294 32h12v4h-12z"/>
+  <path fill="#111d33" d="M0 230l239-75h122l239 75v70H0z"/>
+  <path fill="none" stroke="#263957" d="M0 265l262-110M600 265L338 155M159 300l118-145M441 300L323 155M0 243h600"/>
+  <path fill="#14213b" d="M271 155h58l43 100H228z"/>
+  <path fill="#070d1f" d="M0 256h600v44H0z" opacity=".5"/>
+  <path fill="none" stroke="#42577e" stroke-opacity=".35" d="M222 31h-10v11M378 31h10v11M222 163h-10v-11M378 163h10v-11"/>
+</svg>

@@ -1,4 +1,13 @@
-import type { AssistedRollPart, BoardStatus, Command, HubStatus, LedgerNote, UIChoice } from '../bridge/types';
+import type {
+  AssistedRollPart,
+  BoardStatus,
+  Command,
+  HubStatus,
+  LedgerNote,
+  UIChoice,
+  UpkeepProjection,
+  TargetAdjustment,
+} from '../bridge/types';
 import { signed } from '../engine/rules';
 
 /** Player-visible words for bridge commands and status. */
@@ -15,6 +24,10 @@ export function hubStatusText(hub: HubStatus): string {
     ended: '',
   };
   return lead + board[hub.board];
+}
+
+export function upkeepText(upkeep: UpkeepProjection): string {
+  return `Upkeep due Cr${upkeep.upkeepDue}; paid Cr${upkeep.upkeepPaid}; shortfall Cr${upkeep.upkeepShortfall}. Arrears ${upkeep.arrearsBefore} → ${upkeep.arrearsAfter}. Renown −${upkeep.renownLost}; Strain +${upkeep.strainAdded}; Pursuit ${signed(upkeep.pursuitDelta)}.${upkeep.warning ? ' Warning: arrears approaching the limit.' : ''}${upkeep.failed ? ' Arrears limit reached.' : ''}`;
 }
 
 export function commandText(command: Command): { text: string; sub?: string } {
@@ -35,7 +48,7 @@ export function commandText(command: Command): { text: string; sub?: string } {
     case 'endCycle':
       return {
         text: 'End cycle',
-        sub: `${plural(command.actionsLeft, 'action', 'actions')} left. Pay ship upkeep and advance Pursuit.${command.noEligibleOffers ? ' No eligible offers.' : ''}`,
+        sub: `${plural(command.actionsLeft, 'action', 'actions')} left. Pay ship upkeep and advance Pursuit.${command.noEligibleOffers ? ' No eligible offers.' : ''}${command.upkeep ? ` Preview: ${upkeepText(command.upkeep)}` : ''}`,
       };
     case 'restart':
       return { text: 'Restart run', sub: 'Pursuit is full and no runnable finale is available.' };
@@ -67,12 +80,17 @@ export function commandText(command: Command): { text: string; sub?: string } {
 
 export function noteText(note: LedgerNote): string {
   const command = note.command;
+  if (command?.code === 'upkeepSettlement') return upkeepText(command.settlement);
   if (command?.code === 'cycleUpkeep') return `Cycle upkeep paid: Cr${command.amount}.`;
   if (command?.code === 'trustReward')
     return command.edgeAdded > 0
       ? `${command.name} trusts you: Edge +${command.edgeAdded}.`
       : `${command.name} trusts you: Edge reward consumed; pool full.`;
   return note.t;
+}
+
+export function targetAdjustmentText(adjustment: TargetAdjustment): string {
+  return `Upkeep arrears ${adjustment.arrears}: target ${signed(adjustment.n)} for this required-ship check.`;
 }
 
 export function rollPartText(part: AssistedRollPart): string {

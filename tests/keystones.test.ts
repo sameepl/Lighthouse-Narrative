@@ -131,6 +131,38 @@ describe('keystone scheduling', () => {
     );
   });
 
+  it('hardens a full-clock finale without bypassing availability, evidence or requirements', () => {
+    const input = withKey(
+      {
+        ...initial(),
+        pursuitFull: 'hardenFinale',
+        completed: ['opening'],
+        cycle: { ...initial().cycle, cycle: 2, pursuit: { value: 4, length: 4 } },
+      },
+      'finale',
+      { availableWhen: { cycle: 4 }, deadline: 4 },
+    );
+    expect(ids(input)).toEqual(['a', 'b', 'c']);
+    expect(ids({ ...input, completed: ['opening', 'a', 'b'] })).toEqual(['c']);
+    const ready = { ...input, completed: ['opening', 'a', 'b'], cycle: { ...input.cycle, cycle: 4 } };
+    expect(scheduleKeystones(ready).offers.at(-1)).toMatchObject({
+      keystone: { id: 'finale' },
+      forced: true,
+      weak: true,
+    });
+    const quiet = { ...ready, cycle: { ...ready.cycle, pursuit: { value: 1, length: 4 } } };
+    expect(scheduleKeystones(quiet).offers.at(-1)).toMatchObject({ forced: true, weak: false });
+    expect(scheduleKeystones({ ...quiet, pursuitFull: undefined }).offers.at(-1)).toMatchObject({
+      forced: true,
+      weak: true,
+    });
+    expect(scheduleKeystones({ ...ready, completed: ['opening'] }).blockedDue).toContain('finale');
+    const blocked = scheduleKeystones(withKey(ready, 'finale', { requires: { gear: ['missing'] } }));
+    expect(blocked.offers.some(offer => offer.keystone.id === 'finale')).toBe(false);
+    expect(blocked.blockedDue).toContain('finale');
+    expect(ids({ ...input, pursuitFull: 'forceFinale' })).toEqual(['finale']);
+  });
+
   it.each([
     { minCredits: 101 },
     { shipTag: 'missing' },

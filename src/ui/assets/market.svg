@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" preserveAspectRatio="xMidYMin slice">
+  <defs>
+    <linearGradient id="market-sky" x2="0" y2="1"><stop stop-color="#14224a"/><stop offset="1" stop-color="#070d1f"/></linearGradient>
+    <linearGradient id="market-haze" x2="0" y2="1"><stop stop-color="#8a9ccb" stop-opacity=".16"/><stop offset="1" stop-color="#8a9ccb" stop-opacity="0"/></linearGradient>
+  </defs>
+  <path fill="url(#market-sky)" d="M0 0h600v300H0z"/>
+  <path fill="#1c2b49" stroke="#42577e" d="M0 15h600v17H0zM28 32h14v128H28zM558 32h14v128h-14z"/>
+  <path fill="none" stroke="#5f74a8" stroke-opacity=".35" d="M0 49h600M96 0v31M504 0v31M190 15l30 17M410 15l-30 17"/>
+  <!-- Stacked modules form a central warm counter, with unlettered fascia. -->
+  <path fill="#263957" stroke="#5f74a8" d="M175 40h250v40H175zM165 91h270v68H165z"/>
+  <path fill="#101b31" d="M185 48h230v25H185zM179 103h242v45H179z"/>
+  <path fill="#8a9ccb" d="M174 80h252v9H174z"/>
+  <path fill="#f0b24a" d="M194 92h70v5h-70zM336 92h70v5h-70z"/>
+  <path fill="#a77a37" d="M186 104h4v34h-4zM410 104h4v34h-4z"/>
+  <!-- Lidded bowls rest on two shallow racks. -->
+  <g fill="#8a9ccb" stroke="#1c2b49" stroke-width="2">
+    <path d="M215 114h31l-4 12h-23zM211 113l7-5h25l7 5zM256 114h31l-4 12h-23zM252 113l7-5h25l7 5zM297 114h31l-4 12h-23zM293 113l7-5h25l7 5z"/>
+    <path d="M231 137h31l-4 12h-23zM227 136l7-5h25l7 5zM273 137h31l-4 12h-23zM269 136l7-5h25l7 5z"/>
+  </g>
+  <path fill="none" stroke="#53678f" stroke-width="3" d="M207 128h134M221 151h93"/>
+  <path fill="url(#market-haze)" d="M155 82c26-29 29-42 67-31s47-30 75-14 54-8 89 2 49 19 71 43z"/>
+  <path fill="#111c32" stroke="#344663" d="M0 89h133v78H0zM467 66h133v100H467z"/>
+  <path fill="#283b59" d="M0 89h137v10H0zM462 66h138v10H462z"/>
+  <!-- Wheeled loader and an upright scanner, without human silhouettes. -->
+  <path fill="#0a1325" stroke="#53678f" d="M90 132h45v36h-45zM130 141h20v-30h7v64h-27M157 170h24v5h-24"/>
+  <path fill="#344663" d="M96 169h12v12H96zM122 169h12v12h-12z"/>
+  <path fill="#0a1325" stroke="#53678f" d="M367 133h51v12h-17v33h-17v-33h-17z"/>
+  <path fill="#4fd8f0" d="M372 135h41v3h-41z"/>
+  <path fill="#0a1223" d="M0 184l165-22h270l165 22v116H0z"/>
+  <path fill="none" stroke="#263957" d="M0 231h600M110 300l108-135M490 300L382 165M300 163v137"/>
+  <path fill="none" stroke="#4fd8f0" stroke-opacity=".18" d="M149 51v-12h14M451 51v-12h-14"/>
+</svg>

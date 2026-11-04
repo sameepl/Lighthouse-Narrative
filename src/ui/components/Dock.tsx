@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import type { UIChoice, ViewOdds } from '../../bridge/types';
 import { signed } from '../../engine/rules';
-import { choiceText, rollPartText } from '../strings';
+import { choiceText, rollPartText, targetAdjustmentText } from '../strings';
 
 interface Props {
   choices: UIChoice[];
@@ -20,6 +20,12 @@ export function Dock({ choices, odds, ended, onAct, onRestart }: Props) {
         <div className="odds-panel">
           Need <b>{odds.target}+</b> on 2d6 · modifier <b>{signed(odds.mod)}</b> (
           {odds.parts.map(rollPartText).join(', ')})<br />
+          {odds.targetAdjustment && (
+            <>
+              <span>{targetAdjustmentText(odds.targetAdjustment)}</span>
+              <br />
+            </>
+          )}
           Success <b>{odds.success}%</b> · Clean <b>{odds.clean}%</b>
         </div>
       )}

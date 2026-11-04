@@ -1,12 +1,13 @@
 import type { GameData } from '../data/validate';
 import { availableCrew } from './crew';
+import { assignmentReasons, confirmationReasons, preparationError } from './view';
 import { buildBoard } from '../engine/board';
 import { earnEdge, endCycle, newCycleState } from '../engine/cycle';
 import { scheduleKeystones, type KeystoneRoles } from '../engine/keystones';
 import { createSeededRng } from '../engine/rng';
 import { addResource } from '../engine/rules';
 import type { GameState } from '../engine/types';
-import type { Assignments, LedgerNote, RunState } from './types';
+import type { Assignments, LedgerNote, RunState, UpkeepProjection } from './types';
 
 export interface RunOptions {
   seed?: number;
@@ -24,6 +25,7 @@ export class RunController {
     private options: RunOptions,
   ) {
     this.state = {
+      ending: null,
       phase: 'hub',
       cycle: newCycleState(data.rules, options.slice),
       crewTrust: Object.fromEntries(data.crew.map(member => [member.id, member.trust])),
@@ -51,6 +53,11 @@ export class RunController {
   get configured(): boolean {
     return this.data.keystones.length > 0 && this.keystoneRoles !== undefined;
   }
+  private get pursuitFullPolicy(): 'forceFinale' | 'hardenFinale' {
+    return this.options.slice === true && this.data.season.status === 'configured'
+      ? (this.data.season.pursuitFull ?? 'forceFinale')
+      : 'forceFinale';
+  }
   require(phase: RunState['phase']): void {
     if (this.state.phase !== phase) throw new Error(`Action requires ${phase} phase`);
   }
@@ -74,6 +81,7 @@ export class RunController {
           completed: s.completed,
           keystones: this.data.keystones,
           roles: this.keystoneRoles!,
+          pursuitFull: this.pursuitFullPolicy,
         })
       : null;
     if (scheduled?.ended) {
@@ -96,7 +104,7 @@ export class RunController {
       s.boardStatus = 'ready';
       return;
     }
-    if (s.cycle.pursuit.value >= s.cycle.pursuit.length) {
+    if (s.cycle.pursuit.value >= s.cycle.pursuit.length && this.pursuitFullPolicy === 'forceFinale') {
       s.offers = keys;
       s.boardStatus = keys.length ? 'ready' : 'pursuit-full';
       return;
@@ -155,10 +163,8 @@ export class RunController {
     this.state.assignments = structuredClone(value);
   }
   private validateAssignments(value: Assignments): void {
-    if (value.shipId !== null && !this.data.ships.some(s => s.id === value.shipId)) throw new Error('Unknown ship');
-    if (new Set(value.crewIds).size !== value.crewIds.length) throw new Error('Duplicate crew assignment');
-    const crew = availableCrew(this.data, this.state.busyCrewIds);
-    for (const id of value.crewIds) if (!crew.some(c => c.id === id)) throw new Error(`Crew unavailable: ${id}`);
+    const reason = assignmentReasons(value, this.state, this.data)[0];
+    if (reason) throw new Error(preparationError(reason));
   }
   cancel(): void {
     this.require('prepare');
@@ -169,15 +175,10 @@ export class RunController {
   confirm(game: GameState): void {
     this.require('prepare');
     const s = this.state,
-      offer = s.active!,
-      req = offer.entry.requires;
-    this.validateAssignments(s.assignments);
-    const ship = this.data.ships.find(ship => ship.id === s.assignments.shipId);
-    if (req.shipTag && (!ship || !ship.tags.includes(req.shipTag))) throw new Error('Assign a suitable ship');
-    if ((req.crew ?? []).some(id => !s.assignments.crewIds.includes(id))) throw new Error('Assign the required crew');
+      offer = s.active!;
+    const reason = confirmationReasons(s, this.data, game.res)[0];
+    if (reason) throw new Error(preparationError(reason));
     const cost = offer.kind === 'encounter' ? offer.entry.cost : 0;
-    if ((game.res.Credits ?? 0) < cost) throw new Error('Insufficient Credits');
-    if (s.cycle.actionsLeft <= 0) throw new Error('No actions left');
     addResource(game.res, this.data.rules, 'Credits', -cost);
     if (offer.kind === 'encounter') s.played.push({ id: offer.entry.id, cycle: s.cycle.cycle });
     s.cycle.actionsLeft--;
@@ -196,17 +197,44 @@ export class RunController {
     s.phase = 'hub';
     this.refresh(game, flags);
   }
-  end(game: GameState, flags: Record<string, boolean>): GameState {
+  /** Pure preview and committed settlement share exactly one engine calculation. */
+  private settlement(game: GameState) {
+    const result = endCycle(this.state.cycle, game, this.data.ships, {}, this.data.rules);
+    const before = (name: string) => game.res[name] ?? this.data.rules.resources[name]!.start;
+    const projection: UpkeepProjection = {
+      upkeepDue: result.report.upkeepDue,
+      upkeepPaid: result.report.upkeep,
+      upkeepShortfall: result.cycle.upkeepShortfall,
+      arrearsBefore: this.state.cycle.arrears,
+      arrearsAfter: result.cycle.arrears,
+      renownLost: before('Renown') - (result.game.res.Renown ?? before('Renown')),
+      strainAdded: (result.game.res.Strain ?? before('Strain')) - before('Strain'),
+      pursuitDelta: result.report.pursuitDelta,
+      warning:
+        !result.cycle.failed &&
+        result.cycle.arrears >= this.data.rules.cycle.upkeep.arrearsLimit - this.data.rules.cycle.upkeep.warningLead,
+      failed: result.cycle.failed,
+    };
+    return { ...result, projection };
+  }
+  preview(game: GameState): UpkeepProjection {
+    return this.settlement(game).projection;
+  }
+  end(game: GameState, flags: Record<string, boolean>): { game: GameState; projection: UpkeepProjection } {
     this.require('hub');
     if (this.state.boardStatus === 'pursuit-full' || this.state.offers.some(o => o.forced))
       throw new Error('Resolve Pursuit or the forced keystone first');
-    const result = endCycle(this.state.cycle, game, this.data.ships, {}, this.data.rules);
+    const result = this.settlement(game);
     this.state.cycle = result.cycle;
+    if (result.cycle.failed) {
+      this.state.ending = 'foreclosure';
+      this.state.phase = 'ended';
+    }
     this.state.busyCrewIds = [];
     this.state.assignments = emptyAssignments();
     this.state.encounterBoard = null;
     this.refresh(result.game, flags);
-    return result.game;
+    return { game: result.game, projection: result.projection };
   }
   rewards(game: GameState): { game: GameState; notes: LedgerNote[] } {
     const notes: LedgerNote[] = [];

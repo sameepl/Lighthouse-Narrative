@@ -1,14 +1,38 @@
-import type { Encounter, Keystone } from '../data/schema';
+import type { Crew, Encounter, Keystone, Ships } from '../data/schema';
 import type { CrewTrust, CycleState, Dice, Grade, Note, OddsInfo, RollPart, RollSetup } from '../engine/types';
+
+/** Detached settlement projection from engine results; no extra saved run state. */
+export interface UpkeepProjection {
+  upkeepDue: number;
+  upkeepPaid: number;
+  upkeepShortfall: number;
+  arrearsBefore: number;
+  arrearsAfter: number;
+  renownLost: number;
+  strainAdded: number;
+  pursuitDelta: number;
+  warning: boolean;
+  failed: boolean;
+}
 
 /** Plain ink notes retain their text; bridge notes carry data for the UI formatter. */
 export type LedgerNote = Note & {
   command?:
-    { code: 'cycleUpkeep'; amount: number } | { code: 'trustReward'; crewId: string; name: string; edgeAdded: number };
+    | { code: 'cycleUpkeep'; amount: number }
+    | { code: 'upkeepSettlement'; settlement: UpkeepProjection }
+    | { code: 'trustReward'; crewId: string; name: string; edgeAdded: number };
 };
 export type AssistedRollPart = RollPart & { assist?: { crewId: string; name: string } };
-export type AssistedRollSetup = Omit<RollSetup, 'parts'> & { parts: AssistedRollPart[] };
-export type ViewOdds = Omit<OddsInfo, 'parts'> & { parts: AssistedRollPart[] };
+export interface TargetAdjustment {
+  code: 'upkeepArrears';
+  n: number;
+  arrears: number;
+}
+export type AssistedRollSetup = Omit<RollSetup, 'parts'> & {
+  parts: AssistedRollPart[];
+  targetAdjustment?: TargetAdjustment;
+};
+export type ViewOdds = Omit<OddsInfo, 'parts'> & { parts: AssistedRollPart[]; targetAdjustment?: TargetAdjustment };
 
 export type GameEvent = { id: number } & (
   | { type: 'para'; html: string; speech: boolean }
@@ -33,7 +57,7 @@ export type Command =
       shipTag?: string;
       crew: string[];
     }
-  | { code: 'endCycle'; actionsLeft: number; noEligibleOffers: boolean }
+  | { code: 'endCycle'; actionsLeft: number; noEligibleOffers: boolean; upkeep?: UpkeepProjection }
   | { code: 'restart' }
   | { code: 'ship'; shipId: string; name: string; tags: string[]; selected: boolean }
   | { code: 'crew'; crewId: string; name: string; skill: string; assigned: boolean }
@@ -59,6 +83,27 @@ export interface Assignments {
   shipId: string | null;
   crewIds: string[];
 }
+/** Blocking facts only; UI strings own their wording. */
+export type PreparationReason =
+  | { code: 'unknownShip'; shipId: string }
+  | { code: 'duplicateCrew' }
+  | { code: 'unavailableCrew' | 'requiredCrew'; crewId: string }
+  | { code: 'requiredShip'; shipTag: string }
+  | { code: 'unsuitableShip'; shipId: string; shipTag: string }
+  | { code: 'insufficientCredits'; required: number; available: number }
+  | { code: 'noActionsLeft' };
+export interface PreparationView {
+  ready: boolean;
+  reasons: PreparationReason[];
+  shipRequirement: { kind: 'optional' } | { kind: 'required'; tag: string };
+  crew: (Pick<Crew[number], 'name' | 'assist' | 'trait' | 'assignable'> & {
+    crewId: string;
+    trust: number;
+    busy: boolean;
+    assigned: boolean;
+  })[];
+  ships: (Pick<Ships[number], 'name' | 'tags' | 'upkeep'> & { shipId: string; selected: boolean })[];
+}
 export type Offer =
   | { kind: 'encounter'; entry: Encounter; forced: false; weak: false }
   | { kind: 'keystone'; entry: Keystone; forced: boolean; weak: boolean };
@@ -66,6 +111,7 @@ export type RunPhase = 'hub' | 'prepare' | 'scene' | 'ended';
 export type BoardStatus = 'ready' | 'no-eligible-offers' | 'actions-spent' | 'pursuit-full' | 'ended';
 /** Plain engine-owned run state; saving offers prevents a reload from redrawing the board. */
 export interface RunState {
+  ending: 'foreclosure' | null;
   phase: RunPhase;
   cycle: CycleState;
   crewTrust: CrewTrust;
@@ -97,8 +143,14 @@ export interface GameView {
   /** Scheduling phase, separate from the scene's internal roll interaction. */
   phase: RunPhase;
   offers: Offer[];
+  active: Offer | null;
+  /** Existing Board affordability locks; selecting a locked offer remains allowed. */
+  offerLocks: { offerId: string; reasons: PreparationReason[] }[];
+  preparation: PreparationView | null;
   /** Pursuit is only here, never in res. */
   cycle: CycleState;
+  /** Derived from the clock, including during scenes; never stored as a narrative flag. */
+  pursuitFull: boolean;
   assignments: Assignments;
   busyCrewIds: string[];
   boardStatus: BoardStatus;
@@ -110,7 +162,7 @@ export interface GameView {
   commercialReplacement: boolean;
 }
 export interface SaveData {
-  v: 3;
+  v: 4;
   ink: string;
   res: Record<string, number>;
   ledger: LedgerNote[];
@@ -118,3 +170,8 @@ export interface SaveData {
   bg: string;
   run: RunState;
 }
+
+export type LegacySaveData = Omit<SaveData, 'v' | 'run'> & {
+  v: 3;
+  run: Omit<RunState, 'ending' | 'cycle'> & { cycle: Omit<CycleState, 'arrears' | 'upkeepShortfall' | 'failed'> };
+};

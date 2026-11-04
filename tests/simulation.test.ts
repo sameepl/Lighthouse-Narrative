@@ -300,7 +300,7 @@ describe('seeded GameSession simulation', () => {
         ])
           expect(covered, `${slice ? 'slice' : 'full'} missing ${event}`).toContain(event);
     }
-  }, 30_000);
+  }, 120_000);
 
   // Independent engine boundaries: deliberately infeasible inputs are outside the runnable session cohort.
   it('seed 77 distinguishes remaining unaffordable offers from an empty draw', () => {

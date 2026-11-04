@@ -76,13 +76,9 @@ body {
 .scene {
   position: absolute;
   inset: 0 -4%;
-  background: url(./assets/hall.svg) center top/cover no-repeat;
+  background: center top/cover no-repeat;
   opacity: 0;
-  transition: opacity 1.4s ease;
   animation: drift 60s ease-in-out infinite alternate;
-}
-.scene.on {
-  opacity: var(--art);
 }
 @keyframes drift {
   from {
@@ -265,6 +261,78 @@ main {
 .summary p:last-child {
   margin: 0;
 }
+.board {
+  position: relative;
+  z-index: 1;
+  padding: 8px 16px 12px;
+  font:
+    14px/1.45 system-ui,
+    sans-serif;
+}
+.board-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--dim);
+}
+.board-heading h2 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--fg);
+}
+.board-offers {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.board-card {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 14px;
+  text-align: left;
+  font: inherit;
+  color: var(--fg);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.board-card:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 3px;
+}
+.board-kind,
+.board-title,
+.board-detail,
+.board-lock {
+  display: block;
+}
+.board-kind {
+  color: var(--amber);
+  font-size: 12px;
+}
+.board-title {
+  margin: 4px 0 8px;
+  font:
+    600 19px/1.35 Georgia,
+    serif;
+}
+.board-detail {
+  color: var(--dim);
+}
+.board-card-locked {
+  border-color: var(--warn);
+}
+.board-lock {
+  margin-top: 10px;
+  color: var(--warn);
+}
 .dock {
   position: relative;
   z-index: 1;
@@ -330,6 +398,61 @@ main {
 }
 .choices button.edge {
   border-color: var(--amber);
+}
+.prepare {
+  padding: 12px 18px;
+  font:
+    14px/1.5 system-ui,
+    sans-serif;
+  overflow-wrap: anywhere;
+}
+.prepare h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+.prepare h3 {
+  margin: 16px 0 8px;
+  font-size: 16px;
+}
+.prepare p {
+  margin: 6px 0 10px;
+}
+.prepare-options {
+  display: grid;
+  gap: 8px;
+}
+.prepare-options button {
+  min-height: 44px;
+  min-width: 0;
+  padding: 10px 12px;
+  color: var(--fg);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  text-align: left;
+  font: inherit;
+  overflow-wrap: anywhere;
+}
+.prepare-options button[aria-pressed='true'] {
+  border-color: var(--amber);
+}
+.prepare-options button:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+.prepare-options button:disabled {
+  color: var(--dim);
+}
+.prepare-options strong,
+.prepare-options span {
+  display: block;
+}
+.prepare-status {
+  margin-top: 14px;
+}
+.prepare-status ul {
+  margin: 4px 0;
+  padding-left: 20px;
 }
 .sheet {
   position: fixed;

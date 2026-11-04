@@ -1,0 +1,14 @@
+{
+  "id": "upkeep_recovery",
+  "knot": "upkeep_recovery",
+  "title": "[STUB] Corrected Trade Slips",
+  "layer": "commercial",
+  "archetype": "courier",
+  "tags": ["compact", "commercial"],
+  "requires": {},
+  "repeat": { "kind": "repeatable", "cooldown": 0 },
+  "weight": 1,
+  "cost": 0,
+  "risk": "[STUB] A delayed countersign may cost the courier fee or your crew’s standing with the Compact.",
+  "placeholder": true
+}

@@ -2,10 +2,10 @@ import { Compiler } from 'inkjs/full';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { data, type Encounter } from '../src/data';
-import type { GameData } from '../src/data/validate';
+import { parseSeason, type GameData } from '../src/data/validate';
 import { RunController } from '../src/bridge/run';
 import { newGameState } from '../src/engine/rules';
-import { simulationKeystones, simulationRoles } from './simulation-fixtures';
+import { simulationKeystones, simulationRoles, simulationSeason } from './simulation-fixtures';
 import { storyData } from './helpers';
 import { GameSession } from '../src/bridge/session';
 import type { SessionOptions } from '../src/bridge/session';
@@ -59,6 +59,17 @@ const fixture: GameData = {
   encounters: [encounter('a'), { ...encounter('b'), layer: 'commercial' }],
   keystones: [],
 };
+const hardenedFixture: GameData = {
+  ...fixture,
+  encounters: fixture.encounters.map(entry => ({ ...entry, cost: 0 })),
+  season: { ...simulationSeason, pursuitFull: 'hardenFinale' },
+  keystones: simulationKeystones.map(k => ({
+    ...k,
+    knot: 'job',
+    availableWhen: { cycle: k.id === 'opening' ? 1 : k.id === 'finale' ? 4 : k.id === 'middle_why' ? 5 : 2 },
+    deadline: k.id === 'opening' ? 1 : k.id === 'finale' ? 4 : k.id === 'middle_why' ? 6 : 3,
+  })),
+};
 const make = (opts: Partial<SessionOptions> = {}) =>
   new GameSession({ data: fixture, inkJson: ink, seed: 17, ...opts });
 const view = (s: GameSession) => s.store.getState();
@@ -76,6 +87,79 @@ const roundtrip = (s: GameSession, opts: Partial<SessionOptions> = {}) =>
   make({ ...opts, saved: JSON.parse(JSON.stringify(s.save())) as SaveData });
 
 describe('Hub and scene bridge', () => {
+  it('keeps both middle deadlines and cycle-4 finale in the hardened vertical slice', () => {
+    const configured = hardenedFixture,
+      slice = true;
+    expect(parseSeason(configured.season, configured.keystones)).toEqual(configured.season);
+    for (const loud of [false, true]) {
+      const depleted = make({ data: configured, slice }).save();
+      depleted.res.Credits = 0;
+      let s = make({ data: configured, slice, saved: depleted });
+      const play = (id: string, choice = loud ? 'Expose' : 'Hide') => {
+        s.pickOffer(id);
+        s.confirm();
+        choose(s, choice);
+      };
+      play('opening', 'Finish');
+      play(view(s).offers.find(o => o.kind === 'encounter')!.entry.id, 'Finish');
+      s.endCycle();
+      expect(view(s).cycle.cycle).toBe(2);
+      play(view(s).offers.find(o => o.kind === 'encounter')!.entry.id);
+      expect(view(s).pursuitFull).toBe(loud);
+      expect(view(s).offers.some(o => o.entry.id === 'finale')).toBe(false);
+      expect(view(s).offers.some(o => o.kind === 'encounter')).toBe(true);
+      expect(view(s).choices.some(c => c.id === 'endCycle')).toBe(true);
+      const saved = s.save();
+      s = make({ data: configured, slice, saved });
+      expect(s.save()).toEqual(saved);
+      expect(view(s).pursuitFull).toBe(loud);
+      play(view(s).offers.find(o => o.kind === 'encounter')!.entry.id);
+      expect(view(s).boardStatus).toBe('actions-spent');
+      s.endCycle();
+      expect(view(s).cycle.cycle).toBe(3);
+      expect(view(s).offers.map(o => o.entry.id)).toEqual(['middle_where', 'middle_who']);
+      expect(() => s.endCycle()).toThrow('forced keystone');
+      play('middle_where');
+      play('middle_who');
+      s.endCycle();
+      expect(view(s).cycle.cycle).toBe(4);
+      expect(view(s).pursuitFull).toBe(loud);
+      expect(view(s).offers).toMatchObject([{ entry: { id: 'finale' }, forced: true, weak: loud }]);
+      play('finale');
+      expect(view(s).ended).toBe(true);
+      expect(view(s).res.Credits).toBe(0);
+      expect(s.save().run.completed).toEqual(['opening', 'middle_where', 'middle_who', 'finale']);
+    }
+  });
+
+  it.each([false, undefined])(
+    'retains the emergency finale with a hardened slice and blocked third middle (slice=%s)',
+    slice => {
+      const configured: GameData = {
+        ...hardenedFixture,
+        season: {
+          ...simulationSeason,
+          pursuitFull: 'hardenFinale',
+          full: { ...simulationSeason.full, minCompletedMiddle: 3 },
+        },
+        keystones: hardenedFixture.keystones.map(k =>
+          k.id === simulationSeason.full.conditionalId ? { ...k, requires: { gear: ['missing'] } } : k,
+        ),
+      };
+      expect(parseSeason(configured.season, configured.keystones)).toEqual(configured.season);
+      const s = make({ data: configured, slice });
+      enter(s);
+      choose(s, 'Expose');
+      expect(view(s).pursuitFull).toBe(true);
+      expect(view(s).cycle.cycle).toBe(1);
+      expect(s.save().run.completed).toEqual(['opening']);
+      expect(view(s).offers).toMatchObject([{ entry: { id: 'finale' }, forced: true, weak: true }]);
+      enter(s);
+      choose(s, 'Finish');
+      expect(view(s).ended).toBe(true);
+    },
+  );
+
   it.each([1, 3])('updates trust and rewards once, rolling back every pending change with Edge %s', edge => {
     const original = make().save();
     expect(original.run.crewTrust).toEqual(Object.fromEntries(fixture.crew.map(c => [c.id, c.trust])));
@@ -135,15 +219,12 @@ describe('Hub and scene bridge', () => {
       ...['__proto__', 'constructor', 'toString'].map(id => ({ ...trust, [id]: 0 })),
     ]) {
       expect(() => make({ saved: { ...valid, run: { ...valid.run, crewTrust: bad } } as SaveData })).toThrow(
-        'Invalid version 3 save',
+        'Invalid version 4 save',
       );
     }
     choose(s, 'Trust');
     for (const v of [1, 2]) {
-      const fresh = make({ saved: { ...s.save(), v } as unknown as SaveData }).save();
-      expect(fresh.run).toEqual(make().save().run);
-      expect(fresh.events).toEqual([]);
-      expect(fresh.v).toBe(3);
+      expect(() => make({ saved: { ...s.save(), v } as unknown as SaveData })).toThrow(`Invalid version ${v} save`);
     }
   });
 
@@ -151,7 +232,13 @@ describe('Hub and scene bridge', () => {
     const s = make();
     s.endCycle();
     const before = s.save();
-    expect(before.ledger).toEqual([{ kind: 'cost', t: '', command: { code: 'cycleUpkeep', amount: 4000 } }]);
+    expect(before.ledger).toMatchObject([
+      {
+        kind: 'cost',
+        t: '',
+        command: { code: 'upkeepSettlement', settlement: { upkeepDue: 4000, upkeepPaid: 4000, upkeepShortfall: 0 } },
+      },
+    ]);
     expect(before.events.at(-1)).toMatchObject(before.ledger[0]!);
     Object.assign(view(s).ledger[0]!.command!, { amount: 999 });
     const event = view(s).events.at(-1)!;
@@ -401,12 +488,11 @@ describe('Hub and scene bridge', () => {
     expect(s.save()).toEqual(scene);
   });
 
-  it('discards v1 even through direct construction and exposes honest single-encounter exhaustion', () => {
-    const s = new GameSession({
-      inkJson: realInk,
-      data: storyData,
-      saved: { v: 1 } as unknown as SaveData,
-    });
+  it('rejects v1 through direct construction and exposes honest single-encounter exhaustion', () => {
+    expect(
+      () => new GameSession({ inkJson: realInk, data: storyData, saved: { v: 1 } as unknown as SaveData }),
+    ).toThrow('Invalid version 1 save');
+    const s = new GameSession({ inkJson: realInk, data: storyData });
     expect(view(s).phase).toBe('hub');
     expect(view(s).schedulerStatus).toBe('unconfigured');
     enter(s);

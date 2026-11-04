@@ -1,6 +1,6 @@
 # Targets: what good stub content looks like
 
-Two reference scenes, written to the contract in `../CONTENT_GENERATION.md`. They are **not shipped**: they live in `docs/targets/` so they never enter the build. Both were copied into the real tree and passed `npm test` (schema, compile, and the walk of every branch), then removed.
+Two reference scenes, written to the contract in `../CONTENT_GENERATION.md`. They are **not shipped**: they live in `docs/targets/` so they never enter the build. Both were copied into the real tree and passed `npm test` (schema, compile, and the walk of every branch), then removed. Revised 2026-10-26: the first versions did **not** pass the content gates they were meant to set the bar for (no sentence under nine words in several passages, and one two-word opener five times). They were rewritten, and both now pass the full lint when assembled with `npm run assemble:scene`. Also changed: the scout button label is now within the 3 to 8 word limit.
 
 | Target | Archetype and location | Files |
 |---|---|---|
@@ -26,17 +26,17 @@ Each `brief.json` is the input a coordinator gives a writer model. Each `scene.i
 **Gates** (automatic; any failure rejects the candidate, no score):
 
 1. `npm run check` passes with the scene in place.
-2. The lint from issue #63 passes (until it exists, a person or reviewer checks the section 5 rules by hand).
+2. The content lint passes: `npm run lint:content`, or `npm run assemble:scene` for a candidate that is not yet in the tree.
 3. No `[GM-ONLY]` or HELD material; `tests/canon-guard.test.ts` passes.
 4. Effects are inside the bands in `CONTENT_GENERATION.md` section 4, and every note matches its effect.
-5. No 5-word sequence from the target appears in the candidate (copying is not learning).
+5. No 5-word sequence from the target scene text appears in the candidate (copying is not learning). Words and phrases that the brief itself supplies (its `want`, `at_stake`, `who`, labels and the location file) are exempt: a model must be able to name the object it was asked about.
 
 **Scored criteria**, each 0 (missing), 1 (partial) or 2 (clear), judged blind by a reviewer model with the checklist (`REVIEW_CHECKLIST.md`) and these anchors:
 
 | # | Criterion | 2 means |
 |---|---|---|
 | 1 | Distinct results | Nine outcomes change nine different things |
-| 2 | Fail-forward | Every fail shows a named route and a smaller cost |
+| 2 | Fail-forward | Every fail shows a named route and a cost inside the fail band |
 | 3 | Clean/cost/fail separation | A reader can tell the grade from the outcome alone |
 | 4 | Concrete people and objects | Each outcome names a person or object from the brief |
 | 5 | Show, don't announce | No menu or roll words; no "nothing is decided" hedging |

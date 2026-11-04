@@ -1,30 +1,40 @@
 import { GameSession } from '../bridge/session';
-import type { SaveData } from '../bridge/types';
+import type { LegacySaveData, SaveData } from '../bridge/types';
 import { data } from '../data';
 import inkJson from '../story/main.ink';
 
-const KEY = 'lighthouse-narrative-save-v3';
+const KEY = 'lighthouse-narrative-save-v4';
+const V3_KEY = 'lighthouse-narrative-save-v3';
 const LEGACY_KEYS = ['lighthouse-narrative-save-v1', 'lighthouse-narrative-save-v2'];
 
-function readSave(): SaveData | null {
-  try {
-    for (const key of LEGACY_KEYS) localStorage.removeItem(key);
-    const raw = JSON.parse(localStorage.getItem(KEY) ?? 'null') as SaveData | null;
-    return raw?.v === 3 ? raw : null;
-  } catch {
-    return null;
-  }
-}
-
-/** Starts the game, resuming a save when there is one. A save the story can no longer load is discarded. */
+/** Prefer valid v4, falling back to a fully validated v3 without losing it on write failure. */
 export function startGame(): GameSession {
-  const saved = readSave();
-  if (saved) {
+  for (const key of LEGACY_KEYS) {
     try {
-      return new GameSession({ inkJson, data, saved });
+      localStorage.removeItem(key);
+    } catch {
+      /* storage unavailable */
+    }
+  }
+  for (const [key, version] of [
+    [KEY, 4],
+    [V3_KEY, 3],
+  ] as const) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw === null) continue;
+      const saved = JSON.parse(raw) as SaveData | LegacySaveData;
+      if (saved?.v !== version) throw new Error('Invalid save version');
+      const session = new GameSession({ inkJson, data, saved });
+      if (version === 3) writeSave(session);
+      return session;
     } catch (err) {
       console.warn('Discarding unreadable save', err);
-      clearSave();
+      try {
+        localStorage.removeItem(key);
+      } catch {
+        /* storage unavailable */
+      }
     }
   }
   return new GameSession({ inkJson, data });
@@ -33,6 +43,7 @@ export function startGame(): GameSession {
 export function writeSave(session: GameSession): void {
   try {
     localStorage.setItem(KEY, JSON.stringify(session.save()));
+    localStorage.removeItem(V3_KEY);
   } catch {
     /* private mode, quota: play on */
   }
@@ -41,6 +52,7 @@ export function writeSave(session: GameSession): void {
 export function clearSave(): void {
   try {
     localStorage.removeItem(KEY);
+    localStorage.removeItem(V3_KEY);
     for (const key of LEGACY_KEYS) localStorage.removeItem(key);
   } catch {
     /* ignore */

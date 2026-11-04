@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" preserveAspectRatio="xMidYMin slice">
+  <defs>
+    <linearGradient id="pawn-sky" x2="0" y2="1"><stop stop-color="#14224a"/><stop offset="1" stop-color="#070d1f"/></linearGradient>
+    <linearGradient id="pawn-console" x2="0" y2="1"><stop stop-color="#263957"/><stop offset="1" stop-color="#0a1429"/></linearGradient>
+  </defs>
+  <path fill="url(#pawn-sky)" d="M0 0h600v300H0z"/>
+  <!-- The small viewport looks along the hull spine, with its turret folded flat. -->
+  <path fill="#243655" stroke="#5f74a8" stroke-width="2" d="M161 28h278l-20 112H181z"/>
+  <path fill="#080f21" stroke="#8a9ccb" stroke-opacity=".6" d="M175 38h250l-15 91H190z"/>
+  <path fill="#1a2944" d="M273 109h55l25 19h-108z"/>
+  <path fill="#42577e" stroke="#6b80b3" d="M282 104h35l9 8h-54z"/>
+  <path fill="#263957" d="M289 99h19v5h-19zM278 111h45v4h-45z"/>
+  <path fill="#8a9ccb" opacity=".55" d="M214 56h2v2h-2zM381 63h2v2h-2zM345 47h1v1h-1z"/>
+  <path fill="none" stroke="#4fd8f0" stroke-opacity=".27" d="M212 49h-12v12M388 49h12v12M211 113h-10v-9M389 113h10v-9"/>
+  <path fill="none" stroke="#4fd8f0" stroke-opacity=".2" d="M272 79a28 14 0 0 1 56 0M279 79a21 9 0 0 1 42 0M300 61v6"/>
+  <!-- Broad, dim control surfaces stay separate from the one steady amber light. -->
+  <path fill="#111e35" stroke="#42577e" d="M0 90l165 40 19 46L0 215zM600 90l-165 40-19 46 184 39z"/>
+  <path fill="url(#pawn-console)" stroke="#53678f" d="M169 135h262l43 64H126z"/>
+  <path fill="#101a30" stroke="#42577e" d="M191 146h79l-5 24h-90zM329 146h80l17 24h-92z"/>
+  <path fill="none" stroke="#5f74a8" stroke-opacity=".55" d="M202 152h52M199 158h52M342 152h51M344 158h51M283 144h33M280 171h40"/>
+  <circle cx="300" cy="125" r="3.5" fill="#f0b24a"/>
+  <path fill="#0b1428" d="M126 199h348l62 101H64z"/>
+  <path fill="none" stroke="#263957" d="M187 199l-31 101M413 199l31 101M85 267h430"/>
+  <path fill="#070d1f" d="M0 245h600v55H0z" opacity=".45"/>
+</svg>

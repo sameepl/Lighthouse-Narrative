@@ -7,15 +7,16 @@ import { changeTrust } from '../engine/cycle';
 import { assistedSetup } from './roll';
 import { createSeededRng } from '../engine/rng';
 import { RunController, type RunOptions } from './run';
-import { validateSave } from './save';
+import { migrateSave } from './save';
 import { runChoices } from './run-choices';
+import { preparationProjection } from './view';
 import type { Assignments } from './types';
 import { Story } from 'inkjs';
 import { createStore, type StoreApi } from 'zustand/vanilla';
 import type { GameData } from '../data/validate';
 import { addResource, makeRoll, newGameState, oddsOf, spendEdge } from '../engine/rules';
 import type { CheckRequest, GameState, Grade, NoteKind, Rng, RollResult } from '../engine/types';
-import type { AssistedRollSetup, GameEvent, GameView, LedgerNote, SaveData, UIChoice } from './types';
+import type { AssistedRollSetup, GameEvent, GameView, LedgerNote, LegacySaveData, SaveData, UIChoice } from './types';
 
 const CHECK_CHOICE = '__check__';
 const GRADE_VALUE: Record<Grade, number> = { clean: 2, cost: 1, fail: 0 };
@@ -29,7 +30,7 @@ export interface SessionOptions extends RunOptions {
   inkJson: string;
   data: GameData;
   rng?: Rng;
-  saved?: SaveData | null;
+  saved?: SaveData | LegacySaveData | null;
 }
 
 export class GameSession {
@@ -60,7 +61,7 @@ export class GameSession {
     this.init(null);
   }
 
-  private init(saved: SaveData | null): void {
+  private init(saved: SaveData | LegacySaveData | null): void {
     const { data, inkJson } = this.opts;
     this.errors = [];
     this.run = new RunController(data, this.opts);
@@ -74,7 +75,7 @@ export class GameSession {
     this.showOdds = false;
     this.request = this.setup = this.pending = this.snapshot = null;
     this.bg = 'hall';
-    if (saved?.v === 3) {
+    if (saved) {
       this.restore(saved);
     } else {
       this.rewards();
@@ -89,7 +90,7 @@ export class GameSession {
       this.snapshot && (this.phase === 'staged' || this.phase === 'rolled')
         ? this.snapshot
         : {
-            v: 3,
+            v: 4,
             ink: this.story.state.toJson(),
             res: this.game.res,
             ledger: this.game.ledger,
@@ -100,9 +101,8 @@ export class GameSession {
     );
   }
 
-  private restore(saved: SaveData): void {
-    validateSave(saved, this.opts.data);
-    const s = structuredClone(saved);
+  private restore(saved: SaveData | LegacySaveData): void {
+    const s = migrateSave(saved, this.opts.data);
     this.story.state.LoadJson(s.ink);
     this.game = { res: s.res, ledger: s.ledger };
     delete this.game.res.Pursuit;
@@ -156,12 +156,12 @@ export class GameSession {
     }
   }
   endCycle(): void {
-    const credits = this.game.res.Credits ?? 0;
-    this.game = this.run.end(this.game, this.flags());
+    const result = this.run.end(this.game, this.flags());
+    this.game = result.game;
     const note: LedgerNote = {
       kind: 'cost',
       t: '',
-      command: { code: 'cycleUpkeep', amount: credits - (this.game.res.Credits ?? 0) },
+      command: { code: 'upkeepSettlement', settlement: result.projection },
     };
     this.game.ledger.push(note);
     this.push({ type: 'note', ...note });
@@ -334,6 +334,7 @@ export class GameSession {
         flag => v[flag] === true,
         this.run.state.assignments.crewIds,
         this.run.state.crewTrust,
+        this.run.state,
       );
       this.phase = 'staged';
     } else {
@@ -349,7 +350,12 @@ export class GameSession {
   // ---- view --------------------------------------------------------------------------
 
   private choices(): UIChoice[] {
-    if (this.run.state.phase !== 'scene') return runChoices(this.run.state, this.opts.data, this.game.res);
+    if (this.run.state.phase !== 'scene') {
+      const choices = runChoices(this.run.state, this.opts.data, this.game.res);
+      for (const choice of choices)
+        if (choice.command?.code === 'endCycle') choice.command.upkeep = this.run.preview(this.game);
+      return choices;
+    }
     if (this.phase === 'ended') return [];
     if (this.phase === 'staged') {
       return [
@@ -383,13 +389,19 @@ export class GameSession {
         choices: this.choices(),
         odds:
           this.phase === 'staged' && this.showOdds && this.setup
-            ? { ...oddsOf(this.setup, this.opts.data.rules), parts: this.setup.parts }
+            ? {
+                ...oddsOf(this.setup, this.opts.data.rules),
+                parts: this.setup.parts,
+                ...(this.setup.targetAdjustment ? { targetAdjustment: this.setup.targetAdjustment } : {}),
+              }
             : null,
         bg: this.bg,
         ended: this.run.state.phase === 'ended',
         phase: this.run.state.phase,
         offers: this.run.state.offers,
+        ...preparationProjection(this.run.state, this.opts.data, this.game.res),
         cycle: this.run.state.cycle,
+        pursuitFull: this.run.state.cycle.pursuit.value === this.run.state.cycle.pursuit.length,
         crewTrust: this.run.state.crewTrust,
         assignments: this.run.state.assignments,
         busyCrewIds: this.run.state.busyCrewIds,

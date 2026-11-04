@@ -6,6 +6,26 @@ export const CHARACTERISTICS = ['STR', 'DEX', 'END', 'INT', 'EDU', 'SOC'] as con
 const Characteristic = z.enum(CHARACTERISTICS);
 const Score = z.number().int().min(2).max(12);
 
+const UpkeepSchema = z
+  .strictObject({
+    placeholder: z.literal(true),
+    arrearsLimit: z.number().int().positive(),
+    warningLead: z.number().int().min(2),
+    targetFrom: z.number().int().positive(),
+    targetPenalty: z.number().int().positive(),
+    renownLoss: z.number().int().positive(),
+    strainFrom: z.number().int().positive(),
+    strainGain: z.number().int().positive(),
+  })
+  .refine(v => v.warningLead < v.arrearsLimit, {
+    path: ['warningLead'],
+    message: 'warningLead must be less than arrearsLimit',
+  })
+  .refine(v => v.targetFrom <= v.strainFrom && v.strainFrom < v.arrearsLimit, {
+    path: ['strainFrom'],
+    message: 'thresholds must satisfy targetFrom <= strainFrom < arrearsLimit',
+  });
+
 export const RulesSchema = z.object({
   defaultTarget: z.number().int(),
   cleanMargin: z.number().int().min(1),
@@ -24,6 +44,7 @@ export const RulesSchema = z.object({
   bonuses: z.record(z.string(), z.object({ label: z.string(), n: z.number().int() })),
   cycle: z.object({
     actions: z.number().int().positive(),
+    upkeep: UpkeepSchema,
     pursuit: z.object({
       length: z.number().int().positive(),
       sliceLength: z.number().int().positive(),
@@ -141,6 +162,8 @@ export const SeasonSchema = z.discriminatedUnion('status', [
   z.strictObject({ status: z.literal('unconfigured') }),
   z.strictObject({
     status: z.literal('configured'),
+    /** Vertical-slice policy; full runs retain the legacy full-clock finale trigger. */
+    pursuitFull: z.enum(['forceFinale', 'hardenFinale']).optional(),
     slice: z.strictObject({
       ...SeasonRoleFields,
       middleIds: z.array(ContentId).length(2),

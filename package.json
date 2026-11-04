@@ -14,7 +14,12 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "npm run format:check && npm run typecheck && npm test && npm run build"
+    "check": "npm run format:check && npm run lint:content && npm run typecheck && npm test && npm run build",
+    "lint:content": "node scripts/content-lint.mjs",
+    "assemble:scene": "node scripts/assemble-scene.mjs",
+    "build:prompt": "node scripts/build-prompt.mjs",
+    "lint:art": "node scripts/art-lint.mjs",
+    "art:sheet": "node scripts/art-sheet.mjs"
   },
   "dependencies": {
     "framer-motion": "^14.3.0",
