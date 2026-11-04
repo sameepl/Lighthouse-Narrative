@@ -142,3 +142,32 @@ Please answer in the PR comments. Short answers are fine.
 ## 8. Decision requested from the owner
 
 Adopt, adopt with changes, or reject. If adopted, fold sections 3 and 4 into `docs/AGENT_WORKFLOW.md` and record the date. Until then, `docs/WORK_PLAN.md` routing stays in force.
+
+## 9. Evidence so far (2026-11-04)
+
+Recorded so the owner can decide with the data in front of them. Sources: `docs/targets/stub-loop-results.md`, `docs/targets/bakeoff/pilot-1/`, and the reviews on the slice PRs.
+
+| Finding | Evidence |
+|---|---|
+| Qwen and Luna did not qualify as stub writers | 0 of 26 candidates passed the content gates across five tuning rounds plus held-outs (some failures were gate ambiguities, since fixed) |
+| Sol qualified with targeted feedback | Two benchmark scenes scored 19 and 20 of 20 from independent judges after one or two revisions |
+| The lint can supply the feedback | Content gates, lint and the assembler (#73 to #75, #120, #121) are merged, so a repair loop needs no human reviewer |
+| Judges favour their own family | Pilot 1, 12 candidates: Opus scored the four Claude candidates 18.5 against 14.9 for the others (a gap of 3.6); Astra scored the same Claude candidates 17.2 against 15.2 (a gap of 2.0). Combined means by model: Opus 18.8, Astra 18.0, Sol 17.2, Sonnet 17.0, Luna 14.2, Qwen 10.8 |
+| Judges agreed closely | Mean absolute difference of 1.5 points per candidate; none above 3 |
+| The lint and the prose scores disagree on Sonnet | Both Sonnet samples failed the lint on repeated openers and phrases; judges still scored them 15 to 19 |
+| The owner's blind ratings are incomplete | 3 of 12 rated so far; do not read a ranking from them yet |
+| Opus found real defects as a plan reviewer | Two reviews (the slice plan, the keystone packets) found an unstated engine dependency, a canon-wording conflict and a reversed ending mapping; none of it was visible to the author |
+| The reviewer and assistant workflows work | The reviewer posts verdicts (it asked for splits and caught a size overrun); `@claude` can now run node and npm (#159) |
+
+Caveat: one pilot brief, four samples per Claude model, and model names and capabilities for Sol, Astra and Luna come from the repository's own notes, not from the author's knowledge.
+
+### Recommendation (author's view, for the owner's decision)
+
+Adopt with changes:
+
+1. **Sol** is the default stub writer and code implementer, run through the repair loop (lint feedback, up to three rounds).
+2. **Opus** is the canon steward and keystone writer, and reviews core PRs and plans. It also judges blind alongside Astra, so every candidate has one judge from each family.
+3. **Sonnet** reviews every PR (already wired) and writes spine and roster rewrites from briefs once the pilot confirms it; add the repeat limits to its brief.
+4. **Qwen and Luna** are not used for accepted content until a repair-loop trial with structured output shows a gate-clean rate; keep them for exploratory variants only.
+5. **Judging:** both Opus and Astra judge every candidate and the owner rates the finalists, as agreed. Treat a same-family score as one input, and report the cross-family gap as a bias check.
+6. Fold sections 3 and 4 into `docs/AGENT_WORKFLOW.md` once the owner approves, with this date.
