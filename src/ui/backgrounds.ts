@@ -2,6 +2,13 @@ export type BackgroundRegistry = Readonly<Record<string, () => Promise<{ default
 
 export const backgrounds: BackgroundRegistry = {
   hall: () => import('./assets/hall.svg?url'),
+  berths: () => import('./assets/berths.svg?url'),
+  market: () => import('./assets/market.svg?url'),
+  basin: () => import('./assets/basin.svg?url'),
+  pawn: () => import('./assets/pawn.svg?url'),
+  title: () => import('./assets/title.svg?url'),
+  end_open: () => import('./assets/end_open.svg?url'),
+  end_closed: () => import('./assets/end_closed.svg?url'),
 };
 
 function preloadImage(url: string): Promise<void> {
