@@ -187,8 +187,13 @@ export class RunController {
   }
   finish(game: GameState, flags: Record<string, boolean>): void {
     this.require('scene');
-    const s = this.state,
-      offer = s.active!;
+    const s = this.state;
+    if (s.ending === 'foreclosure') {
+      s.ending = null;
+      s.phase = 'ended';
+      return;
+    }
+    const offer = s.active!;
     if (offer.kind === 'encounter') {
       if (offer.entry.lead && !s.leads.includes(offer.entry.lead)) s.leads.push(offer.entry.lead);
     } else s.completed.push(offer.entry.id);
@@ -228,12 +233,18 @@ export class RunController {
     this.state.cycle = result.cycle;
     if (result.cycle.failed) {
       this.state.ending = 'foreclosure';
-      this.state.phase = 'ended';
+      this.state.phase = 'scene';
+      this.state.active = null;
+      this.state.offers = [];
+      this.state.blockedDue = [];
+      this.state.unmetGuarantees = [];
+      this.state.commercialReplacement = false;
+      this.state.boardStatus = 'ended';
     }
     this.state.busyCrewIds = [];
     this.state.assignments = emptyAssignments();
     this.state.encounterBoard = null;
-    this.refresh(result.game, flags);
+    if (!result.cycle.failed) this.refresh(result.game, flags);
     return { game: result.game, projection: result.projection };
   }
   rewards(game: GameState): { game: GameState; notes: LedgerNote[] } {

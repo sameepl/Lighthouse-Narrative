@@ -56,8 +56,9 @@ export function validateSave(save: SaveData | LegacySaveData, data: GameData): v
       typeof failed !== 'boolean' ||
       failed !== (arrears === limit) ||
       ![null, 'foreclosure'].includes(save.run.ending) ||
-      (save.run.ending === 'foreclosure') !== failed ||
-      (failed && save.run.phase !== 'ended')
+      (save.run.ending === 'foreclosure' && !failed) ||
+      (failed && !((save.run.phase === 'scene' && save.run.ending === 'foreclosure') || save.run.phase === 'ended')) ||
+      (failed && (s.active !== null || s.offers.length !== 0 || s.boardStatus !== 'ended'))
     )
       fail();
   }
@@ -89,7 +90,8 @@ export function validateSave(save: SaveData | LegacySaveData, data: GameData): v
     if (!offer?.entry || !ids.has(offer.entry.id) || !hasTitle(offer.entry)) fail();
   for (const entry of s.encounterBoard ?? [])
     if (!entry || !data.encounters.some(value => value.id === entry.id) || !hasTitle(entry)) fail();
-  if ((s.phase === 'scene' || s.phase === 'prepare') !== Boolean(s.active)) fail();
+  const endingScene = save.v === 4 && save.run.ending === 'foreclosure' && s.phase === 'scene';
+  if ((s.phase === 'prepare' || (s.phase === 'scene' && !endingScene)) !== Boolean(s.active)) fail();
   if (s.assignments.shipId !== null && !data.ships.some(ship => ship.id === s.assignments.shipId)) fail();
   for (const id of [...s.busyCrewIds, ...s.assignments.crewIds, ...c.edgeEarnedCrewIds])
     if (!data.crew.some(member => member.id === id)) fail();
@@ -107,7 +109,11 @@ export function validateSave(save: SaveData | LegacySaveData, data: GameData): v
 export function migrateSave(save: SaveData | LegacySaveData, data: GameData): SaveData {
   validateSave(save, data);
   const copy = structuredClone(save);
-  if (copy.v === 4) return copy;
+  if (copy.v === 4) {
+    // Previously shipped v4 saves kept the marker after the terminal run ended.
+    if (copy.run.phase === 'ended' && copy.run.cycle.failed) copy.run.ending = null;
+    return copy;
+  }
   return {
     ...copy,
     v: 4,
