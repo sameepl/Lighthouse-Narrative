@@ -94,7 +94,7 @@ export function targetAdjustmentText(adjustment: TargetAdjustment): string {
 }
 
 export function rollPartText(part: AssistedRollPart): string {
-  return `${part.assist ? `${part.assist.name} assist` : part.label} ${signed(part.n)}`;
+  return `${part.ship ? `Ship: ${part.ship.tag}` : part.assist ? `${part.assist.name} assist` : part.label} ${signed(part.n)}`;
 }
 
 /** Text and hint for a dock button: ink text as written, bridge commands from codes. */

@@ -4,7 +4,7 @@
     "name": "Errant Pawn",
     "role": "Fast, armoured, quiet escort. Marcus's main ship.",
     "main": true,
-    "tags": ["fast", "armoured", "quiet"],
+    "tags": ["fast", "armoured", "quiet", "armed"],
     "upkeep": 1000,
     "placeholder": true
   },
