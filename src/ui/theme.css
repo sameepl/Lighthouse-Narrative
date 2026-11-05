@@ -538,3 +538,49 @@ main > * {
     animation: none;
   }
 }
+
+.title-screen {
+  padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+  gap: 20px;
+  justify-content: center;
+}
+.title-screen h1 {
+  font-size: 2rem;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.title-screen nav,
+.title-screen footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.title-screen button,
+.onboarding-hint button,
+.title-screen a {
+  min-height: 44px;
+  padding: 10px 14px;
+}
+.title-screen button,
+.onboarding-hint {
+  background: var(--panel);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.title-screen a {
+  color: var(--amber);
+}
+.onboarding-hint {
+  margin: 12px 14px;
+  padding: 12px;
+}
+.onboarding-hint p {
+  margin: 0 0 8px;
+}
+.onboarding-hint button {
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}

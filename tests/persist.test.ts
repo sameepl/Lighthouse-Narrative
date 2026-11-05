@@ -1,5 +1,8 @@
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { App } from '../src/ui/App';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { clearSave, startGame, writeSave } from '../src/ui/persist';
+import { clearSave, newGame, readSavedGame, startGame, writeSave } from '../src/ui/persist';
 import { GameSession } from '../src/bridge/session';
 import type { SaveData } from '../src/bridge/types';
 import { data } from '../src/data';
@@ -20,6 +23,40 @@ vi.mock('../src/data', async importOriginal => {
 
 afterEach(() => vi.unstubAllGlobals());
 describe('versioned browser persistence', () => {
+  it('probes title saves without writing, validates fallback, and starts fresh only on request', () => {
+    const original = new GameSession({ inkJson, data }).save();
+    original.res.Credits = 123;
+    const legacy = JSON.parse(JSON.stringify(original));
+    legacy.v = 3;
+    delete legacy.run.ending;
+    for (const key of ['arrears', 'upkeepShortfall', 'failed']) delete legacy.run.cycle[key];
+    const values = new Map([
+      ['lighthouse-narrative-save-v4', '{"v":4}'],
+      ['lighthouse-narrative-save-v3', JSON.stringify(legacy)],
+    ]);
+    const before = new Map(values);
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => values.set(key, value),
+      removeItem: (key: string) => values.delete(key),
+    });
+    expect(renderToStaticMarkup(createElement(App))).toContain('>Continue</button>');
+    expect(values).toEqual(before);
+    const continued = readSavedGame()!;
+    expect(continued.save().res.Credits).toBe(123);
+    expect(values).toEqual(before);
+    writeSave(continued);
+    expect(readSavedGame()!.save()).toEqual(continued.save());
+    expect(values.has('lighthouse-narrative-save-v3')).toBe(false);
+    const fresh = newGame();
+    expect(fresh.save().res.Credits).toBe(data.rules.resources.Credits!.start);
+    expect(values.size).toBe(0);
+    expect(readSavedGame()).toBeNull();
+    values.set('lighthouse-narrative-save-v4', '{"v":4}');
+    expect(readSavedGame()).toBeNull();
+    expect(values.size).toBe(1);
+  });
+
   it('migrates a detached complete v3 only after validation and retains it on write failure', () => {
     const original = new GameSession({ inkJson, data }).save();
     const legacy = JSON.parse(JSON.stringify(original));
