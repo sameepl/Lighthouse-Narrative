@@ -26,39 +26,68 @@ const UpkeepSchema = z
     message: 'thresholds must satisfy targetFrom <= strainFrom < arrearsLimit',
   });
 
-export const RulesSchema = z.object({
-  defaultTarget: z.number().int(),
-  cleanMargin: z.number().int().min(1),
-  charMods: z.array(z.tuple([z.number().int(), z.number().int()])).min(1),
-  skillChar: z.record(z.string(), Characteristic),
-  resources: z.record(
-    z.string(),
-    z.object({
-      start: z.number().int(),
-      min: z.number().int(),
-      max: z.number().int().optional(),
-      reserve: z.number().int().optional(),
-      placeholder: z.boolean().optional(),
+export const SHIP_TAGS = ['armed', 'fast', 'armoured', 'quiet', 'hub', 'workshop', 'sickbay'] as const;
+const ShipTag = z.enum(SHIP_TAGS);
+
+export const RulesSchema = z
+  .object({
+    defaultTarget: z.number().int(),
+    cleanMargin: z.number().int().min(1),
+    charMods: z.array(z.tuple([z.number().int(), z.number().int()])).min(1),
+    skillChar: z.record(z.string(), Characteristic),
+    resources: z.record(
+      z.string(),
+      z.object({
+        start: z.number().int(),
+        min: z.number().int(),
+        max: z.number().int().optional(),
+        reserve: z.number().int().optional(),
+        placeholder: z.boolean().optional(),
+      }),
+    ),
+    bonuses: z.record(z.string(), z.object({ label: z.string(), n: z.number().int() })),
+    shipModifiers: z
+      .array(
+        z.strictObject({
+          tag: ShipTag,
+          skills: z.array(z.string()).min(1),
+          n: z.number().int().positive(),
+          placeholder: z.literal(true),
+        }),
+      )
+      .superRefine((entries, ctx) => {
+        const tags = entries.map(entry => entry.tag);
+        if (new Set(tags).size !== tags.length) ctx.addIssue({ code: 'custom', message: 'Duplicate modifier tag' });
+      }),
+    cycle: z.object({
+      actions: z.number().int().positive(),
+      upkeep: UpkeepSchema,
+      pursuit: z.object({
+        length: z.number().int().positive(),
+        sliceLength: z.number().int().positive(),
+        base: z.number().int(),
+        renownThreshold: z.number().int(),
+        renownDelta: z.number().int(),
+        loudDelta: z.number().int(),
+        quietDelta: z.number().int(),
+      }),
+      edgeTrust: z.number().int().min(0).max(3),
+      edgeReward: z.number().int().positive(),
+      trustedAssistBonus: z.number().int().nonnegative(),
     }),
-  ),
-  bonuses: z.record(z.string(), z.object({ label: z.string(), n: z.number().int() })),
-  cycle: z.object({
-    actions: z.number().int().positive(),
-    upkeep: UpkeepSchema,
-    pursuit: z.object({
-      length: z.number().int().positive(),
-      sliceLength: z.number().int().positive(),
-      base: z.number().int(),
-      renownThreshold: z.number().int(),
-      renownDelta: z.number().int(),
-      loudDelta: z.number().int(),
-      quietDelta: z.number().int(),
-    }),
-    edgeTrust: z.number().int().min(0).max(3),
-    edgeReward: z.number().int().positive(),
-    trustedAssistBonus: z.number().int().nonnegative(),
-  }),
-});
+  })
+  .superRefine((rules, ctx) => {
+    rules.shipModifiers.forEach((entry, i) =>
+      entry.skills.forEach((skill, j) => {
+        if (!Object.hasOwn(rules.skillChar, skill))
+          ctx.addIssue({
+            code: 'custom',
+            path: ['shipModifiers', i, 'skills', j],
+            message: `Unknown skill ${skill}; known: ${Object.keys(rules.skillChar).join(', ')}`,
+          });
+      }),
+    );
+  });
 
 export const CharacterSchema = z.object({
   name: z.string(),
@@ -89,7 +118,9 @@ export const ShipsSchema = z.array(
     name: z.string(),
     role: z.string(),
     main: z.boolean(),
-    tags: z.array(z.string().min(1)),
+    tags: z.array(
+      z.string().refine(tag => (SHIP_TAGS as readonly string[]).includes(tag), { message: 'Unknown ship tag' }),
+    ),
     upkeep: z.number().int().nonnegative(),
     placeholder: z.boolean().optional(),
   }),
