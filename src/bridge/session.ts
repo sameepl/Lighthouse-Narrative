@@ -156,17 +156,33 @@ export class GameSession {
     }
   }
   endCycle(): void {
-    const result = this.run.end(this.game, this.flags());
-    this.game = result.game;
-    const note: LedgerNote = {
-      kind: 'cost',
-      t: '',
-      command: { code: 'upkeepSettlement', settlement: result.projection },
-    };
-    this.game.ledger.push(note);
-    this.push({ type: 'note', ...note });
-    this.rewards();
-    this.publish();
+    this.run.require('hub');
+    const before = this.save();
+    const showOdds = this.showOdds;
+    try {
+      const result = this.run.end(this.game, this.flags());
+      this.game = result.game;
+      const note: LedgerNote = {
+        kind: 'cost',
+        t: '',
+        command: { code: 'upkeepSettlement', settlement: result.projection },
+      };
+      this.game.ledger.push(note);
+      this.push({ type: 'note', ...note });
+      if (this.run.state.ending === 'foreclosure') {
+        this.story.ChoosePathString('foreclosure');
+        this.phase = 'story';
+        this.snapshot = null;
+        this.advance();
+      } else this.rewards();
+      this.publish();
+    } catch (error) {
+      this.restore(before);
+      this.showOdds = showOdds;
+      this.errors = [];
+      this.publish();
+      throw error;
+    }
   }
 
   private rewards(): void {
@@ -350,6 +366,8 @@ export class GameSession {
   // ---- view --------------------------------------------------------------------------
 
   private choices(): UIChoice[] {
+    if (this.run.state.phase === 'ended' && this.run.state.cycle.failed)
+      return [{ id: 'restart', kind: 'choice', text: '', command: { code: 'restart' } }];
     if (this.run.state.phase !== 'scene') {
       const choices = runChoices(this.run.state, this.opts.data, this.game.res);
       for (const choice of choices)
