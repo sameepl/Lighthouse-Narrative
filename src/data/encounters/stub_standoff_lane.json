@@ -1,0 +1,16 @@
+{
+  "id": "stub_standoff_lane",
+  "knot": "stub_standoff_lane_scene",
+  "title": "[STUB] The Blocked Lane",
+  "layer": "crisis",
+  "archetype": "standoff",
+  "tags": [],
+  "requires": {},
+  "repeat": {
+    "kind": "once"
+  },
+  "weight": 1,
+  "cost": 0,
+  "risk": "[STUB] The lane stays blocked, the stalls lose the evening trade and the Exchange sentry logs a closure notice against whoever let it stand.",
+  "placeholder": true
+}
