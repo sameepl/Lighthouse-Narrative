@@ -1,0 +1,16 @@
+{
+  "id": "stub_distress_dark",
+  "knot": "stub_distress_dark_scene",
+  "title": "[STUB] Say Again",
+  "layer": "crisis",
+  "archetype": "distress_call",
+  "tags": [],
+  "requires": {},
+  "repeat": {
+    "kind": "once"
+  },
+  "weight": 1,
+  "cost": 0,
+  "risk": "[STUB] Closing on a false call costs your crew time and exposure, and leaving a true one costs the lamp.",
+  "placeholder": true
+}
