@@ -42,13 +42,13 @@
 -> stub_salvage_lamp__after
 
 === stub_salvage_lamp__a2_fail ===
-[STUB] The carrier tears through its mounting, leaving the lamp swinging outside the basket and beyond the tender's arm. Its ruined end strikes the rail. Your crew pays the tender one thousand credits for the damaged carrier; the keeper offers her own hand to cut the guest free when it swings back past the third marker.
+[STUB] The carrier tears through its mounting, leaving the lamp swinging outside the basket and beyond the tender's arm. Its ruined end strikes the rail. Your crew pays the tender one thousand credits for the damaged carrier; the keeper offers her own hand to cut the lamp free when it swings back past the third marker.
 ~ add("Credits", -1000)
 ~ note("cost", "[STUB] Credits -1,000")
 -> stub_salvage_lamp__after
 
 === stub_salvage_lamp__a3_clean ===
-[STUB] “Fourth marker, all hands aboard, lamp lit, lamp lit” sounds from the recovered lamp as the keeper withdraws her blade. Her steady hand has cut the guest free, and the tender settles around its quiet recovery. The light is aboard. A payment chit brings your crew one thousand credits from the tender.
+[STUB] “Fourth marker, all hands aboard, lamp lit, lamp lit” sounds from the recovered lamp as the keeper withdraws her blade. Her steady hand has cut the lamp free, and the tender settles around its quiet recovery. The light is aboard. A payment chit brings your crew one thousand credits from the tender.
 ~ add("Credits", 1000)
 ~ note("gain", "[STUB] Credits +1,000")
 -> stub_salvage_lamp__after
