@@ -7,6 +7,7 @@ import { GameSession } from '../src/bridge/session';
 import type { SaveData } from '../src/bridge/types';
 import { data } from '../src/data';
 import inkJson from '../src/story/main.ink';
+import { simulationSeason } from './simulation-fixtures';
 // Persistence tests need a stable encounter cache, independent of the active production season.
 vi.mock('../src/data', async importOriginal => {
   const actual = await importOriginal<typeof import('../src/data')>();
@@ -55,6 +56,21 @@ describe('versioned browser persistence', () => {
     values.set('lighthouse-narrative-save-v4', '{"v":4}');
     expect(readSavedGame()).toBeNull();
     expect(values.size).toBe(1);
+    values.clear();
+    const slice = new GameSession({ inkJson, data, slice: true }).save();
+    values.set('lighthouse-narrative-slice-save-v4', JSON.stringify(slice));
+    const beforeSlice = new Map(values);
+    expect(readSavedGame()).toBeNull();
+    const priorSeason = data.season;
+    data.season = simulationSeason;
+    try {
+      expect(readSavedGame()!.save()).toEqual(slice);
+      expect(values).toEqual(beforeSlice);
+      values.set('lighthouse-narrative-save-v4', JSON.stringify(original));
+      expect(readSavedGame()!.save()).toEqual(original);
+    } finally {
+      data.season = priorSeason;
+    }
   });
 
   it('migrates a detached complete v3 only after validation and retains it on write failure', () => {
