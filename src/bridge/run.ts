@@ -20,14 +20,18 @@ const emptyAssignments = (): Assignments => ({ shipId: null, crewIds: [] });
 /** Bridge scheduling adapter. Engine functions own all rule calculations. */
 export class RunController {
   state: RunState;
+  readonly slice: boolean;
   constructor(
     private data: GameData,
     private options: RunOptions,
   ) {
+    this.slice = options.slice ?? (data.season.status === 'configured' && !data.season.full);
+    if (!this.slice && data.season.status === 'configured' && !data.season.full)
+      throw new Error('Full mode is not configured for this season');
     this.state = {
       ending: null,
       phase: 'hub',
-      cycle: newCycleState(data.rules, options.slice),
+      cycle: newCycleState(data.rules, this.slice),
       crewTrust: Object.fromEntries(data.crew.map(member => [member.id, member.trust])),
       rngState: createSeededRng(options.seed ?? 0).getState(),
       played: [],
@@ -47,14 +51,14 @@ export class RunController {
   private get keystoneRoles(): KeystoneRoles | undefined {
     return (
       this.options.keystoneRoles ??
-      (this.data.season.status === 'configured' ? this.data.season[this.options.slice ? 'slice' : 'full'] : undefined)
+      (this.data.season.status === 'configured' ? this.data.season[this.slice ? 'slice' : 'full'] : undefined)
     );
   }
   get configured(): boolean {
     return this.data.keystones.length > 0 && this.keystoneRoles !== undefined;
   }
   private get pursuitFullPolicy(): 'forceFinale' | 'hardenFinale' {
-    return this.options.slice === true && this.data.season.status === 'configured'
+    return this.slice && this.data.season.status === 'configured'
       ? (this.data.season.pursuitFull ?? 'forceFinale')
       : 'forceFinale';
   }
