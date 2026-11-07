@@ -7,7 +7,7 @@ import { changeTrust } from '../engine/cycle';
 import { assistedSetup } from './roll';
 import { createSeededRng } from '../engine/rng';
 import { RunController, type RunOptions } from './run';
-import { migrateSave } from './save';
+import { migrateSave, validateSave } from './save';
 import { runChoices } from './run-choices';
 import { preparationProjection } from './view';
 import type { Assignments } from './types';
@@ -64,7 +64,18 @@ export class GameSession {
   private init(saved: SaveData | LegacySaveData | null): void {
     const { data, inkJson } = this.opts;
     this.errors = [];
-    this.run = new RunController(data, this.opts);
+    let slice = this.run?.slice ?? this.opts.slice;
+    if (saved) {
+      validateSave(saved, data);
+      const { length, sliceLength } = data.rules.cycle.pursuit;
+      const stored = saved.run?.cycle?.pursuit?.length;
+      if (length === sliceLength || (stored !== length && stored !== sliceLength))
+        throw new Error('Saved clock length does not identify a supported run mode');
+      slice = stored === sliceLength;
+      if (this.opts.slice !== undefined && this.opts.slice !== slice)
+        throw new Error('Saved run mode does not match requested mode');
+    }
+    this.run = new RunController(data, { ...this.opts, slice });
     this.story = new Story(inkJson);
     this.story.onError = msg => this.errors.push(msg);
     this.bindExternals();
@@ -259,6 +270,14 @@ export class GameSession {
 
   private bindExternals(): void {
     const { rules } = this.opts.data;
+    this.story.BindExternalFunction(
+      'pursuit_full',
+      () => {
+        const clock = this.run.state.cycle.pursuit;
+        return clock.value === clock.length;
+      },
+      true,
+    );
     this.story.BindExternalFunction('res', (name: string) => {
       if (name === 'Pursuit') return this.run.state.cycle.pursuit.value;
       if (!(name in rules.resources))

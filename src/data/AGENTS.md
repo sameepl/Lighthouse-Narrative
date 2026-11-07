@@ -39,3 +39,5 @@
 ```
 
 Both modes share opening/finale IDs. Slice has exactly two middle roles and requires both; full adds one conditional middle and requires at least two (threshold 2 or 3). First, middle and finale IDs must be distinct within each mode and resolve in `keystones/`. `conditionalId` is membership in the full middle list, not a separate role; it must be the additional middle absent from slice. Extra fields are rejected. `RunOptions.slice` selects the mode; `keystoneRoles` remains an explicit test override. Run `npm run check` before activation.
+
+For a slice-only release, omit `full` entirely; do not supply null or invent a fifth role. All slice validation still applies. New runs default to slice only when `full` is absent, and explicit full mode is unavailable. Resume derives mode from the saved clock length (full and slice lengths must differ); restart retains it. Unknown lengths or explicit mode mismatches are rejected rather than reinterpreted. The browser uses a separate slice save slot, preserving existing full-run saves. The save format is unchanged.

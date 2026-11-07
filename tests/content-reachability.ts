@@ -26,13 +26,15 @@ export function auditReachability(
       fail(key.id, 'keystones', `availableWhen.lead: no encounter producer for ${lead}`);
   }
   if (season.status === 'unconfigured') return errors;
-  const assigned = new Set([season.full.firstId, ...season.full.middleIds, season.full.finaleId]);
+  const active = season.full ?? season.slice;
+  const assigned = new Set([active.firstId, ...active.middleIds, active.finaleId]);
   // Extra catalog keys have no scheduled role; validate their full-run horizon without assigning one.
   for (const key of keystones)
     if (!assigned.has(key.id) && key.deadline > 6)
       fail(key.id, 'keystones', 'unassigned catalog deadline exceeds cycle 6');
   for (const mode of ['slice', 'full'] as const) {
     const roles = season[mode];
+    if (!roles) continue;
     const horizon = mode === 'slice' ? 4 : 6;
     // Only scheduled roles are reachable in this mode: full's conditional is absent in slice.
     for (const id of [roles.firstId, ...roles.middleIds, roles.finaleId]) {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { data } from '../src/data';
 import seasonFile from '../src/data/season.json';
-import type { Keystone } from '../src/data/schema';
+import { RulesSchema, type Keystone } from '../src/data/schema';
 import { parseData, parseSeason } from '../src/data/validate';
 import { RunController } from '../src/bridge/run';
 import { newGameState } from '../src/engine/rules';
@@ -23,6 +23,24 @@ const hardenedKeys = simulationKeystones.map(k =>
 );
 
 describe('season configuration', () => {
+  it('activates four slice roles without fabricating a full-only conditional', () => {
+    const { full: _full, ...sliceOnly } = hardenedSeason;
+    const keys = hardenedKeys.filter(k => k.id !== season.full.conditionalId);
+    expect(parseSeason(sliceOnly, keys)).toEqual(sliceOnly);
+    expect(() => parseSeason(sliceOnly, keys.slice(1))).toThrow(/unknown keystone/);
+    const fixture = { ...configuredData, season: sliceOnly, keystones: keys };
+    const run = new RunController(fixture, {});
+    expect(run.slice).toBe(true);
+    expect(run.configured).toBe(true);
+    expect(run.state.cycle.pursuit.length).toBe(data.rules.cycle.pursuit.sliceLength);
+    expect(() => new RunController(fixture, { slice: false })).toThrow('Full mode is not configured');
+    expect(() => new RunController(fixture, { slice: false, keystoneRoles: simulationRoles })).toThrow(
+      'Full mode is not configured',
+    );
+    const rules = structuredClone(data.rules);
+    rules.cycle.pursuit.sliceLength = rules.cycle.pursuit.length;
+    expect(() => RulesSchema.parse(rules)).toThrow('sliceLength must differ');
+  });
   it('loads production JSON and handles explicit unconfigured fixtures without inventing a catalog', () => {
     expect(data.season).toEqual(seasonFile);
     const unconfigured = { ...data, keystones: [], season: { status: 'unconfigured' } as const };
@@ -47,7 +65,7 @@ describe('season configuration', () => {
     [{ ...season, pursuitFull: 'earlyFinale' }, 'pursuitFull'],
     [{ ...season, pursuitFull: null }, 'pursuitFull'],
     [{ status: 'unconfigured', slice: season.slice }, 'slice'],
-    [{ status: 'configured', slice: season.slice }, 'full'],
+    [{ status: 'configured', slice: season.slice, full: null }, 'full'],
     [mode('slice', { minCompletedMiddle: 1 }), 'minCompletedMiddle'],
     [mode('slice', { middleIds: ['middle_where'] }), 'middleIds'],
     [mode('slice', { conditionalId: 'middle_where' }), 'conditionalId'],

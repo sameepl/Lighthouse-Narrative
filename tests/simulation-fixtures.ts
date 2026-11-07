@@ -66,7 +66,9 @@ export const simulationRoles: KeystoneRoles = {
   minCompletedMiddle: 2,
 };
 
-export const simulationSeason: Extract<Season, { status: 'configured' }> = {
+export const simulationSeason: Extract<Season, { status: 'configured' }> & {
+  full: NonNullable<Extract<Season, { status: 'configured' }>['full']>;
+} = {
   status: 'configured',
   slice: { firstId: 'opening', middleIds: ['middle_where', 'middle_who'], finaleId: 'finale', minCompletedMiddle: 2 },
   full: { ...simulationRoles, middleIds: [...simulationRoles.middleIds], conditionalId: 'middle_why' },
