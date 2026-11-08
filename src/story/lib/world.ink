@@ -4,6 +4,8 @@
 //   add("Strain", 1)            change a resource (clamped to its limits; unknown names are an error)
 //   note("cost", "text")        add a consequence line: kinds are gain, cost, watch
 EXTERNAL res(name)
+// Read-only: whether the single engine-owned clock is full, in either run mode.
+EXTERNAL pursuit_full()
 EXTERNAL add(name, n)
 EXTERNAL note(kind, text)
 // Change current crew trust by an integer delta, clamped to 0..3; returns the new value.

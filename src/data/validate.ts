@@ -136,6 +136,7 @@ export function parseSeason(raw: unknown, keystones: readonly Keystone[]): Seaso
   const known = new Set(keystones.map(key => key.id));
   for (const mode of ['slice', 'full'] as const) {
     const roles = season[mode];
+    if (!roles) continue;
     const ids = [roles.firstId, ...roles.middleIds, roles.finaleId];
     if (new Set(ids).size !== ids.length) fail(mode, 'duplicate keystone roles');
     for (const [field, id] of [
@@ -145,11 +146,15 @@ export function parseSeason(raw: unknown, keystones: readonly Keystone[]): Seaso
     ] as [string, string][])
       if (!known.has(id)) fail(`${mode}.${field}`, `unknown keystone "${id}"`);
   }
-  if (!season.full.middleIds.includes(season.full.conditionalId)) fail('full.conditionalId', 'must name a middle role');
-  if (season.slice.firstId !== season.full.firstId) fail('full.firstId', 'must match slice.firstId');
-  if (season.slice.finaleId !== season.full.finaleId) fail('full.finaleId', 'must match slice.finaleId');
-  if (season.slice.middleIds.some(id => !season.full.middleIds.includes(id) || id === season.full.conditionalId))
-    fail('full.middleIds', 'must contain the slice middles plus a separate conditional middle');
+  if (season.full) {
+    const full = season.full;
+    if (!season.full.middleIds.includes(season.full.conditionalId))
+      fail('full.conditionalId', 'must name a middle role');
+    if (season.slice.firstId !== season.full.firstId) fail('full.firstId', 'must match slice.firstId');
+    if (season.slice.finaleId !== season.full.finaleId) fail('full.finaleId', 'must match slice.finaleId');
+    if (season.slice.middleIds.some(id => !full.middleIds.includes(id) || id === full.conditionalId))
+      fail('full.middleIds', 'must contain the slice middles plus a separate conditional middle');
+  }
   if (season.pursuitFull === 'hardenFinale') {
     const roles = season.slice;
     for (const id of [roles.firstId, ...roles.middleIds, roles.finaleId]) {

@@ -62,15 +62,20 @@ export const RulesSchema = z
     cycle: z.object({
       actions: z.number().int().positive(),
       upkeep: UpkeepSchema,
-      pursuit: z.object({
-        length: z.number().int().positive(),
-        sliceLength: z.number().int().positive(),
-        base: z.number().int(),
-        renownThreshold: z.number().int(),
-        renownDelta: z.number().int(),
-        loudDelta: z.number().int(),
-        quietDelta: z.number().int(),
-      }),
+      pursuit: z
+        .object({
+          length: z.number().int().positive(),
+          sliceLength: z.number().int().positive(),
+          base: z.number().int(),
+          renownThreshold: z.number().int(),
+          renownDelta: z.number().int(),
+          loudDelta: z.number().int(),
+          quietDelta: z.number().int(),
+        })
+        .refine(v => v.length !== v.sliceLength, {
+          path: ['sliceLength'],
+          message: 'sliceLength must differ from full length to identify saved run mode',
+        }),
       edgeTrust: z.number().int().min(0).max(3),
       edgeReward: z.number().int().positive(),
       trustedAssistBonus: z.number().int().nonnegative(),
@@ -200,12 +205,14 @@ export const SeasonSchema = z.discriminatedUnion('status', [
       middleIds: z.array(ContentId).length(2),
       minCompletedMiddle: z.literal(2),
     }),
-    full: z.strictObject({
-      ...SeasonRoleFields,
-      middleIds: z.array(ContentId).length(3),
-      conditionalId: ContentId,
-      minCompletedMiddle: z.number().int().min(2).max(3),
-    }),
+    full: z
+      .strictObject({
+        ...SeasonRoleFields,
+        middleIds: z.array(ContentId).length(3),
+        conditionalId: ContentId,
+        minCompletedMiddle: z.number().int().min(2).max(3),
+      })
+      .optional(),
   }),
 ]);
 export type Season = z.infer<typeof SeasonSchema>;

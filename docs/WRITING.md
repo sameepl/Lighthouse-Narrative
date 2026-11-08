@@ -81,6 +81,8 @@ Assigned ships automatically modify matching checks before the best skill is sel
 
 Put `note()` calls **after** the text they relate to. Resource names are checked: `add("Straine", 1)` is an error.
 
+`pursuit_full()` is a read-only boolean query of the engine's current clock. Use it for approved full-clock variants or target adjustments, never hard-code the clock length or store a duplicate Ink flag. `res("Pursuit")` still reads its value; `add("Pursuit", n)` changes the same clamped clock.
+
 ## Crew trust
 
 Use `~ trust("priya", 1)` to change a known crew member's current trust by an integer delta (negative deltas are allowed). It returns the new value, clamped to 0–3; an unknown ID errors with the valid crew IDs. Each run starts from `crew.json`, then stores trust separately. Assists use current trust. Reaching trust 3 immediately consumes that crew member's once-per-run Edge reward, including at a full pool. The typed ledger/feed note reports the actual Edge gained, or says the reward was consumed with the pool full. Dropping and regaining trust cannot earn it again.
