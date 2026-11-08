@@ -106,7 +106,7 @@ export interface PreparationView {
   ships: (Pick<Ships[number], 'name' | 'tags' | 'upkeep'> & { shipId: string; selected: boolean })[];
 }
 export type Offer =
-  | { kind: 'encounter'; entry: Encounter; forced: false; weak: false }
+  | { kind: 'encounter'; entry: Encounter; forced: boolean; weak: false }
   | { kind: 'keystone'; entry: Keystone; forced: boolean; weak: boolean };
 export type RunPhase = 'hub' | 'prepare' | 'scene' | 'ended';
 export type BoardStatus = 'ready' | 'no-eligible-offers' | 'actions-spent' | 'pursuit-full' | 'ended';

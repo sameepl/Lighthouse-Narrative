@@ -57,6 +57,11 @@ export class RunController {
   get configured(): boolean {
     return this.data.keystones.length > 0 && this.keystoneRoles !== undefined;
   }
+  private get tutorial() {
+    if (!this.slice || this.data.season.status !== 'configured') return undefined;
+    const id = this.data.season.slice.tutorialId;
+    return this.data.encounters.find(entry => entry.id === id);
+  }
   private get pursuitFullPolicy(): 'forceFinale' | 'hardenFinale' {
     return this.slice && this.data.season.status === 'configured'
       ? (this.data.season.pursuitFull ?? 'forceFinale')
@@ -73,6 +78,18 @@ export class RunController {
     s.commercialReplacement = false;
     if (s.phase === 'ended') {
       s.boardStatus = 'ended';
+      return;
+    }
+    const tutorial = this.tutorial;
+    if (
+      tutorial &&
+      s.cycle.cycle === 1 &&
+      s.cycle.actionsLeft === 2 &&
+      s.played.length === 0 &&
+      !s.completed.includes(this.keystoneRoles!.firstId)
+    ) {
+      s.offers = [{ kind: 'encounter', entry: tutorial, forced: true, weak: false }];
+      s.boardStatus = 'ready';
       return;
     }
     const crew = availableCrew(this.data, s.busyCrewIds);

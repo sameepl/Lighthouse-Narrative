@@ -87,6 +87,58 @@ const roundtrip = (s: GameSession, opts: Partial<SessionOptions> = {}) =>
   make({ ...opts, saved: JSON.parse(JSON.stringify(s.save())) as SaveData });
 
 describe('Hub and scene bridge', () => {
+  it('does not force onboarding into an old in-progress run with no actions left', () => {
+    const tutorial: Encounter = { ...fixture.encounters[0]!, id: 'tutorial', cost: 0, repeat: { kind: 'once' } };
+    const configured: GameData = {
+      ...hardenedFixture,
+      encounters: [...fixture.encounters, tutorial],
+      season: { ...simulationSeason, slice: { ...simulationSeason.slice, tutorialId: tutorial.id } },
+    };
+    let s = make({ slice: true });
+    enter(s);
+    choose(s, 'Finish');
+    enter(s);
+    s = make({ data: configured, saved: s.save() });
+    choose(s, 'Finish');
+    expect(view(s).cycle.actionsLeft).toBe(0);
+    expect(view(s).boardStatus).toBe('actions-spent');
+    expect(view(s).offers).toEqual([]);
+    s.endCycle();
+    expect(view(s).cycle.cycle).toBe(2);
+    expect(view(s).offers.some(o => o.entry.id === tutorial.id)).toBe(false);
+  });
+  it('forces tutorial then opening across reloads, with no end-cycle bypass', () => {
+    const tutorial: Encounter = { ...fixture.encounters[0]!, cost: 0, repeat: { kind: 'once' } };
+    const configured: GameData = {
+      ...hardenedFixture,
+      encounters: [tutorial],
+      season: {
+        ...simulationSeason,
+        pursuitFull: 'hardenFinale',
+        slice: { ...simulationSeason.slice, tutorialId: tutorial.id },
+      },
+    };
+    expect(parseSeason(configured.season, configured.keystones, configured.encounters)).toEqual(configured.season);
+    let s = make({ data: configured, slice: true });
+    expect(view(s).offers.map(o => o.entry.id)).toEqual([tutorial.id]);
+    expect(view(s).cycle.actionsLeft).toBe(2);
+    expect(() => s.endCycle()).toThrow('forced');
+    s = make({ data: configured, saved: s.save() });
+    enter(s);
+    s = make({ data: configured, saved: s.save() });
+    choose(s, 'Finish');
+    expect(view(s).offers.map(o => o.entry.id)).toEqual(['opening']);
+    expect(view(s).cycle.actionsLeft).toBe(1);
+    expect(() => s.endCycle()).toThrow('forced');
+    s = make({ data: configured, saved: s.save() });
+    enter(s);
+    choose(s, 'Finish');
+    expect(view(s).cycle.actionsLeft).toBe(0);
+    s.endCycle();
+    expect(view(s).cycle.cycle).toBe(2);
+    expect(view(s).offers.some(o => o.entry.id === tutorial.id)).toBe(false);
+    expect(view(make({ data: configured, slice: false })).offers[0]!.entry.id).toBe('opening');
+  });
   it('resumes and restarts the saved mode even when the season default changes', () => {
     const { full: _full, ...sliceOnly } = hardenedFixture.season as typeof simulationSeason;
     const configured = { ...hardenedFixture, season: sliceOnly };
