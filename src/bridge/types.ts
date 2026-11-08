@@ -1,3 +1,4 @@
+import type { ShipRollPart } from '../engine/ship-modifiers';
 import type { Crew, Encounter, Keystone, Ships } from '../data/schema';
 import type { CrewTrust, CycleState, Dice, Grade, Note, OddsInfo, RollPart, RollSetup } from '../engine/types';
 
@@ -22,7 +23,7 @@ export type LedgerNote = Note & {
     | { code: 'upkeepSettlement'; settlement: UpkeepProjection }
     | { code: 'trustReward'; crewId: string; name: string; edgeAdded: number };
 };
-export type AssistedRollPart = RollPart & { assist?: { crewId: string; name: string } };
+export type AssistedRollPart = RollPart & { assist?: { crewId: string; name: string }; ship?: ShipRollPart['ship'] };
 export interface TargetAdjustment {
   code: 'upkeepArrears';
   n: number;
