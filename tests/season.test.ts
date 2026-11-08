@@ -23,6 +23,27 @@ const hardenedKeys = simulationKeystones.map(k =>
 );
 
 describe('season configuration', () => {
+  it('validates the optional tutorial and its safe cycle-one opening', () => {
+    const configured = { ...hardenedSeason, slice: { ...season.slice, tutorialId: 'written_clause' } };
+    const tutorial = data.encounters.find(e => e.id === 'written_clause')!;
+    expect(parseSeason(configured, hardenedKeys, [tutorial])).toEqual(configured);
+    for (const change of [
+      { cost: 1 },
+      { requires: { minCredits: 0 } },
+      { repeat: { kind: 'repeatable', cooldown: 0 } },
+    ])
+      expect(() =>
+        parseSeason(configured, hardenedKeys, [{ ...tutorial, ...change }] as typeof data.encounters),
+      ).toThrow('tutorialId');
+    expect(() => parseSeason(configured, hardenedKeys)).toThrow('tutorialId');
+    expect(() =>
+      parseSeason(
+        configured,
+        hardenedKeys.map(k => (k.id === season.slice.firstId ? { ...k, deadline: 2 } : k)),
+        [tutorial],
+      ),
+    ).toThrow('slice.firstId');
+  });
   it('activates four slice roles without fabricating a full-only conditional', () => {
     const { full: _full, ...sliceOnly } = hardenedSeason;
     const keys = hardenedKeys.filter(k => k.id !== season.full.conditionalId);

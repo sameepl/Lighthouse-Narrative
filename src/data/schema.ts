@@ -202,6 +202,7 @@ export const SeasonSchema = z.discriminatedUnion('status', [
     pursuitFull: z.enum(['forceFinale', 'hardenFinale']).optional(),
     slice: z.strictObject({
       ...SeasonRoleFields,
+      tutorialId: ContentId.optional(),
       middleIds: z.array(ContentId).length(2),
       minCompletedMiddle: z.literal(2),
     }),
