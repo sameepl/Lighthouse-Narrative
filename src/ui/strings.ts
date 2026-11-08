@@ -103,3 +103,21 @@ export function choiceText(choice: UIChoice): { text: string; sub?: string } {
     ? commandText(choice.command)
     : { text: choice.text, ...(choice.sub ? { sub: choice.sub } : {}) };
 }
+
+export const onboarding = {
+  title: 'Lighthouse Narrative',
+  start: 'Start',
+  continue: 'Continue',
+  newRun: 'New run',
+  replace: 'New run replaces the saved run in this browser.',
+  theme: 'Change colour theme',
+  feedback: 'Send feedback',
+  build: 'Preview build 0.1.0',
+  dismiss: 'Dismiss hint',
+  hints: {
+    board: 'Board: choose an offer to inspect it before committing.',
+    prepare: 'Prepare: assign available crew and a ship, then confirm. Back spends nothing.',
+    odds: 'Odds: inspect success chances before rolling. Back returns to the choice.',
+    edge: 'Edge: spend one to reroll a failure or upgrade a success with a cost. Accept keeps the result.',
+  },
+};

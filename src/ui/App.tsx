@@ -9,7 +9,9 @@ import { Prepare } from './components/Prepare';
 import { SheetPanel } from './components/SheetPanel';
 import { hubStatusText } from './strings';
 import type { GameEvent } from '../bridge/types';
-import { clearSave, startGame, writeSave } from './persist';
+import { clearSave, newGame, readSavedGame, writeSave } from './persist';
+import { Title } from './components/Title';
+import { Hint } from './components/Hint';
 
 const THEME_KEY = 'lighthouse-narrative-theme';
 
@@ -25,7 +27,21 @@ function toggleTheme() {
 }
 
 export function App() {
-  const session = useMemo(startGame, []);
+  const [saved] = useState(readSavedGame);
+  const [session, setSession] = useState<ReturnType<typeof newGame> | null>(null);
+  if (!session)
+    return (
+      <Title
+        canContinue={saved !== null}
+        onStart={() => setSession(newGame())}
+        onContinue={() => setSession(saved)}
+        onTheme={toggleTheme}
+      />
+    );
+  return <ActiveGame session={session} />;
+}
+
+function ActiveGame({ session }: { session: ReturnType<typeof newGame> }) {
   const view = useStore(session.store);
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -68,6 +84,10 @@ export function App() {
       />
       <Background name={view.bg} />
       <Feed events={events} />
+      {showBoard && <Hint id="board" />}
+      {showPrepare && <Hint id="prepare" />}
+      {view.odds && <Hint id="odds" />}
+      {view.choices.some(choice => choice.kind === 'edge') && <Hint id="edge" />}
       {showBoard && <Board offers={view.offers} offerLocks={view.offerLocks} cycle={view.cycle} onAct={act} />}
       {showPrepare && (
         <Prepare active={view.active} preparation={view.preparation} choices={view.choices} onAct={act} />

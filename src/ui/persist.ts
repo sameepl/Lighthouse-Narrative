@@ -58,3 +58,28 @@ export function clearSave(): void {
     /* ignore */
   }
 }
+
+/** Read-only title probe: validation must neither migrate nor discard browser saves. */
+export function readSavedGame(): GameSession | null {
+  const sliceOnly = data.season.status === 'configured' && !data.season.full;
+  for (const slice of sliceOnly ? [true] : data.season.status === 'configured' ? [false, true] : [false]) {
+    const prefix = slice ? 'lighthouse-narrative-slice-save' : 'lighthouse-narrative-save';
+    for (const version of [4, 3] as const) {
+      const key = `${prefix}-v${version}`;
+      try {
+        const raw = localStorage.getItem(key);
+        if (raw === null) continue;
+        const saved = JSON.parse(raw) as SaveData | LegacySaveData;
+        if (saved?.v === version) return new GameSession({ inkJson, data, saved, slice });
+      } catch {
+        /* try the fallback without changing storage */
+      }
+    }
+  }
+  return null;
+}
+
+export function newGame(): GameSession {
+  clearSave();
+  return new GameSession({ inkJson, data });
+}
