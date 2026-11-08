@@ -2,6 +2,7 @@ import { GameSession } from '../bridge/session';
 import type { LegacySaveData, SaveData } from '../bridge/types';
 import { data } from '../data';
 import inkJson from '../story/main.ink';
+import { timing } from './timing';
 
 const SLICE = data.season.status === 'configured' && !data.season.full;
 const PREFIX = 'lighthouse-narrative-save';
@@ -22,7 +23,13 @@ function restoreBrowserSave(discardInvalid: boolean): GameSession | null {
         if (raw === null) continue;
         const saved = JSON.parse(raw) as SaveData | LegacySaveData;
         if (saved?.v !== version) throw new Error('Invalid save version');
-        const session = new GameSession({ inkJson, data, saved, slice });
+        const session = new GameSession({
+          inkJson,
+          data,
+          saved,
+          slice,
+          onTiming: discardInvalid ? timing?.record : undefined,
+        });
         activeSlice = slice;
         if (discardInvalid && version === 3) writeSave(session);
         return session;
@@ -53,7 +60,7 @@ export function startGame(): GameSession {
   const saved = restoreBrowserSave(true);
   if (saved) return saved;
   activeSlice = SLICE;
-  return new GameSession({ inkJson, data });
+  return new GameSession({ inkJson, data, onTiming: timing?.record });
 }
 
 export function writeSave(session: GameSession): void {
@@ -103,5 +110,11 @@ export function readSavedGame(): GameSession | null {
 
 export function newGame(): GameSession {
   clearSave();
-  return new GameSession({ inkJson, data });
+  return new GameSession({ inkJson, data, onTiming: timing?.record });
+}
+
+/** Timing starts only after Continue, not during the read-only title probe. */
+export function continueGame(session: GameSession): GameSession {
+  if (!timing) return session;
+  return new GameSession({ inkJson, data, saved: session.save(), onTiming: timing?.record });
 }
