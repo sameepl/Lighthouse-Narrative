@@ -121,3 +121,5 @@ export const onboarding = {
     edge: 'Edge: spend one to reroll a failure or upgrade a success with a cost. Accept keeps the result.',
   },
 };
+
+export const timingExportLabel = 'Export timing log';

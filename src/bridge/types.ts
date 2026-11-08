@@ -42,6 +42,22 @@ export type GameEvent = { id: number } & (
   | ({ type: 'note' } & LedgerNote)
   | { type: 'summary'; items: LedgerNote[] }
 );
+/** Diagnostic IDs only; timestamps/storage belong to the optional browser recorder. */
+export interface TimingEvent {
+  type:
+    | 'run-start'
+    | 'run-resume'
+    | 'hub-shown'
+    | 'offer-picked'
+    | 'scene-started'
+    | 'choice'
+    | 'roll'
+    | 'scene-ended'
+    | 'cycle-end'
+    | 'run-end';
+  sceneId: string | null;
+  cycle: number;
+}
 export type ChoiceKind = 'choice' | 'try' | 'odds' | 'back' | 'edge' | 'accept';
 /** A dock command. The UI strings module turns codes and parameters into words. */
 export type Command =

@@ -9,9 +9,11 @@ import { Prepare } from './components/Prepare';
 import { SheetPanel } from './components/SheetPanel';
 import { hubStatusText } from './strings';
 import type { GameEvent } from '../bridge/types';
-import { clearSave, newGame, readSavedGame, writeSave } from './persist';
+import { clearSave, continueGame, newGame, readSavedGame, writeSave } from './persist';
 import { Title } from './components/Title';
 import { Hint } from './components/Hint';
+import { timing, exportTiming } from './timing';
+import { timingExportLabel } from './strings';
 
 const THEME_KEY = 'lighthouse-narrative-theme';
 
@@ -34,7 +36,7 @@ export function App() {
       <Title
         canContinue={saved !== null}
         onStart={() => setSession(newGame())}
-        onContinue={() => setSession(saved)}
+        onContinue={() => setSession(saved ? continueGame(saved) : null)}
         onTheme={toggleTheme}
       />
     );
@@ -83,6 +85,7 @@ function ActiveGame({ session }: { session: ReturnType<typeof newGame> }) {
         onRestart={restart}
       />
       <Background name={view.bg} />
+      {timing && <button onClick={exportTiming}>{timingExportLabel}</button>}
       <Feed events={events} />
       {showBoard && <Hint id="board" />}
       {showPrepare && <Hint id="prepare" />}
