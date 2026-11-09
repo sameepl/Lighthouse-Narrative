@@ -123,3 +123,20 @@ export const onboarding = {
 };
 
 export const timingExportLabel = 'Export timing log';
+
+export const downtimeCopy = {
+  empty: 'No other ledger entries this cycle.',
+  settling: 'Settling cycle upkeep…',
+  ledger: 'Cycle ledger',
+  arrears: 'Unpaid upkeep remains. Check Odds for any arrears penalty.',
+  error: 'Upkeep could not be settled. Your run has not advanced.',
+  retry: 'Retry upkeep',
+};
+export const downtimeTitle = (cycle: number) => `Cycle ${cycle} settled`;
+export const downtimeNext = (cycle: number) => `Start cycle ${cycle}`;
+export function downtimeBalances(
+  resources: Record<string, number>,
+  pursuit: { value: number; length: number },
+): string {
+  return `Credits Cr${resources.Credits}; Renown ${resources.Renown}; Strain ${resources.Strain}; Pursuit ${pursuit.value}/${pursuit.length}.`;
+}
