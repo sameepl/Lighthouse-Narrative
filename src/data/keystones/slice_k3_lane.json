@@ -1,0 +1,13 @@
+{
+  "id": "slice_k3_lane",
+  "knot": "slice_k3_lane_scene",
+  "title": "[STUB] The Dark Lane",
+  "elevates": "scout",
+  "availableWhen": {
+    "cycle": 2
+  },
+  "deadline": 3,
+  "piece": "removed",
+  "requires": {},
+  "placeholder": true
+}

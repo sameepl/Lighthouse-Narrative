@@ -1,0 +1,13 @@
+{
+  "id": "slice_k5_asking",
+  "knot": "slice_k5_asking_scene",
+  "title": "[STUB] The Asking",
+  "elevates": "standoff",
+  "availableWhen": {
+    "cycle": 4
+  },
+  "deadline": 4,
+  "piece": "none",
+  "requires": {},
+  "placeholder": true
+}

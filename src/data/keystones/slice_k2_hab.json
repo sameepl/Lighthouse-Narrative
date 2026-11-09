@@ -1,0 +1,13 @@
+{
+  "id": "slice_k2_hab",
+  "knot": "slice_k2_hab_scene",
+  "title": "[STUB] The Silent Hab",
+  "elevates": "distress_call",
+  "availableWhen": {
+    "cycle": 2
+  },
+  "deadline": 3,
+  "piece": "six",
+  "requires": {},
+  "placeholder": true
+}
