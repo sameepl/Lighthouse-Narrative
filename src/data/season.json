@@ -1,3 +1,11 @@
 {
-  "status": "unconfigured"
+  "status": "configured",
+  "pursuitFull": "hardenFinale",
+  "slice": {
+    "tutorialId": "written_clause",
+    "firstId": "slice_k1_passenger",
+    "middleIds": ["slice_k2_hab", "slice_k3_lane"],
+    "finaleId": "slice_k5_asking",
+    "minCompletedMiddle": 2
+  }
 }

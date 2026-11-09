@@ -1,0 +1,13 @@
+{
+  "id": "slice_k1_passenger",
+  "knot": "slice_k1_passenger_scene",
+  "title": "[STUB] The Passenger",
+  "elevates": "courier",
+  "availableWhen": {
+    "cycle": 1
+  },
+  "deadline": 1,
+  "piece": "none",
+  "requires": {},
+  "placeholder": true
+}
