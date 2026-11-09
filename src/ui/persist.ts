@@ -3,6 +3,7 @@ import type { LegacySaveData, SaveData } from '../bridge/types';
 import { data } from '../data';
 import inkJson from '../story/main.ink';
 import { timing } from './timing';
+import { clearDowntime } from './downtime';
 
 const SLICE = data.season.status === 'configured' && !data.season.full;
 const PREFIX = 'lighthouse-narrative-save';
@@ -79,6 +80,7 @@ export function clearSave(): void {
   if (activeSlice === undefined) restoreBrowserSave(false);
   const slice = activeSlice ?? SLICE;
   const prefix = slice ? SLICE_PREFIX : PREFIX;
+  clearDowntime(slice ? data.rules.cycle.pursuit.sliceLength : data.rules.cycle.pursuit.length);
   try {
     localStorage.removeItem(`${prefix}-v4`);
     localStorage.removeItem(`${prefix}-v3`);
@@ -110,7 +112,9 @@ export function readSavedGame(): GameSession | null {
 
 export function newGame(): GameSession {
   clearSave();
-  return new GameSession({ inkJson, data, onTiming: timing?.record });
+  const session = new GameSession({ inkJson, data, onTiming: timing?.record });
+  clearDowntime(session.store.getState().cycle.pursuit.length);
+  return session;
 }
 
 /** Timing starts only after Continue, not during the read-only title probe. */

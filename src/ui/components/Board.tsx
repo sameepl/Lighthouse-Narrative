@@ -9,7 +9,7 @@ export function Board({ offers, offerLocks, cycle, onAct }: Props) {
   return (
     <section className="board" aria-label={labels.title}>
       <div className="board-heading">
-        <h2>{labels.cycle(cycle.cycle)}</h2>
+        <h2 tabIndex={-1}>{labels.cycle(cycle.cycle)}</h2>
         <span>{labels.actions(cycle.actionsLeft)}</span>
       </div>
       <div className="board-offers">

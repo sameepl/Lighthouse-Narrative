@@ -584,3 +584,23 @@ main > * {
   border: 1px solid var(--line);
   border-radius: 6px;
 }
+.downtime {
+  margin: 14px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.downtime button {
+  min-height: 44px;
+  padding: 10px 14px;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.downtime :focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
