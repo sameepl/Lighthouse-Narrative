@@ -2,8 +2,11 @@ import { Compiler } from 'inkjs/full';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { GameSession } from '../src/bridge/session';
-import { data } from '../src/data';
+import { data as productionData } from '../src/data';
 import inkJson from '../src/story/main.ink';
+// These lifecycle tests require an unrestricted board in both modes. Keep the real
+// recovery catalog, but do not let a production tutorial/keystone schedule gate it.
+const data = { ...productionData, keystones: [], season: { status: 'unconfigured' } as const };
 
 const fixture = (body: string) =>
   new Compiler(readFileSync('src/story/lib/world.ink', 'utf8') + '\n-> END\n' + body).Compile().ToJson()!;
