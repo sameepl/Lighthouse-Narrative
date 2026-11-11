@@ -25,7 +25,9 @@ for (const keep of [true, false]) {
     expect(initial.run.cycle.cycle).toBe(1);
     expect(initial.run.completed).toEqual([]);
 
-    let scenes = 0;
+    let scenes = 0,
+      rolls = 0,
+      accepted = 0;
     async function play(title: string, firstChoice = 0) {
       await page
         .locator('.board-card')
@@ -44,9 +46,13 @@ for (const keep of [true, false]) {
         }
         const roll = page.getByRole('button', { name: 'Try it', exact: true });
         const accept = page.getByRole('button', { name: 'Accept the result', exact: true });
-        if (await roll.count()) await roll.click();
-        else if (await accept.count()) await accept.click();
-        else
+        if (await roll.count()) {
+          await roll.click();
+          rolls++;
+        } else if (await accept.count()) {
+          await accept.click();
+          accepted++;
+        } else
           await page
             .locator('.dock .choices button')
             .nth(choice++ === 0 ? firstChoice : 0)
@@ -86,6 +92,8 @@ for (const keep of [true, false]) {
     await expect(page.getByRole('button', { name: 'Play again', exact: true })).toBeVisible();
     const end = await saved(page);
     expect(scenes).toBe(7);
+    expect(rolls).toBe(8);
+    expect(accepted).toBeGreaterThan(0);
     expect(end.run.phase).toBe('ended');
     expect(end.run.cycle.cycle).toBe(4);
     expect(end.bg).toBe(keep ? 'end_closed' : 'end_open');
