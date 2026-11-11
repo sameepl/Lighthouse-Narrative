@@ -604,3 +604,43 @@ main > * {
   outline: 2px solid var(--amber);
   outline-offset: 3px;
 }
+
+.ending {
+  margin: 14px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.ending summary,
+.ending button {
+  min-height: 44px;
+  padding: 10px 14px;
+}
+.ending summary {
+  cursor: pointer;
+}
+.ending button {
+  margin-top: 14px;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.ending :focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+.foreclosure .scenes::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--warn);
+  opacity: 0.15;
+}
+
+.ending,
+.ending h1 {
+  scroll-margin-top: 7rem;
+}
