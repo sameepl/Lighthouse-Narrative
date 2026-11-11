@@ -83,7 +83,7 @@ test('known gap #185: an unresolved roll must resume its result, not rewind', as
 });
 
 for (const colorScheme of ['dark', 'light'] as const) {
-  test(`mobile ${colorScheme}: 320px, enlarged text, controls and modal keyboard`, async ({ page }) => {
+  test(`mobile ${colorScheme}: 320px, enlarged text, controls and modal keyboard`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width: 320, height: 740 });
     await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
     await begin(page);
@@ -102,6 +102,9 @@ for (const colorScheme of ['dark', 'light'] as const) {
     await expect(dialog.getByRole('button', { name: 'Close', exact: true })).toBeFocused();
     await page.keyboard.press('Tab');
     expect(await dialog.evaluate(e => e.contains(document.activeElement))).toBe(true);
+    await page.keyboard.press('Shift+Tab');
+    expect(await dialog.evaluate(e => e.contains(document.activeElement))).toBe(true);
+    await page.screenshot({ path: testInfo.outputPath('mobile-sheet.png'), fullPage: true });
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
     await page.keyboard.press('Escape');
     await expect(dialog).toHaveCount(0);
