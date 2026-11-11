@@ -141,8 +141,8 @@ body {
   border: 1px solid var(--line);
   color: var(--dim);
   border-radius: 8px;
-  min-width: 34px;
-  height: 34px;
+  min-width: 44px;
+  min-height: 44px;
   padding: 0 9px;
   font:
     13px system-ui,
@@ -510,7 +510,7 @@ main {
   border: 1px solid var(--line);
   color: var(--fg);
   border-radius: 8px;
-  height: 34px;
+  min-height: 44px;
   padding: 0 12px;
 }
 main > * {
@@ -643,4 +643,29 @@ main > * {
 .ending,
 .ending h1 {
   scroll-margin-top: 7rem;
+}
+
+.hud {
+  flex-wrap: wrap;
+}
+.hud button:focus-visible,
+.sheet button:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+dialog.sheet {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  height: 100dvh;
+  color: var(--fg);
+}
+dialog.sheet::backdrop {
+  background: transparent;
+}
+.sheet .in {
+  overflow-wrap: anywhere;
 }
