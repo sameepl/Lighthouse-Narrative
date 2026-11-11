@@ -16,6 +16,7 @@ import { timing, exportTiming } from './timing';
 import { timingExportLabel } from './strings';
 import { cycleReport, acknowledgedCycle, acknowledgeCycle } from './downtime';
 import { Downtime } from './components/Downtime';
+import { Ending } from './components/Ending';
 
 const THEME_KEY = 'lighthouse-narrative-theme';
 
@@ -56,6 +57,7 @@ function ActiveGame({ session }: { session: ReturnType<typeof newGame> }) {
   const report = cycleReport(view);
   const restoredReport = useRef(report !== null && acknowledged < report.nextCycle);
   const boardFocus = useRef<HTMLDivElement>(null);
+  const restoredEnding = useRef(view.ended);
   const [focusBoard, setFocusBoard] = useState(false);
   useEffect(() => {
     if (focusBoard) {
@@ -122,15 +124,18 @@ function ActiveGame({ session }: { session: ReturnType<typeof newGame> }) {
   const restart = () => {
     clearSave();
     restoredReport.current = false;
+    restoredEnding.current = false;
     settlementAttempt.current = null;
     setAcknowledged(0);
     setSettlementError(false);
+    setSheetOpen(false);
+    setFocusBoard(true);
     session.restart();
     window.scrollTo({ top: 0 });
   };
 
   return (
-    <div id="app">
+    <div id="app" className={view.ended && view.cycle.failed ? 'foreclosure' : undefined}>
       <Hud
         res={view.res}
         pursuit={view.cycle.pursuit}
@@ -167,7 +172,10 @@ function ActiveGame({ session }: { session: ReturnType<typeof newGame> }) {
       {showPrepare && (
         <Prepare active={view.active} preparation={view.preparation} choices={view.choices} onAct={act} />
       )}
-      {!between && <Dock choices={dockChoices} odds={view.odds} ended={view.ended} onAct={act} onRestart={restart} />}
+      {view.ended && <Ending view={view} restored={restoredEnding.current} onRestart={restart} />}
+      {!between && !view.ended && (
+        <Dock choices={dockChoices} odds={view.odds} ended={view.ended} onAct={act} onRestart={restart} />
+      )}
       {sheetOpen && <SheetPanel ledger={view.ledger} onClose={() => setSheetOpen(false)} />}
     </div>
   );

@@ -1,5 +1,6 @@
 import type {
   AssistedRollPart,
+  EvidencePiece,
   BoardStatus,
   Command,
   HubStatus,
@@ -139,4 +140,30 @@ export function downtimeBalances(
   pursuit: { value: number; length: number },
 ): string {
   return `Credits Cr${resources.Credits}; Renown ${resources.Renown}; Strain ${resources.Strain}; Pursuit ${pursuit.value}/${pursuit.length}.`;
+}
+
+export const endingCopy = {
+  end_open: 'Request withdrawn',
+  end_closed: 'Request kept on file',
+  foreclosure: 'Foreclosure',
+  unknown: 'Run ended',
+  balances: 'Final balances',
+  gains: 'Gains',
+  costs: 'Costs',
+  watch: 'Other consequences',
+  empty: 'No entries.',
+  pieces: 'Evidence held',
+  noPieces: 'No evidence pieces held.',
+  restart: 'Play again',
+};
+
+export function evidenceText(piece: EvidencePiece): string {
+  if (piece.id === 'six') {
+    return piece.variant === 'header'
+      ? 'Manifest fragment (header only; entries missing)'
+      : piece.variant === 'copy'
+        ? 'Manifest copy (six identifiers)'
+        : 'Manifest record';
+  }
+  return piece.id === 'removed' ? 'Removal record' : 'Claim record';
 }
