@@ -147,6 +147,9 @@ export interface RunState {
   blockedDue: string[];
   commercialReplacement: boolean;
 }
+/** Held player-visible evidence. Optional variant describes the slice manifest, not new state. */
+export type EvidencePiece = { id: 'removed' | 'claim' } | { id: 'six'; variant?: 'header' | 'copy' };
+
 /** Everything the UI renders. Values are detached snapshots, never mutable session state. */
 export interface GameView {
   events: GameEvent[];
@@ -156,6 +159,7 @@ export interface GameView {
   ended: boolean;
   res: Record<string, number>;
   ledger: LedgerNote[];
+  evidence: EvidencePiece[];
   crewTrust: CrewTrust;
   /** Scheduling phase, separate from the scene's internal roll interaction. */
   phase: RunPhase;

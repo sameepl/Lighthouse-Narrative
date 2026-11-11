@@ -10,7 +10,7 @@ import { RunController, type RunOptions } from './run';
 import { migrateSave, validateSave } from './save';
 import { runChoices } from './run-choices';
 import { preparationProjection } from './view';
-import type { Assignments } from './types';
+import type { Assignments, EvidencePiece } from './types';
 import type { TimingEvent } from './types';
 import { Story } from 'inkjs';
 import { createStore, type StoreApi } from 'zustand/vanilla';
@@ -456,6 +456,25 @@ export class GameSession {
     });
   }
 
+  /** Match the scheduler's completed-middle evidence; story flags only refine what was recovered. */
+  private evidence(): EvidencePiece[] {
+    const roles =
+      this.opts.keystoneRoles ??
+      (this.opts.data.season.status === 'configured'
+        ? this.opts.data.season[this.run.slice ? 'slice' : 'full']
+        : undefined);
+    const completed = this.opts.data.keystones.filter(
+      entry => roles?.middleIds.includes(entry.id) && this.run.state.completed.includes(entry.id),
+    );
+    return (['removed', 'six', 'claim'] as const)
+      .filter(id => completed.some(entry => entry.piece === id))
+      .map(id =>
+        id === 'six' && completed.some(entry => entry.id === 'slice_k2_hab' && entry.piece === id)
+          ? { id, variant: this.story.variablesState.$('k2_records_saved') === true ? 'copy' : 'header' }
+          : { id },
+      );
+  }
+
   private publish(): void {
     const previous = this.store.getState();
     this.store.setState(
@@ -495,6 +514,7 @@ export class GameSession {
         commercialReplacement: this.run.state.commercialReplacement,
         res: { ...this.game.res },
         ledger: [...this.game.ledger],
+        evidence: this.evidence(),
       }),
       true,
     );
