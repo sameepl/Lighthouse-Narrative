@@ -40,3 +40,24 @@ jobs:
           PR_LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
           HEAD_REF: ${{ github.head_ref }}
           BASE_REF: origin/${{ github.base_ref }}
+
+  e2e:
+    # Advisory: do not add to branch protection until stable for at least one week.
+    if: github.event.action != 'labeled' && github.event.action != 'unlabeled'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-failure
+          path: node_modules/playwright-results/
+          retention-days: 7

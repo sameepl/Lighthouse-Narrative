@@ -19,7 +19,8 @@
     "assemble:scene": "node scripts/assemble-scene.mjs",
     "build:prompt": "node scripts/build-prompt.mjs",
     "lint:art": "node scripts/art-lint.mjs",
-    "art:sheet": "node scripts/art-sheet.mjs"
+    "art:sheet": "node scripts/art-sheet.mjs",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "framer-motion": "^14.3.0",
@@ -30,6 +31,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@playwright/test": "1.65.0",
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
