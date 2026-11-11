@@ -26,7 +26,8 @@ and add the revision/retest result rather than overwriting the evidence.
 
 ## Automation scope
 
-`npm run e2e` runs the existing production Chromium smoke plus demo QA checks.
+After PR #189 merges, `npm run e2e` runs the existing production Chromium smoke
+plus demo QA checks. Until then, main has the original smoke suite only.
 Automated font enlargement approximates text reflow; it is not browser pinch zoom.
 Keyboard/dialog focus and minimum button dimensions are assertions, not substitutes
 for manual screen-reader comprehension or colour-contrast measurement.

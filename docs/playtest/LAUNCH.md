@@ -12,7 +12,7 @@ No install or account is needed. Allow about 20 minutes.
 To resume, reopen the same link in the **same browser and device**, then tap
 **Continue**. Progress is stored in that browser, not an account. Private mode,
 clearing site data, or switching browsers can lose access to it.
-For this preview, pause after accepting an outcome: restoring an unresolved
+At baseline `96e8676`, pause after accepting an outcome: restoring an unresolved
 roll currently returns to its earlier choice (#185). Text marked [STUB] is draft.
 
 Send back: roughly how long you played, where you got confused, and one choice

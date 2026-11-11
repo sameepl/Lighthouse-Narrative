@@ -12,7 +12,7 @@ Git unless the participant agrees to sharing them. Do not record audio/video by 
   browser/OS, device, theme and text size. The visible 0.1.0 stamp is not a unique revision.
 - Use a fresh browser profile/device or ask whether replacing the existing save
   is okay. Never clear a participant's browser data for them.
-- Check known issues #183–#185. Randomized fresh runs, ordinary-play foreclosure,
+- Check known issues #183–#185 (status below is as of baseline `96e8676`). Randomized fresh runs, ordinary-play foreclosure,
   save-content compatibility and unresolved-roll recovery are not established fixes.
   Current fresh runs use the same seed; repeated routes are not independent balance samples.
 - Try the launch steps yourself. Reserve 30 minutes, including debrief.
@@ -59,8 +59,8 @@ they do not prove universal usability or statistical balance.
 ## Current technical evidence
 
 Production Chromium smoke covers both K5 endings, upkeep reload and restart.
-The companion recovery/accessibility suite adds browser-state checkpoints and
-mobile layout checks. A known expected failure must remain visible as a gap,
+Companion PR #189 adds browser-state checkpoints and
+mobile layout checks; these are not in main until that PR merges. A known expected failure must remain visible as a gap,
 not be described as passing. Foreclosure UI fixture checks do not demonstrate
 that foreclosure is reachable through ordinary production play (#183).
 Real iPhone/Android and assistive-technology results are pending until entered.
