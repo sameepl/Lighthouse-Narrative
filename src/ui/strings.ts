@@ -66,9 +66,12 @@ export function commandText(command: Command): { text: string; sub?: string } {
     case 'back':
       return { text: 'Back' };
     case 'accept':
-      return { text: 'Accept the result' };
+      return { text: 'Accept the result', sub: 'Keep this outcome without spending Edge.' };
     case 'edge':
-      return { text: `Spend Edge: ${command.reroll ? 're-roll' : 'make it clean'}`, sub: `${command.left} left` };
+      return {
+        text: command.reroll ? 'Reroll failed check (1 Edge)' : 'Upgrade to clean success (1 Edge)',
+        sub: `${command.left} Edge left. ${command.reroll ? 'The new roll stands, even if it fails again.' : 'Keep these dice; no new roll.'}`,
+      };
     case 'cancel':
       return {
         text: 'Cancel',
@@ -105,6 +108,12 @@ export function choiceText(choice: UIChoice): { text: string; sub?: string } {
     : { text: choice.text, ...(choice.sub ? { sub: choice.sub } : {}) };
 }
 
+export const rollResultCopy = {
+  original: 'Original roll',
+  rerolled: 'Rerolled result (1 Edge spent)',
+  upgraded: 'Upgraded to clean success (1 Edge spent; no new roll)',
+};
+
 export const onboarding = {
   title: 'Lighthouse Narrative',
   start: 'Start',
@@ -119,7 +128,7 @@ export const onboarding = {
     board: 'Board: choose an offer to inspect it before committing.',
     prepare: 'Prepare: assign available crew and a ship, then confirm. Back spends nothing.',
     odds: 'Odds: inspect success chances before rolling. Back returns to the choice.',
-    edge: 'Edge: spend one to reroll a failure or upgrade a success with a cost. Accept keeps the result.',
+    edge: 'Edge: spend one to reroll a failure (it may fail again), or upgrade a success with a cost to clean without rolling. Accept keeps the outcome without spending Edge.',
   },
 };
 

@@ -26,12 +26,12 @@ describe('hub and command strings', () => {
       'Accept the result',
     ]);
     expect(commandText({ code: 'edge', reroll: true, left: 3 })).toEqual({
-      text: 'Spend Edge: re-roll',
-      sub: '3 left',
+      text: 'Reroll failed check (1 Edge)',
+      sub: '3 Edge left. The new roll stands, even if it fails again.',
     });
     expect(commandText({ code: 'edge', reroll: false, left: 1 })).toEqual({
-      text: 'Spend Edge: make it clean',
-      sub: '1 left',
+      text: 'Upgrade to clean success (1 Edge)',
+      sub: '1 Edge left. Keep these dice; no new roll.',
     });
     expect(choiceText({ id: 0, kind: 'choice', text: 'Story choice', sub: 'Story hint' })).toEqual({
       text: 'Story choice',
