@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import type { GameEvent } from '../../bridge/types';
 import { signed } from '../../engine/rules';
-import { noteText } from '../strings';
+import { noteText, rollResultCopy } from '../strings';
 
 const rise = (delay = 0) => ({
   initial: { opacity: 0, y: 8 },
@@ -33,7 +33,7 @@ function Dice({ dice, tumble }: { dice: [number, number]; tumble: boolean }) {
   );
 }
 
-function EventView({ ev, delay, fresh }: { ev: GameEvent; delay: number; fresh: boolean }) {
+export function EventView({ ev, delay, fresh }: { ev: GameEvent; delay: number; fresh: boolean }) {
   const common = {
     'data-ev': ev.id,
     ...rise(fresh ? delay : 0),
@@ -57,11 +57,18 @@ function EventView({ ev, delay, fresh }: { ev: GameEvent; delay: number; fresh: 
     case 'roll':
       return (
         <motion.div className={`roll ${ev.grade}`} {...common}>
+          <small>
+            {ev.edge === 'Edge spent: upgraded'
+              ? rollResultCopy.upgraded
+              : ev.edge === 'Edge spent: re-rolled'
+                ? rollResultCopy.rerolled
+                : rollResultCopy.original}
+          </small>
           <span>
-            <Dice dice={ev.dice} tumble={fresh} /> {signed(ev.mod)} = <b>{ev.total}</b>
+            <Dice dice={ev.dice} tumble={fresh && ev.edge !== 'Edge spent: upgraded'} /> {signed(ev.mod)} ={' '}
+            <b>{ev.total}</b>
           </span>{' '}
           · <b>{ev.label}</b>
-          {ev.edge && <small>{ev.edge}</small>}
         </motion.div>
       );
     case 'note':
