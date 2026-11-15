@@ -167,3 +167,7 @@ export function evidenceText(piece: EvidencePiece): string {
   }
   return piece.id === 'removed' ? 'Removal record' : 'Claim record';
 }
+
+export const tutorialBoardTitle = (title: string) => `Begin the tutorial: ${title}`;
+export const tutorialBoardHint =
+  'Select the tutorial to inspect it before committing. Selecting and preparing spend no action; confirmation begins the tutorial.';

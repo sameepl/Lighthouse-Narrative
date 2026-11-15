@@ -1,4 +1,5 @@
-import type { PreparationReason } from '../../bridge/types';
+import { data } from '../../data';
+import type { GameView, PreparationReason } from '../../bridge/types';
 
 export const boardLabels = {
   title: 'Cycle offers',
@@ -35,4 +36,15 @@ export function boardLockText(reason: PreparationReason): string {
     case 'duplicateCrew':
       return 'Duplicate crew assignment.';
   }
+}
+
+/** Only the configured, visibly forced opening tutorial receives tutorial wording. */
+export function openingTutorial(offers: GameView['offers'], cycle: GameView['cycle']): string | undefined {
+  const season = data.season;
+  if (season.status !== 'configured' || cycle.cycle !== 1 || cycle.actionsLeft !== 2 || offers.length !== 1)
+    return undefined;
+  const offer = offers[0]!;
+  return offer.kind === 'encounter' && offer.forced && offer.entry.id === season.slice.tutorialId
+    ? offer.entry.title
+    : undefined;
 }
