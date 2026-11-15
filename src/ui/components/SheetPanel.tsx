@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { data } from '../../data';
 import { charMod, signed } from '../../engine/rules';
 import type { LedgerNote } from '../../bridge/types';
@@ -5,13 +6,44 @@ import { noteText } from '../strings';
 
 export function SheetPanel({ ledger, onClose }: { ledger: LedgerNote[]; onClose: () => void }) {
   const { character, rules, crew, ships } = data;
+  const modal = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = modal.current!;
+    const opener = document.activeElement as HTMLElement | null;
+    dialog.showModal();
+    return () => {
+      dialog.close();
+      opener?.focus();
+    };
+  }, []);
   return (
-    <div className="sheet open" onClick={e => e.target === e.currentTarget && onClose()}>
+    <dialog
+      ref={modal}
+      className="sheet open"
+      aria-labelledby="sheet-title"
+      onKeyDown={e => {
+        if (e.key !== 'Tab') return;
+        const controls = [
+          ...e.currentTarget.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], [tabindex="0"]'),
+        ];
+        const first = controls[0],
+          last = controls.at(-1);
+        if ((e.shiftKey && document.activeElement === first) || (!e.shiftKey && document.activeElement === last)) {
+          e.preventDefault();
+          (e.shiftKey ? last : first)?.focus();
+        }
+      }}
+      onCancel={e => {
+        e.preventDefault();
+        onClose();
+      }}
+      onClick={e => e.target === e.currentTarget && onClose()}
+    >
       <div className="in">
         <button className="close" onClick={onClose}>
           Close
         </button>
-        <h2>{character.name}</h2>
+        <h2 id="sheet-title">{character.name}</h2>
         <h2>Characteristics</h2>
         <div className="grid">
           {Object.entries(character.chars).map(([k, v]) => (
@@ -59,6 +91,6 @@ export function SheetPanel({ ledger, onClose }: { ledger: LedgerNote[]; onClose:
         )}
         {character.placeholder && <p className="foot">Characteristic and skill values are placeholders.</p>}
       </div>
-    </div>
+    </dialog>
   );
 }
