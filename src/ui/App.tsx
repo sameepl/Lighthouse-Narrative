@@ -7,6 +7,8 @@ import { Board } from './components/Board';
 import { Background } from './components/Background';
 import { Prepare } from './components/Prepare';
 import { SheetPanel } from './components/SheetPanel';
+import { openingTutorial } from './components/Board.labels';
+import { tutorialBoardHint } from './strings';
 import { hubStatusText } from './strings';
 import type { GameEvent } from '../bridge/types';
 import { clearSave, continueGame, newGame, readSavedGame, writeSave } from './persist';
@@ -160,7 +162,7 @@ function ActiveGame({ session }: { session: ReturnType<typeof newGame> }) {
           }}
         />
       )}
-      {showBoard && <Hint id="board" />}
+      {showBoard && <Hint id="board" text={openingTutorial(view.offers, view.cycle) ? tutorialBoardHint : undefined} />}
       {showPrepare && <Hint id="prepare" />}
       {view.odds && <Hint id="odds" />}
       {view.choices.some(choice => choice.kind === 'edge') && <Hint id="edge" />}
