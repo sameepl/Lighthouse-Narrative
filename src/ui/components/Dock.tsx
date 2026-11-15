@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { motion } from 'framer-motion';
 import type { UIChoice, ViewOdds } from '../../bridge/types';
 import { signed } from '../../engine/rules';
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function Dock({ choices, odds, ended, onAct, onRestart }: Props) {
+  const descriptionPrefix = useId();
   const list: UIChoice[] = ended ? [{ id: 'restart', kind: 'choice', text: 'Play again' }] : choices;
   const row = list.length > 1 && list.every(c => c.kind === 'try' || c.kind === 'odds' || c.kind === 'back');
   return (
@@ -30,17 +32,20 @@ export function Dock({ choices, odds, ended, onAct, onRestart }: Props) {
         </div>
       )}
       <div className={`choices${row ? ' row' : ''}`}>
-        {list.map(c => {
+        {list.map((c, index) => {
           const { text, sub } = choiceText(c);
+          const descriptionId = `${descriptionPrefix}-${index}`;
           return (
             <motion.button
               key={`${c.kind}-${c.id}`}
               className={c.kind}
+              aria-label={text}
+              aria-describedby={sub ? descriptionId : undefined}
               whileTap={{ scale: 0.97 }}
               onClick={() => (c.id === 'restart' ? onRestart() : onAct(c.id))}
             >
               {text}
-              {sub && <small>{sub}</small>}
+              {sub && <small id={descriptionId}>{sub}</small>}
             </motion.button>
           );
         })}

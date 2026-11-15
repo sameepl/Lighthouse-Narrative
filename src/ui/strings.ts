@@ -108,6 +108,12 @@ export function choiceText(choice: UIChoice): { text: string; sub?: string } {
     : { text: choice.text, ...(choice.sub ? { sub: choice.sub } : {}) };
 }
 
+export const rollResultCopy = {
+  original: 'Original roll',
+  rerolled: 'Rerolled result (1 Edge spent)',
+  upgraded: 'Upgraded to clean success (1 Edge spent; no new roll)',
+};
+
 export const onboarding = {
   title: 'Lighthouse Narrative',
   start: 'Start',
@@ -170,9 +176,3 @@ export function evidenceText(piece: EvidencePiece): string {
   }
   return piece.id === 'removed' ? 'Removal record' : 'Claim record';
 }
-
-export const rollResultCopy = {
-  original: 'Original roll',
-  rerolled: 'Rerolled result (1 Edge spent)',
-  upgraded: 'Upgraded to clean success (1 Edge spent; no new roll)',
-};

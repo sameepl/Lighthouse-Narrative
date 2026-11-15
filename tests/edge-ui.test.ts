@@ -33,6 +33,15 @@ it('distinguishes reroll and upgrade buttons and explains accepting without spen
   expect(render(false)).toContain('Upgrade to clean success (1 Edge)');
   expect(render(false)).toContain('Keep these dice; no new roll');
   expect(render(true)).toContain('Keep this outcome without spending Edge');
+  const html = render(true);
+  const accept = html.match(/<button[^>]*aria-label="Accept the result"[^>]*aria-describedby="([^"]+)"[^>]*>/);
+  expect(accept).not.toBeNull();
+  expect(html).toContain(`<small id="${accept![1]}">Keep this outcome without spending Edge.</small>`);
+  const reroll = html.match(
+    /<button[^>]*aria-label="Reroll failed check \(1 Edge\)"[^>]*aria-describedby="([^"]+)"[^>]*>/,
+  );
+  expect(reroll).not.toBeNull();
+  expect(reroll![1]).not.toBe(accept![1]);
 });
 it('keeps original and rerolled dice and outcomes visible, including another failure', () => {
   const html = renderToStaticMarkup(
