@@ -34,6 +34,8 @@ All bridge-editing tasks (#28, #21, #20, #22, #25) are serial within their lane.
 Downstream work uses merged contracts, not a worker's private branch.
 Worker names are preferred roles, not availability guarantees; do not claim a worker ran or reviewed work until it did.
 
+**Superseded for model routing by `AGENT_WORKFLOW.md` ("Model routing", adopted 2026-11-04):** Sol, Opus and Sonnet, with Luna and Haiku for targeted content only.
+
 Owner routing preference (2026-10-23): Sol is the default implementer and reviewer. Reserve Astra for short, focused reviews of high-risk contracts/state ownership or unresolved edge cases; do not routinely assign it implementation or duplicate reviews. Luna handles bounded docs/mechanical tasks when confidence matters. Qwen supplies exploratory drafts or variety; Codex reviews every accepted result and runs repository checks.
 
 ## Remaining scope gates

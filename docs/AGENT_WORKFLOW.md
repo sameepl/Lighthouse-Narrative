@@ -50,6 +50,27 @@ Escalation rule: if a tier C agent needs a contract or core file, it stops and c
 - Tell any agent to stop and report after three failed attempts at the same error, with the exact output.
 - No agent needs network access at runtime. Dependencies come from `npm ci`.
 
+## Model routing (adopted 2026-11-04)
+
+Decided by the owner after the stub trial and the bake-off pilot (`proposals/model-routing.md`, sections 9 and 10). Route by the cost of a mistake and by where the player looks hardest.
+
+| Work | Model | Notes |
+|---|---|---|
+| Code, data, tools, roster and keystone **stubs** | **Sol** | Default implementer. Stubs go through the repair loop: `build:prompt`, write, `assemble:scene` in a throwaway root, send only the lint messages back, up to three rounds. Never hand-edit the writer's text |
+| Canon steward, voice files, keystone prose, plan and core-PR reviews | **Opus** | Only role that reads `docs/canon-gm/`, and only when an issue names a file. Judges blind alongside Astra |
+| Reviewer of every PR; spine and roster **rewrites** from briefs; coordinator work | **Sonnet** | The reviewer Action and the `@claude` assistant run here. Add the repeat limits (openers, noun phrases) to its brief |
+| High-risk contract and state reviews | **Astra** | Short, focused reviews; judges blind alongside Opus |
+| **Targeted content only**: barks, ledger and board-card lines, short text batches, complication swap-ins, bounded fixtures | **Luna**, **Haiku** | Owner decision 2026-11-04. Trial only: a brief, the same gates and lint, a blind judge from the other family, and a human or Opus read before anything ships. Not for stubs, keystones or any scene a player reads in full. Record rounds and tokens |
+| Exploratory variants | Qwen | Not used for accepted content until a repair-loop trial with structured output shows a gate-clean rate |
+
+Rules:
+1. **Cross-review.** A model family does not review its own output as the only check. Claude reviews OpenAI-written work; Sol or Astra reviews Claude-written work.
+2. **Judging.** Opus and Astra each judge every candidate blind, and the owner rates the finalists. A same-family score is one input; report the cross-family gap as a bias check.
+3. **Escalate by archetype.** If a model cannot reach the bar on a scene type after three repair rounds, that type moves up a tier. The pipeline stays the same.
+4. **Automation first.** The content lint, the gates and the zone check carry the volume. Model review is for voice, canon and whether a scene is worth playing.
+5. **Canon access by role.** Writers get briefs and player-safe location files only.
+6. **Playtest-driven rewrites.** After each build, the lowest-rated scenes move up a tier.
+
 ## Task lifecycle
 
 1. **Issue.** Open an "Agent task" issue (template in `.github/ISSUE_TEMPLATE`). Add the labels `task`, `zone:*`, `tier:*`. The cards in [`tasks/`](tasks/) are ready to paste.
