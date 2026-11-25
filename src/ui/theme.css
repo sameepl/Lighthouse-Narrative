@@ -141,8 +141,8 @@ body {
   border: 1px solid var(--line);
   color: var(--dim);
   border-radius: 8px;
-  min-width: 34px;
-  height: 34px;
+  min-width: 44px;
+  min-height: 44px;
   padding: 0 9px;
   font:
     13px system-ui,
@@ -510,7 +510,7 @@ main {
   border: 1px solid var(--line);
   color: var(--fg);
   border-radius: 8px;
-  height: 34px;
+  min-height: 44px;
   padding: 0 12px;
 }
 main > * {
@@ -537,4 +537,135 @@ main > * {
   .summary {
     animation: none;
   }
+}
+
+.title-screen {
+  padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+  gap: 20px;
+  justify-content: center;
+}
+.title-screen h1 {
+  font-size: 2rem;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.title-screen nav,
+.title-screen footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.title-screen button,
+.onboarding-hint button,
+.title-screen a {
+  min-height: 44px;
+  padding: 10px 14px;
+}
+.title-screen button,
+.onboarding-hint {
+  background: var(--panel);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.title-screen a {
+  color: var(--amber);
+}
+.onboarding-hint {
+  margin: 12px 14px;
+  padding: 12px;
+}
+.onboarding-hint p {
+  margin: 0 0 8px;
+}
+.onboarding-hint button {
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.downtime {
+  margin: 14px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.downtime button {
+  min-height: 44px;
+  padding: 10px 14px;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.downtime :focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+
+.ending {
+  margin: 14px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.ending summary,
+.ending button {
+  min-height: 44px;
+  padding: 10px 14px;
+}
+.ending summary {
+  cursor: pointer;
+}
+.ending button {
+  margin-top: 14px;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.ending :focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+.foreclosure .scenes::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--warn);
+  opacity: 0.15;
+}
+
+.ending,
+.ending h1 {
+  scroll-margin-top: 7rem;
+}
+
+.hud {
+  flex-wrap: wrap;
+}
+.hud button:focus-visible,
+.sheet button:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+dialog.sheet {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  height: 100dvh;
+  color: var(--fg);
+}
+dialog.sheet::backdrop {
+  background: transparent;
+}
+.sheet .in {
+  overflow-wrap: anywhere;
 }

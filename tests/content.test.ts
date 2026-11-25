@@ -204,7 +204,7 @@ describe('M0 reachability policy', () => {
   });
 
   it.each(['slice', 'full'] as const)('schedules depleted opening and emergency finale throughout %s', mode => {
-    const roles = season[mode];
+    const roles = season[mode]!;
     const clockLength = mode === 'slice' ? 4 : 6;
     for (let cycle = 1; cycle <= (mode === 'slice' ? 4 : 6); cycle++) {
       const input = {

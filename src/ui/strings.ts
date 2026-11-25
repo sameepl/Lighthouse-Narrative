@@ -1,5 +1,6 @@
 import type {
   AssistedRollPart,
+  EvidencePiece,
   BoardStatus,
   Command,
   HubStatus,
@@ -94,7 +95,7 @@ export function targetAdjustmentText(adjustment: TargetAdjustment): string {
 }
 
 export function rollPartText(part: AssistedRollPart): string {
-  return `${part.assist ? `${part.assist.name} assist` : part.label} ${signed(part.n)}`;
+  return `${part.ship ? `Ship: ${part.ship.tag}` : part.assist ? `${part.assist.name} assist` : part.label} ${signed(part.n)}`;
 }
 
 /** Text and hint for a dock button: ink text as written, bridge commands from codes. */
@@ -102,4 +103,67 @@ export function choiceText(choice: UIChoice): { text: string; sub?: string } {
   return choice.command
     ? commandText(choice.command)
     : { text: choice.text, ...(choice.sub ? { sub: choice.sub } : {}) };
+}
+
+export const onboarding = {
+  title: 'Lighthouse Narrative',
+  start: 'Start',
+  continue: 'Continue',
+  newRun: 'New run',
+  replace: 'New run replaces the saved run in this browser.',
+  theme: 'Change colour theme',
+  feedback: 'Send feedback',
+  build: 'Preview build 0.1.0',
+  dismiss: 'Dismiss hint',
+  hints: {
+    board: 'Board: choose an offer to inspect it before committing.',
+    prepare: 'Prepare: assign available crew and a ship, then confirm. Back spends nothing.',
+    odds: 'Odds: inspect success chances before rolling. Back returns to the choice.',
+    edge: 'Edge: spend one to reroll a failure or upgrade a success with a cost. Accept keeps the result.',
+  },
+};
+
+export const timingExportLabel = 'Export timing log';
+
+export const downtimeCopy = {
+  empty: 'No other ledger entries this cycle.',
+  settling: 'Settling cycle upkeep…',
+  ledger: 'Cycle ledger',
+  arrears: 'Unpaid upkeep remains. Check Odds for any arrears penalty.',
+  error: 'Upkeep could not be settled. Your run has not advanced.',
+  retry: 'Retry upkeep',
+};
+export const downtimeTitle = (cycle: number) => `Cycle ${cycle} settled`;
+export const downtimeNext = (cycle: number) => `Start cycle ${cycle}`;
+export function downtimeBalances(
+  resources: Record<string, number>,
+  pursuit: { value: number; length: number },
+): string {
+  return `Credits Cr${resources.Credits}; Renown ${resources.Renown}; Strain ${resources.Strain}; Pursuit ${pursuit.value}/${pursuit.length}.`;
+}
+
+export const endingCopy = {
+  end_open: 'Request withdrawn',
+  end_closed: 'Request kept on file',
+  foreclosure: 'Foreclosure',
+  unknown: 'Run ended',
+  balances: 'Final balances',
+  gains: 'Gains',
+  costs: 'Costs',
+  watch: 'Other consequences',
+  empty: 'No entries.',
+  pieces: 'Evidence held',
+  noPieces: 'No evidence pieces held.',
+  restart: 'Play again',
+};
+
+export function evidenceText(piece: EvidencePiece): string {
+  if (piece.id === 'six') {
+    return piece.variant === 'header'
+      ? 'Manifest fragment (header only; entries missing)'
+      : piece.variant === 'copy'
+        ? 'Manifest copy (six identifiers)'
+        : 'Manifest record';
+  }
+  return piece.id === 'removed' ? 'Removal record' : 'Claim record';
 }

@@ -30,6 +30,10 @@
   "bonuses": {
     "priya_read": { "label": "Priya’s reading", "n": 1 }
   },
+  "shipModifiers": [
+    { "tag": "armed", "skills": ["Gunnery", "Tactics"], "n": 1, "placeholder": true },
+    { "tag": "fast", "skills": ["Pilot", "Astrogation"], "n": 1, "placeholder": true }
+  ],
   "cycle": {
     "actions": 2,
     "upkeep": {

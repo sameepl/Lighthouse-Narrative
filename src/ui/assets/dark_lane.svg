@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" preserveAspectRatio="xMidYMin slice">
+  <!-- Abstract grey-box placeholder; unapproved Fenrir Gap details excluded (#101). -->
+  <path fill="#0c1322" d="M0 0h600v300H0z"/>
+  <path fill="none" stroke="#3b475f" opacity=".35" d="M0 290L280 130M600 290L320 130M0 225L280 130M600 225L320 130"/>
+</svg>

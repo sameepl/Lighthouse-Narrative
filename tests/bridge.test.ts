@@ -87,6 +87,108 @@ const roundtrip = (s: GameSession, opts: Partial<SessionOptions> = {}) =>
   make({ ...opts, saved: JSON.parse(JSON.stringify(s.save())) as SaveData });
 
 describe('Hub and scene bridge', () => {
+  it('does not force onboarding into an old in-progress run with no actions left', () => {
+    const tutorial: Encounter = { ...fixture.encounters[0]!, id: 'tutorial', cost: 0, repeat: { kind: 'once' } };
+    const configured: GameData = {
+      ...hardenedFixture,
+      encounters: [...fixture.encounters, tutorial],
+      season: { ...simulationSeason, slice: { ...simulationSeason.slice, tutorialId: tutorial.id } },
+    };
+    let s = make({ slice: true });
+    enter(s);
+    choose(s, 'Finish');
+    enter(s);
+    s = make({ data: configured, saved: s.save() });
+    choose(s, 'Finish');
+    expect(view(s).cycle.actionsLeft).toBe(0);
+    expect(view(s).boardStatus).toBe('actions-spent');
+    expect(view(s).offers).toEqual([]);
+    s.endCycle();
+    expect(view(s).cycle.cycle).toBe(2);
+    expect(view(s).offers.some(o => o.entry.id === tutorial.id)).toBe(false);
+  });
+  it('forces tutorial then opening across reloads, with no end-cycle bypass', () => {
+    const tutorial: Encounter = { ...fixture.encounters[0]!, cost: 0, repeat: { kind: 'once' } };
+    const configured: GameData = {
+      ...hardenedFixture,
+      encounters: [tutorial],
+      season: {
+        ...simulationSeason,
+        pursuitFull: 'hardenFinale',
+        slice: { ...simulationSeason.slice, tutorialId: tutorial.id },
+      },
+    };
+    expect(parseSeason(configured.season, configured.keystones, configured.encounters)).toEqual(configured.season);
+    let s = make({ data: configured, slice: true });
+    expect(view(s).offers.map(o => o.entry.id)).toEqual([tutorial.id]);
+    expect(view(s).cycle.actionsLeft).toBe(2);
+    expect(() => s.endCycle()).toThrow('forced');
+    s = make({ data: configured, saved: s.save() });
+    enter(s);
+    s = make({ data: configured, saved: s.save() });
+    choose(s, 'Finish');
+    expect(view(s).offers.map(o => o.entry.id)).toEqual(['opening']);
+    expect(view(s).cycle.actionsLeft).toBe(1);
+    expect(() => s.endCycle()).toThrow('forced');
+    s = make({ data: configured, saved: s.save() });
+    enter(s);
+    choose(s, 'Finish');
+    expect(view(s).cycle.actionsLeft).toBe(0);
+    s.endCycle();
+    expect(view(s).cycle.cycle).toBe(2);
+    expect(view(s).offers.some(o => o.entry.id === tutorial.id)).toBe(false);
+    expect(view(make({ data: configured, slice: false })).offers[0]!.entry.id).toBe('opening');
+  });
+  it('resumes and restarts the saved mode even when the season default changes', () => {
+    const { full: _full, ...sliceOnly } = hardenedFixture.season as typeof simulationSeason;
+    const configured = { ...hardenedFixture, season: sliceOnly };
+    const s = make({ data: configured });
+    const saved = s.save();
+    const resumed = make({ data: hardenedFixture, saved });
+    expect(resumed.save()).toEqual(saved);
+    resumed.restart();
+    expect(view(resumed).cycle.pursuit.length).toBe(data.rules.cycle.pursuit.sliceLength);
+    expect(() => make({ data: hardenedFixture, saved, slice: false })).toThrow('mode');
+    const full = make({ data: hardenedFixture }).save();
+    expect(make({ data: hardenedFixture, saved: full }).save()).toEqual(full);
+    expect(() => make({ data: configured, saved: full })).toThrow('Full mode is not configured');
+    const unknown = structuredClone(saved);
+    unknown.run.cycle.pursuit.length = 999;
+    expect(() => make({ data: hardenedFixture, saved: unknown })).toThrow('clock length');
+  });
+
+  it('exposes a read-only full-clock Ink query across changes, both lengths and reload', () => {
+    const queryInk = new Compiler(`${readFileSync('src/story/lib/world.ink', 'utf8')}
+-> END
+=== job ===
+Clock {pursuit_full()}.
++ [Fill {pursuit_full()}]
+    ~ add("Pursuit", 99)
+    Clock {pursuit_full()}.
+    -> drain
+=== drain ===
++ [Drain]
+    ~ add("Pursuit", -99)
+    Clock {pursuit_full()}.
+    -> scene_end
+`)
+      .Compile()
+      .ToJson()!;
+    for (const slice of [false, true]) {
+      let s = make({ inkJson: queryInk, slice });
+      enter(s);
+      expect(view(s).events.some(e => e.type === 'para' && e.html === 'Clock false.')).toBe(true);
+      expect(view(s).cycle.pursuit.value).toBe(0);
+      expect(view(s).choices.map(c => c.text)).toContain('Fill false');
+      choose(s, 'Fill false');
+      expect(view(s).events.some(e => e.type === 'para' && e.html === 'Clock true.')).toBe(true);
+      expect(view(s).cycle.pursuit.value).toBe(view(s).cycle.pursuit.length);
+      s = make({ inkJson: queryInk, saved: s.save() });
+      choose(s, 'Drain');
+      expect(view(s).cycle.pursuit.value).toBe(0);
+      expect(view(s).events.filter(e => e.type === 'para' && e.html === 'Clock false.')).toHaveLength(2);
+    }
+  });
   it('keeps both middle deadlines and cycle-4 finale in the hardened vertical slice', () => {
     const configured = hardenedFixture,
       slice = true;

@@ -20,14 +20,18 @@ const emptyAssignments = (): Assignments => ({ shipId: null, crewIds: [] });
 /** Bridge scheduling adapter. Engine functions own all rule calculations. */
 export class RunController {
   state: RunState;
+  readonly slice: boolean;
   constructor(
     private data: GameData,
     private options: RunOptions,
   ) {
+    this.slice = options.slice ?? (data.season.status === 'configured' && !data.season.full);
+    if (!this.slice && data.season.status === 'configured' && !data.season.full)
+      throw new Error('Full mode is not configured for this season');
     this.state = {
       ending: null,
       phase: 'hub',
-      cycle: newCycleState(data.rules, options.slice),
+      cycle: newCycleState(data.rules, this.slice),
       crewTrust: Object.fromEntries(data.crew.map(member => [member.id, member.trust])),
       rngState: createSeededRng(options.seed ?? 0).getState(),
       played: [],
@@ -47,14 +51,19 @@ export class RunController {
   private get keystoneRoles(): KeystoneRoles | undefined {
     return (
       this.options.keystoneRoles ??
-      (this.data.season.status === 'configured' ? this.data.season[this.options.slice ? 'slice' : 'full'] : undefined)
+      (this.data.season.status === 'configured' ? this.data.season[this.slice ? 'slice' : 'full'] : undefined)
     );
   }
   get configured(): boolean {
     return this.data.keystones.length > 0 && this.keystoneRoles !== undefined;
   }
+  private get tutorial() {
+    if (!this.slice || this.data.season.status !== 'configured') return undefined;
+    const id = this.data.season.slice.tutorialId;
+    return this.data.encounters.find(entry => entry.id === id);
+  }
   private get pursuitFullPolicy(): 'forceFinale' | 'hardenFinale' {
-    return this.options.slice === true && this.data.season.status === 'configured'
+    return this.slice && this.data.season.status === 'configured'
       ? (this.data.season.pursuitFull ?? 'forceFinale')
       : 'forceFinale';
   }
@@ -69,6 +78,18 @@ export class RunController {
     s.commercialReplacement = false;
     if (s.phase === 'ended') {
       s.boardStatus = 'ended';
+      return;
+    }
+    const tutorial = this.tutorial;
+    if (
+      tutorial &&
+      s.cycle.cycle === 1 &&
+      s.cycle.actionsLeft === 2 &&
+      s.played.length === 0 &&
+      !s.completed.includes(this.keystoneRoles!.firstId)
+    ) {
+      s.offers = [{ kind: 'encounter', entry: tutorial, forced: true, weak: false }];
+      s.boardStatus = 'ready';
       return;
     }
     const crew = availableCrew(this.data, s.busyCrewIds);
@@ -187,8 +208,13 @@ export class RunController {
   }
   finish(game: GameState, flags: Record<string, boolean>): void {
     this.require('scene');
-    const s = this.state,
-      offer = s.active!;
+    const s = this.state;
+    if (s.ending === 'foreclosure') {
+      s.ending = null;
+      s.phase = 'ended';
+      return;
+    }
+    const offer = s.active!;
     if (offer.kind === 'encounter') {
       if (offer.entry.lead && !s.leads.includes(offer.entry.lead)) s.leads.push(offer.entry.lead);
     } else s.completed.push(offer.entry.id);
@@ -228,12 +254,18 @@ export class RunController {
     this.state.cycle = result.cycle;
     if (result.cycle.failed) {
       this.state.ending = 'foreclosure';
-      this.state.phase = 'ended';
+      this.state.phase = 'scene';
+      this.state.active = null;
+      this.state.offers = [];
+      this.state.blockedDue = [];
+      this.state.unmetGuarantees = [];
+      this.state.commercialReplacement = false;
+      this.state.boardStatus = 'ended';
     }
     this.state.busyCrewIds = [];
     this.state.assignments = emptyAssignments();
     this.state.encounterBoard = null;
-    this.refresh(result.game, flags);
+    if (!result.cycle.failed) this.refresh(result.game, flags);
     return { game: result.game, projection: result.projection };
   }
   rewards(game: GameState): { game: GameState; notes: LedgerNote[] } {

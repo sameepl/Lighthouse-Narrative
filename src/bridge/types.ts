@@ -1,3 +1,4 @@
+import type { ShipRollPart } from '../engine/ship-modifiers';
 import type { Crew, Encounter, Keystone, Ships } from '../data/schema';
 import type { CrewTrust, CycleState, Dice, Grade, Note, OddsInfo, RollPart, RollSetup } from '../engine/types';
 
@@ -22,7 +23,7 @@ export type LedgerNote = Note & {
     | { code: 'upkeepSettlement'; settlement: UpkeepProjection }
     | { code: 'trustReward'; crewId: string; name: string; edgeAdded: number };
 };
-export type AssistedRollPart = RollPart & { assist?: { crewId: string; name: string } };
+export type AssistedRollPart = RollPart & { assist?: { crewId: string; name: string }; ship?: ShipRollPart['ship'] };
 export interface TargetAdjustment {
   code: 'upkeepArrears';
   n: number;
@@ -41,6 +42,22 @@ export type GameEvent = { id: number } & (
   | ({ type: 'note' } & LedgerNote)
   | { type: 'summary'; items: LedgerNote[] }
 );
+/** Diagnostic IDs only; timestamps/storage belong to the optional browser recorder. */
+export interface TimingEvent {
+  type:
+    | 'run-start'
+    | 'run-resume'
+    | 'hub-shown'
+    | 'offer-picked'
+    | 'scene-started'
+    | 'choice'
+    | 'roll'
+    | 'scene-ended'
+    | 'cycle-end'
+    | 'run-end';
+  sceneId: string | null;
+  cycle: number;
+}
 export type ChoiceKind = 'choice' | 'try' | 'odds' | 'back' | 'edge' | 'accept';
 /** A dock command. The UI strings module turns codes and parameters into words. */
 export type Command =
@@ -105,7 +122,7 @@ export interface PreparationView {
   ships: (Pick<Ships[number], 'name' | 'tags' | 'upkeep'> & { shipId: string; selected: boolean })[];
 }
 export type Offer =
-  | { kind: 'encounter'; entry: Encounter; forced: false; weak: false }
+  | { kind: 'encounter'; entry: Encounter; forced: boolean; weak: false }
   | { kind: 'keystone'; entry: Keystone; forced: boolean; weak: boolean };
 export type RunPhase = 'hub' | 'prepare' | 'scene' | 'ended';
 export type BoardStatus = 'ready' | 'no-eligible-offers' | 'actions-spent' | 'pursuit-full' | 'ended';
@@ -130,6 +147,9 @@ export interface RunState {
   blockedDue: string[];
   commercialReplacement: boolean;
 }
+/** Held player-visible evidence. Optional variant describes the slice manifest, not new state. */
+export type EvidencePiece = { id: 'removed' | 'claim' } | { id: 'six'; variant?: 'header' | 'copy' };
+
 /** Everything the UI renders. Values are detached snapshots, never mutable session state. */
 export interface GameView {
   events: GameEvent[];
@@ -139,6 +159,7 @@ export interface GameView {
   ended: boolean;
   res: Record<string, number>;
   ledger: LedgerNote[];
+  evidence: EvidencePiece[];
   crewTrust: CrewTrust;
   /** Scheduling phase, separate from the scene's internal roll interaction. */
   phase: RunPhase;

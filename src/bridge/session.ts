@@ -7,10 +7,11 @@ import { changeTrust } from '../engine/cycle';
 import { assistedSetup } from './roll';
 import { createSeededRng } from '../engine/rng';
 import { RunController, type RunOptions } from './run';
-import { migrateSave } from './save';
+import { migrateSave, validateSave } from './save';
 import { runChoices } from './run-choices';
 import { preparationProjection } from './view';
-import type { Assignments } from './types';
+import type { Assignments, EvidencePiece } from './types';
+import type { TimingEvent } from './types';
 import { Story } from 'inkjs';
 import { createStore, type StoreApi } from 'zustand/vanilla';
 import type { GameData } from '../data/validate';
@@ -27,6 +28,7 @@ type Phase = 'story' | 'staged' | 'rolled' | 'ended';
 type Draft = GameEvent extends infer E ? (E extends GameEvent ? Omit<E, 'id'> : never) : never;
 
 export interface SessionOptions extends RunOptions {
+  onTiming?: (event: TimingEvent) => void;
   inkJson: string;
   data: GameData;
   rng?: Rng;
@@ -49,6 +51,8 @@ export class GameSession {
   private bg = 'hall';
   private snapshot: SaveData | null = null;
   private errors: string[] = [];
+  private timings: TimingEvent[] = [];
+  private timingStarted = false;
 
   constructor(private opts: SessionOptions) {
     this.store = createStore<GameView>(() => ({}) as GameView);
@@ -64,7 +68,18 @@ export class GameSession {
   private init(saved: SaveData | LegacySaveData | null): void {
     const { data, inkJson } = this.opts;
     this.errors = [];
-    this.run = new RunController(data, this.opts);
+    let slice = this.run?.slice ?? this.opts.slice;
+    if (saved) {
+      validateSave(saved, data);
+      const { length, sliceLength } = data.rules.cycle.pursuit;
+      const stored = saved.run?.cycle?.pursuit?.length;
+      if (length === sliceLength || (stored !== length && stored !== sliceLength))
+        throw new Error('Saved clock length does not identify a supported run mode');
+      slice = stored === sliceLength;
+      if (this.opts.slice !== undefined && this.opts.slice !== slice)
+        throw new Error('Saved run mode does not match requested mode');
+    }
+    this.run = new RunController(data, { ...this.opts, slice });
     this.story = new Story(inkJson);
     this.story.onError = msg => this.errors.push(msg);
     this.bindExternals();
@@ -81,6 +96,8 @@ export class GameSession {
       this.rewards();
       this.run.refresh(this.game, this.flags());
     }
+    this.trace(saved ? 'run-resume' : 'run-start');
+    this.timingStarted = true;
     this.publish();
   }
 
@@ -128,6 +145,7 @@ export class GameSession {
 
   pickOffer(id: string): void {
     this.run.pick(id);
+    this.trace('offer-picked');
     this.publish();
   }
   assign(value: Assignments): void {
@@ -143,12 +161,14 @@ export class GameSession {
     const before = this.save();
     try {
       this.run.confirm(this.game);
+      this.trace('scene-started');
       this.story.ChoosePathString(this.run.state.active!.entry.knot);
       this.phase = 'story';
       this.snapshot = null;
       this.advance();
       this.publish();
     } catch (error) {
+      this.timings = [];
       this.restore(before);
       this.errors = [];
       this.publish();
@@ -156,17 +176,36 @@ export class GameSession {
     }
   }
   endCycle(): void {
-    const result = this.run.end(this.game, this.flags());
-    this.game = result.game;
-    const note: LedgerNote = {
-      kind: 'cost',
-      t: '',
-      command: { code: 'upkeepSettlement', settlement: result.projection },
-    };
-    this.game.ledger.push(note);
-    this.push({ type: 'note', ...note });
-    this.rewards();
-    this.publish();
+    this.run.require('hub');
+    const before = this.save();
+    const showOdds = this.showOdds;
+    try {
+      this.trace('cycle-end', null);
+      const result = this.run.end(this.game, this.flags());
+      this.game = result.game;
+      const note: LedgerNote = {
+        kind: 'cost',
+        t: '',
+        command: { code: 'upkeepSettlement', settlement: result.projection },
+      };
+      this.game.ledger.push(note);
+      this.push({ type: 'note', ...note });
+      if (this.run.state.ending === 'foreclosure') {
+        this.trace('scene-started', 'foreclosure');
+        this.story.ChoosePathString('foreclosure');
+        this.phase = 'story';
+        this.snapshot = null;
+        this.advance();
+      } else this.rewards();
+      this.publish();
+    } catch (error) {
+      this.timings = [];
+      this.restore(before);
+      this.showOdds = showOdds;
+      this.errors = [];
+      this.publish();
+      throw error;
+    }
   }
 
   private rewards(): void {
@@ -181,6 +220,21 @@ export class GameSession {
   /** id is a story choice index (number) or 'try' | 'odds' | 'back' | 'edge' | 'accept'. */
   act(id: number | string): void {
     if (!this.choices().some(choice => choice.id === id)) throw new Error(`Action unavailable: ${id}`);
+    this.trace(
+      'choice',
+      typeof id === 'string' && id.startsWith('offer:')
+        ? id.slice(6)
+        : (this.run.state.active?.entry.id ?? this.run.state.ending),
+    );
+    try {
+      this.actAvailable(id);
+    } catch (error) {
+      this.timings = [];
+      throw error;
+    }
+  }
+
+  private actAvailable(id: number | string): void {
     if (id === 'restart') return this.restart();
     if (typeof id === 'string' && id.startsWith('offer:')) return this.pickOffer(id.slice(6));
     if (id === 'restart') return this.restart();
@@ -233,6 +287,7 @@ export class GameSession {
 
   private try(): void {
     this.pending = makeRoll(this.setup!, this.opts.data.rules, this.dice);
+    this.trace('roll');
     this.push({ type: 'roll', ...this.pending });
     if (this.pending.grade !== 'clean' && (this.game.res.Edge ?? 0) > 0) this.phase = 'rolled';
     else this.finalize(this.pending.grade);
@@ -240,7 +295,9 @@ export class GameSession {
 
   private edge(): void {
     addResource(this.game.res, this.opts.data.rules, 'Edge', -1);
+    const reroll = this.pending!.grade === 'fail';
     this.pending = spendEdge(this.pending!, this.setup!, this.opts.data.rules, this.dice);
+    if (reroll) this.trace('roll');
     this.push({ type: 'roll', ...this.pending });
     this.finalize(this.pending.grade);
   }
@@ -259,6 +316,14 @@ export class GameSession {
 
   private bindExternals(): void {
     const { rules } = this.opts.data;
+    this.story.BindExternalFunction(
+      'pursuit_full',
+      () => {
+        const clock = this.run.state.cycle.pursuit;
+        return clock.value === clock.length;
+      },
+      true,
+    );
     this.story.BindExternalFunction('res', (name: string) => {
       if (name === 'Pursuit') return this.run.state.cycle.pursuit.value;
       if (!(name in rules.resources))
@@ -307,6 +372,7 @@ export class GameSession {
     const choices = this.story.currentChoices;
     const end = choices.find(c => c.text === '__scene_end__');
     if (end) {
+      this.trace('scene-ended', this.run.state.active?.entry.id ?? this.run.state.ending);
       this.story.ChooseChoiceIndex(end.index);
       while (this.story.canContinue) this.story.Continue();
       this.snapshot = null;
@@ -346,10 +412,18 @@ export class GameSession {
   private push(e: Draft): void {
     this.events.push({ ...e, id: this.nextId++ } as GameEvent);
   }
+  private trace(
+    type: TimingEvent['type'],
+    sceneId: string | null = this.run.state.active?.entry.id ?? this.run.state.ending,
+  ): void {
+    if (this.opts.onTiming) this.timings.push({ type, sceneId, cycle: this.run.state.cycle.cycle });
+  }
 
   // ---- view --------------------------------------------------------------------------
 
   private choices(): UIChoice[] {
+    if (this.run.state.phase === 'ended' && this.run.state.cycle.failed)
+      return [{ id: 'restart', kind: 'choice', text: '', command: { code: 'restart' } }];
     if (this.run.state.phase !== 'scene') {
       const choices = runChoices(this.run.state, this.opts.data, this.game.res);
       for (const choice of choices)
@@ -382,7 +456,27 @@ export class GameSession {
     });
   }
 
+  /** Match the scheduler's completed-middle evidence; story flags only refine what was recovered. */
+  private evidence(): EvidencePiece[] {
+    const roles =
+      this.opts.keystoneRoles ??
+      (this.opts.data.season.status === 'configured'
+        ? this.opts.data.season[this.run.slice ? 'slice' : 'full']
+        : undefined);
+    const completed = this.opts.data.keystones.filter(
+      entry => roles?.middleIds.includes(entry.id) && this.run.state.completed.includes(entry.id),
+    );
+    return (['removed', 'six', 'claim'] as const)
+      .filter(id => completed.some(entry => entry.piece === id))
+      .map(id =>
+        id === 'six' && completed.some(entry => entry.id === 'slice_k2_hab' && entry.piece === id)
+          ? { id, variant: this.story.variablesState.$('k2_records_saved') === true ? 'copy' : 'header' }
+          : { id },
+      );
+  }
+
   private publish(): void {
+    const previous = this.store.getState();
     this.store.setState(
       structuredClone({
         events: this.events,
@@ -420,8 +514,26 @@ export class GameSession {
         commercialReplacement: this.run.state.commercialReplacement,
         res: { ...this.game.res },
         ledger: [...this.game.ledger],
+        evidence: this.evidence(),
       }),
       true,
     );
+    const current = this.store.getState();
+    if (
+      current.phase === 'hub' &&
+      (this.timingStarted || previous.phase !== 'hub' || previous.cycle?.cycle !== current.cycle.cycle)
+    )
+      this.trace('hub-shown', null);
+    if (current.ended && !this.timingStarted && previous.phase !== undefined && !previous.ended)
+      this.trace('run-end', this.timings.filter(e => e.type === 'scene-ended').at(-1)?.sceneId ?? null);
+    this.timingStarted = false;
+    const pending = this.timings.splice(0);
+    for (const event of pending) {
+      try {
+        this.opts.onTiming?.(event);
+      } catch {
+        /* diagnostics never affect play */
+      }
+    }
   }
 }

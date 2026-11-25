@@ -1,0 +1,16 @@
+{
+  "id": "stub_salvage_lamp",
+  "knot": "stub_salvage_lamp_scene",
+  "title": "[STUB] The Loose Lamp",
+  "layer": "commercial",
+  "archetype": "salvage",
+  "tags": [],
+  "requires": {},
+  "repeat": {
+    "kind": "once"
+  },
+  "weight": 1,
+  "cost": 0,
+  "risk": "[STUB] The lamp's loop is lost, and the keepers hold the loss against your hull at the next tender round.",
+  "placeholder": true
+}

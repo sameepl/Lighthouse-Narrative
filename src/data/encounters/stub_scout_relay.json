@@ -1,0 +1,16 @@
+{
+  "id": "stub_scout_relay",
+  "knot": "stub_scout_relay_scene",
+  "title": "[STUB] The Last Relay",
+  "layer": "commercial",
+  "archetype": "scout",
+  "tags": [],
+  "requires": {},
+  "repeat": {
+    "kind": "once"
+  },
+  "weight": 1,
+  "cost": 0,
+  "risk": "[STUB] A wrong guess sends your crew down the wrong lane and the hauler master takes his charter elsewhere.",
+  "placeholder": true
+}

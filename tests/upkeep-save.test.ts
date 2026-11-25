@@ -46,7 +46,7 @@ describe('upkeep cycle and save integration', () => {
         strain = Math.min(rules.resources.Strain!.max!, strain + rules.cycle.upkeep.strainGain);
       expect(saved.run.cycle).toMatchObject({ arrears, upkeepShortfall: due, failed });
       expect(saved.res.Strain).toBe(strain);
-      expect(saved.run.ending).toBe(failed ? 'foreclosure' : null);
+      expect(saved.run.ending).toBeNull();
       expect(saved.run.phase).toBe(failed ? 'ended' : 'hub');
       const restored = new GameSession({ inkJson, data: sessionData, saved: JSON.parse(JSON.stringify(saved)) });
       expect(restored.save()).toEqual(saved);

@@ -67,6 +67,8 @@ More narration.
 | the three diverts | Clean success, success with a cost, failure. |
 
 The game runs the roll (Try it, Odds, Edge), then continues into one of the three knots.
+
+Assigned ships automatically modify matching checks before the best skill is selected. The placeholder values in `rules.json` give `armed` +1 to Gunnery or Tactics and `fast` +1 to Pilot or Astrogation; only the assigned ship contributes, and repeated tags do not stack. These bonuses coexist with the single best matching assigned crew assist and active flag bonuses. Odds expose structured ship parts, which the UI formats as `Ship: armed +1` (or the matching tag). Writers keep the usual `roll()` call: no ink changes or extra bonus flags are needed.
 **Failure must still move the story**: write what it costs, never a dead end. Write all three outcomes.
 
 ## Consequences and resources
@@ -78,6 +80,8 @@ The game runs the roll (Try it, Odds, Edge), then continues into one of the thre
 ```
 
 Put `note()` calls **after** the text they relate to. Resource names are checked: `add("Straine", 1)` is an error.
+
+`pursuit_full()` is a read-only boolean query of the engine's current clock. Use it for approved full-clock variants or target adjustments, never hard-code the clock length or store a duplicate Ink flag. `res("Pursuit")` still reads its value; `add("Pursuit", n)` changes the same clamped clock.
 
 ## Crew trust
 

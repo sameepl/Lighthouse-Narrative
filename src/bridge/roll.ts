@@ -1,3 +1,4 @@
+import { shipModifiers } from '../engine/ship-modifiers';
 import type { GameData } from '../data/validate';
 import { upkeepTargetPenalty } from '../engine/upkeep';
 import { assistOf } from '../engine/cycle';
@@ -14,9 +15,13 @@ export function assistedSetup(
   crewTrust: CrewTrust,
   run?: Pick<RunState, 'active' | 'assignments' | 'cycle'>,
 ): AssistedRollSetup {
+  const ship = data.ships.find(ship => ship.id === run?.assignments.shipId);
   let best: AssistedRollSetup | undefined;
   for (const skill of request.skills) {
     const setup: AssistedRollSetup = setupRoll(data.character, data.rules, { ...request, skills: [skill] }, active);
+    const shipParts = shipModifiers(ship, skill, data.rules);
+    setup.parts.push(...shipParts);
+    setup.mod += shipParts.reduce((sum, part) => sum + part.n, 0);
     const assigned = data.crew
       .filter(c => crewIds.includes(c.id))
       .map(crew => ({ crew, assist: assistOf(crew, crewTrust[crew.id]!, data.rules) }))
@@ -35,7 +40,6 @@ export function assistedSetup(
   }
   if (!best) throw new Error('A check needs at least one skill');
   const requiredTag = run?.active?.entry.requires.shipTag;
-  const ship = data.ships.find(ship => ship.id === run?.assignments.shipId);
   const penalty = upkeepTargetPenalty(
     run?.cycle.arrears ?? 0,
     !!requiredTag && !!ship?.tags.includes(requiredTag),

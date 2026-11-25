@@ -1,0 +1,16 @@
+{
+  "id": "stub_trade_convoy",
+  "knot": "stub_trade_convoy_scene",
+  "title": "[STUB] Past the Third Marker",
+  "layer": "commercial",
+  "archetype": "trade_run",
+  "tags": [],
+  "requires": {},
+  "repeat": {
+    "kind": "once"
+  },
+  "weight": 1,
+  "cost": 0,
+  "risk": "[STUB] The string turns back, the hab's order lapses and your crew is left holding the seals.",
+  "placeholder": true
+}

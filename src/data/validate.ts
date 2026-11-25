@@ -71,7 +71,9 @@ export function parseData(raw: {
     shipTags: ships.flatMap(ship => ship.tags),
     crewIds: crew.filter(member => member.assignable).map(member => member.id),
   });
-  const season = parseSeason(raw.season, content.keystones);
+  const season = parseSeason(raw.season, content.keystones, content.encounters);
+  if (season.status === 'configured' && season.slice.tutorialId && rules.cycle.actions !== 2)
+    throw new Error('season.json: slice.tutorialId: tutorial opening requires two actions per cycle');
   return { rules, character, crew, ships, ...content, season };
 }
 
@@ -125,7 +127,11 @@ export function parseContent(
 }
 
 /** Season activation is atomic: configured roles must all resolve in the same catalog. */
-export function parseSeason(raw: unknown, keystones: readonly Keystone[]): Season {
+export function parseSeason(
+  raw: unknown,
+  keystones: readonly Keystone[],
+  encounters: readonly Encounter[] = [],
+): Season {
   const result = SeasonSchema.safeParse(raw);
   if (!result.success) throw new Error(`season.json: ${result.error.message}`);
   const season = result.data;
@@ -133,9 +139,18 @@ export function parseSeason(raw: unknown, keystones: readonly Keystone[]): Seaso
   const fail = (field: string, message: string): never => {
     throw new Error(`season.json: ${field}: ${message}`);
   };
+  if (season.slice.tutorialId) {
+    const tutorial = encounters.find(entry => entry.id === season.slice.tutorialId);
+    if (!tutorial || tutorial.cost !== 0 || tutorial.repeat.kind !== 'once' || Object.keys(tutorial.requires).length)
+      fail('slice.tutorialId', 'must name a free, once-only encounter with empty requirements');
+    const opening = keystones.find(entry => entry.id === season.slice.firstId);
+    if (!opening || opening.deadline !== 1 || Object.keys(opening.requires).length)
+      fail('slice.firstId', 'tutorial must be followed by an unrestricted cycle-one opening');
+  }
   const known = new Set(keystones.map(key => key.id));
   for (const mode of ['slice', 'full'] as const) {
     const roles = season[mode];
+    if (!roles) continue;
     const ids = [roles.firstId, ...roles.middleIds, roles.finaleId];
     if (new Set(ids).size !== ids.length) fail(mode, 'duplicate keystone roles');
     for (const [field, id] of [
@@ -145,11 +160,15 @@ export function parseSeason(raw: unknown, keystones: readonly Keystone[]): Seaso
     ] as [string, string][])
       if (!known.has(id)) fail(`${mode}.${field}`, `unknown keystone "${id}"`);
   }
-  if (!season.full.middleIds.includes(season.full.conditionalId)) fail('full.conditionalId', 'must name a middle role');
-  if (season.slice.firstId !== season.full.firstId) fail('full.firstId', 'must match slice.firstId');
-  if (season.slice.finaleId !== season.full.finaleId) fail('full.finaleId', 'must match slice.finaleId');
-  if (season.slice.middleIds.some(id => !season.full.middleIds.includes(id) || id === season.full.conditionalId))
-    fail('full.middleIds', 'must contain the slice middles plus a separate conditional middle');
+  if (season.full) {
+    const full = season.full;
+    if (!season.full.middleIds.includes(season.full.conditionalId))
+      fail('full.conditionalId', 'must name a middle role');
+    if (season.slice.firstId !== season.full.firstId) fail('full.firstId', 'must match slice.firstId');
+    if (season.slice.finaleId !== season.full.finaleId) fail('full.finaleId', 'must match slice.finaleId');
+    if (season.slice.middleIds.some(id => !full.middleIds.includes(id) || id === full.conditionalId))
+      fail('full.middleIds', 'must contain the slice middles plus a separate conditional middle');
+  }
   if (season.pursuitFull === 'hardenFinale') {
     const roles = season.slice;
     for (const id of [roles.firstId, ...roles.middleIds, roles.finaleId]) {
