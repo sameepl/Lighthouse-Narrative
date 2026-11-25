@@ -91,19 +91,16 @@ describe('Board projection rendering', () => {
 
 describe('opening tutorial wording', () => {
   const opening = { ...cycle, cycle: 1, actionsLeft: 2 };
-  const tutorial: Offer = {
-    kind: 'encounter',
-    forced: true,
-    weak: false,
-    entry: data.encounters.find(
-      e => e.id === (data.season.status === 'configured' ? data.season.slice.tutorialId : ''),
-    )!,
-  };
+  if (data.season.status !== 'configured') throw new Error('Tutorial test requires a configured season');
+  const tutorialId = data.season.slice.tutorialId;
+  const entry = data.encounters.find(e => e.id === tutorialId);
+  if (!entry) throw new Error(`Tutorial encounter missing: ${tutorialId}`);
+  const tutorial: Offer = { kind: 'encounter', forced: true, weak: false, entry };
   it('uses the configured visible tutorial and preserves its inspection title and action', () => {
     const html = renderToStaticMarkup(
       createElement(Board, { offers: [tutorial], offerLocks: [], cycle: opening, onAct: () => {} }),
     );
-    expect(html).toContain('Begin the tutorial: The Written Clause');
+    expect(html).toContain('class="board-detail">Begin the tutorial: The Written Clause');
     expect(html).toContain('class="board-title">The Written Clause</strong>');
     expect(openingTutorial([tutorial], opening)).toBe(tutorial.entry.title);
   });

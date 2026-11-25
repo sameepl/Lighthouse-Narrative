@@ -1,7 +1,5 @@
 import type { GameView } from '../../bridge/types';
-import { boardLabels as labels, boardLockText, openingTutorial } from './Board.labels';
-
-import { tutorialBoardTitle } from '../strings';
+import { boardLabels as labels, boardLockText, openingTutorial, tutorialBoardTitle } from './Board.labels';
 
 type Props = Pick<GameView, 'offers' | 'offerLocks' | 'cycle'> & {
   onAct: (id: number | string) => void;
@@ -15,7 +13,7 @@ export function Board({ offers, offerLocks, cycle, onAct }: Props) {
         <h2 tabIndex={-1}>{labels.cycle(cycle.cycle)}</h2>
         <span>{labels.actions(cycle.actionsLeft)}</span>
       </div>
-      {tutorial && <p>{tutorialBoardTitle(tutorial)}</p>}
+      {tutorial && <p className="board-detail">{tutorialBoardTitle(tutorial)}</p>}
       <div className="board-offers">
         {offers.map(offer => {
           const reasons = offerLocks.find(lock => lock.offerId === offer.entry.id)?.reasons ?? [];

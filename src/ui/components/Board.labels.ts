@@ -41,10 +41,19 @@ export function boardLockText(reason: PreparationReason): string {
 /** Only the configured, visibly forced opening tutorial receives tutorial wording. */
 export function openingTutorial(offers: GameView['offers'], cycle: GameView['cycle']): string | undefined {
   const season = data.season;
-  if (season.status !== 'configured' || cycle.cycle !== 1 || cycle.actionsLeft !== 2 || offers.length !== 1)
+  if (
+    season.status !== 'configured' ||
+    cycle.cycle !== 1 ||
+    cycle.actionsLeft !== data.rules.cycle.actions ||
+    offers.length !== 1
+  )
     return undefined;
   const offer = offers[0]!;
   return offer.kind === 'encounter' && offer.forced && offer.entry.id === season.slice.tutorialId
     ? offer.entry.title
     : undefined;
 }
+
+export const tutorialBoardTitle = (title: string) => `Begin the tutorial: ${title}`;
+export const tutorialBoardHint =
+  'Select the tutorial to inspect it before committing. Selecting and preparing spend no action; confirmation begins the tutorial.';
