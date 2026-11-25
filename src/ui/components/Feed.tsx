@@ -107,7 +107,7 @@ export function Feed({ events }: { events: GameEvent[] }) {
   let batchIndex = 0,
     prev = 0;
   return (
-    <main>
+    <main className={events.length === 0 ? 'feed-empty' : undefined}>
       <AnimatePresence initial={false}>
         {events.map(ev => {
           batchIndex = ev.id === prev + 1 ? batchIndex + 1 : 0;
