@@ -175,3 +175,10 @@ Adopt with changes:
 ## 10. Decision (owner, 2026-11-04)
 
 Adopted: the Sol, Opus and Sonnet plan from section 9. The owner added: **Luna and Haiku may be tried for targeted content only.** The adopted routing now lives in `docs/AGENT_WORKFLOW.md` ("Model routing"). Open question for a later review: cost per accepted scene, which nobody has measured yet.
+
+## 11. Amendment (owner, 2026-11-25)
+
+Evidence: a blind three-draft comparison of the K5 keystone (Sonnet, Opus and Fable, same packet, same mechanics) was run on 2026-11-25. All three compiled and passed the branch walk, canon guard and content lint; the only test failures were the two assertions that expect the `[STUB]` prefix. Owner ratings are pending, so this amendment does not rest on them.
+
+Decision: **Opus is the default for narrative writing; Sonnet is the fixer and editor; rewrites go back to Opus.** A final reviewer lists findings tagged edit or rewrite, and edits go to Sonnet while rewrites go to Opus. Fable was the intended final reviewer but is unavailable as of 2026-11-25, so Astra, or an Opus pass in a fresh context, takes that role and the owner rates finalists. The adopted routing is in `docs/AGENT_WORKFLOW.md` ("Model routing"). Open question: cost per accepted scene is still unmeasured.
+
