@@ -2,6 +2,8 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import type { GameView, Offer } from '../src/bridge/types';
+import { openingTutorial } from '../src/ui/components/Board.labels';
+import { data } from '../src/data';
 import { Board } from '../src/ui/components/Board';
 
 const cycle: GameView['cycle'] = {
@@ -84,5 +86,31 @@ describe('Board projection rendering', () => {
     for (const text of ['Keystone', 'Forced', 'Weaker options', 'Cost not listed', 'Risk not listed'])
       expect(html).toContain(text);
     for (const text of ['Crisis', 'Commercial', 'Cost Cr']) expect(html).not.toContain(text);
+  });
+});
+
+describe('opening tutorial wording', () => {
+  const opening = { ...cycle, cycle: 1, actionsLeft: 2 };
+  if (data.season.status !== 'configured') throw new Error('Tutorial test requires a configured season');
+  const tutorialId = data.season.slice.tutorialId;
+  const entry = data.encounters.find(e => e.id === tutorialId);
+  if (!entry) throw new Error(`Tutorial encounter missing: ${tutorialId}`);
+  const tutorial: Offer = { kind: 'encounter', forced: true, weak: false, entry };
+  it('uses the configured visible tutorial and preserves its inspection title and action', () => {
+    const html = renderToStaticMarkup(
+      createElement(Board, { offers: [tutorial], offerLocks: [], cycle: opening, onAct: () => {} }),
+    );
+    expect(html).toContain('class="board-detail">Begin the tutorial: The Written Clause');
+    expect(html).toContain('class="board-title">The Written Clause</strong>');
+    expect(openingTutorial([tutorial], opening)).toBe(tutorial.entry.title);
+  });
+  it('does not call later, unforced or alternative single offers tutorials', () => {
+    expect(openingTutorial([tutorial], cycle)).toBeUndefined();
+    expect(openingTutorial([tutorial], { ...opening, actionsLeft: 1 })).toBeUndefined();
+    expect(openingTutorial([{ ...tutorial, forced: false }], opening)).toBeUndefined();
+    expect(openingTutorial([encounter], opening)).toBeUndefined();
+    expect(openingTutorial([keystone], opening)).toBeUndefined();
+    expect(openingTutorial([tutorial, encounter], opening)).toBeUndefined();
+    expect(render([tutorial])).not.toContain('Begin the tutorial');
   });
 });
